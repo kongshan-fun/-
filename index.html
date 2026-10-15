@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="description" content="青岚问道，五境文字修仙生存游戏。离线单机，完整入门引导。">
+<title>青岚问道 · V9 洞府营建</title>
+<link rel="stylesheet" href="src/style.css">
+</head>
+<body>
+<div id="phone" class="phone">
+ <div id="game-shell" class="game-shell">
+  <header class="topbar"><div class="wordmark">青岚问道 <span>V9</span></div><div class="top-buttons"><button data-a="panel" data-name="help">教程</button><button data-a="panel" data-name="settings">设置</button></div></header>
+  <section id="status" aria-label="修行状态"></section>
+  <button id="quest" class="quest" data-a="panel" data-name="quest" aria-label="查看主线任务"></button>
+  <main id="scene" class="scene" aria-label="当前地点"><div id="scene-content"></div></main>
+  <section class="inventory-peek" id="inventory-peek" aria-label="随身物品概览">
+   <div class="peek-heading"><b>随身</b><span id="weight-caption"></span><button data-a="panel" data-name="pack">全部 ›</button></div>
+   <div class="peek-grid" id="peek-grid"></div>
+  </section>
+  <section class="bottom-dock" aria-label="移动与补给">
+   <div class="map-dock" id="map-dock" aria-label="以玩家为中心的九宫格">
+    <div class="map-heading"><span id="map-caption">附近</span><button id="expand-map" data-a="expand-map" aria-controls="map-overlay" aria-expanded="false">展开</button></div>
+    <div id="map" class="mini-grid" role="group" aria-label="九宫格移动盘，我固定在中心"></div>
+   </div>
+   <div class="field-controls">
+    <div class="travel-row"><button id="travel-toggle" data-a="travel-toggle" aria-expanded="false" aria-controls="travel-menu"><span>出行</span><strong id="zone-label">青岚山麓</strong><span aria-hidden="true">⌄</span></button></div>
+    <div class="journey-controls"><button id="home-button" data-a="home">定居</button><button id="stop-button" data-a="stop" disabled>停步</button></div>
+    <div class="supplies"><button id="food-button" data-a="consume" data-id="berry">灵果 <small id="berry-count">4</small></button><button id="water-button" data-a="consume" data-id="water">饮水 <small id="water-count">3</small></button><button id="heal-button" data-a="consume" data-id="salve">回春 <small id="salve-count">2</small></button><button id="rest-button" data-a="quick-rest">调息</button></div>
+   </div>
+  </section>
+  <nav class="quick-nav" aria-label="快捷操作">
+   <button id="camp-button" data-a="panel" data-name="camp">洞府</button>
+   <button id="craft-button" data-a="panel" data-name="craft">炼制</button>
+   <button id="pack-button" data-a="panel" data-name="pack">背包</button>
+   <button id="cultivate-button" data-a="panel" data-name="cultivate">修炼</button>
+   <button id="book-button" data-a="panel" data-name="book">图鉴</button>
+  </nav>
+  <div id="travel-menu" class="travel-menu" hidden></div>
+ </div>
+ <section id="panel-root" aria-live="off"></section>
+ <section id="map-overlay" class="map-overlay" hidden aria-label="本境完整地图" role="dialog" aria-modal="true">
+  <div class="world-header"><div><small id="world-zone">青岚山麓</small><h2>本境地图</h2></div><button id="collapse-map" data-a="collapse-map" aria-label="收起完整地图">收起 ×</button></div>
+  <p id="world-caption" class="world-caption"></p>
+  <div class="world-map-frame"><div id="world-map" class="world-grid" role="group" aria-label="八乘八完整区域地图"></div></div>
+  <div class="world-legend"><span><b>我</b> 所在地</span><span>？ 未知</span><span>府 自建洞府</span></div>
+  <p class="world-tip">点一格前往 · 出发后自动收起</p>
+  <p class="world-note">遇敌、奇遇或界碑时停步</p>
+ </section>
+ <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+ <div id="guide-root" class="guide-root"></div>
+ <div id="modal-root"></div>
+ <div class="rotate-note" role="status"><b>请竖屏游玩</b><span>或将浏览器窗口高度调至500像素以上</span></div>
+</div>
+<input id="import-file" type="file" accept=".json,application/json" hidden>
+<noscript>此游戏需要浏览器启用 JavaScript。没有联网要求。</noscript>
+<script src="src/data.js"></script><script src="src/engine.js"></script><script src="src/ui.js"></script>
+</body>
+</html>

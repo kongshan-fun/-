@@ -1,0 +1,18 @@
+'use strict';
+const assert=require('node:assert/strict');
+const D=require('../src/data.js');
+const Game=require('../src/engine.js');
+const g=new Game();
+assert.equal(D.VERSION,9);
+assert.equal(D.ZONES.length,5);
+assert.equal(D.GUIDE.length,11);
+assert.equal(g.s.version,9);
+assert.equal(g.s.settlements.length,5);
+assert.equal(g.camp,null);
+assert.equal(g.storageReady,false);
+assert.equal(g.workshop,false);
+assert.equal(g.s.pos.x,1);
+assert.equal(g.s.pos.y,5);
+const restored=new Game(g.state());
+assert.deepEqual(restored.s.settlements,g.s.settlements);
+console.log('V9 smoke PASS: maps, guide, initial settlement, storage and state round-trip');
