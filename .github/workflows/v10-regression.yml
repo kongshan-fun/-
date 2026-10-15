@@ -1,67 +1,95 @@
-name: V13 character 100-slot regression
+name: V14 races, full-screen creation and current-build regression
 on:
   push:
-    branches: [main, 'chore/**', 'feat/**', 'release/**']
+    branches: [main, 'chore/**', 'feat/**', 'fix/**', 'release/**']
   pull_request:
-    branches: [main, 'chore/**', 'feat/**']
+    branches: [main, 'chore/**', 'feat/**', 'fix/**']
 permissions:
   contents: read
 jobs:
-  core:
-    name: Gameplay, independent characters, lifespan, 12 maps and build
+  validate:
+    name: V14 current source, two races, saves and Chromium
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with: {node-version: '22'}
       - uses: actions/setup-python@v5
         with: {python-version: '3.12'}
-      - name: JS syntax
+      - name: Verify and unpack one-time authored source delivery
+        run: python tools/apply_v14.py
+      - name: Syntax and deterministic builds
         run: |
-          node --check src/data.js
-          node --check src/engine.js
-          node --check src/slots.js
-          node --check src/ui.js
-      - name: Existing rule and storage regressions
-        run: |
-          node tests/smoke.test.js
-          node tests/v10_regression.test.js
-          node tests/v10_lifespan.test.js
-          node tests/v11_characters.test.js
-          node tests/v13_slots.test.js
-      - name: Six old region full campaigns (3 seeds x 2 roles)
-        run: node tests/v10_campaign.test.js --all --both-roles
-      - name: Actual mortal-world ascension (two roles)
-        run: node tests/v12_ascension.test.js
-      - name: Rebuild manual and standalone
-        run: |
+          for f in src/*.js; do node --check "$f"; done
           python build_docs.py
           python build.py
-      - name: Verify committed HTML and tutorial match source
+      - name: 76 rule, lifespan, race and slot checks
         run: |
-          git diff --exit-code -- '青岚问道_V13_百档角色.html' 'docs/完整文字教程.html' 'docs/完整文字教程.md' 'docs/营建与炼制数值.md' 'docs/当前游戏数据.json'
-  browser:
-    name: Chromium mobile layout, storage and ascension UI (test adapter)
+          node tests/v14_core.test.js
+          node tests/v14_lifespan.test.js
+          node tests/v14_races.test.js
+      - name: Six natural initial-resource campaigns and both ascensions
+        run: |
+          node tests/v14_campaign.test.js --all --both-roles
+          node tests/v14_ascension.test.js
+      - name: Chromium setup
+        run: |
+          python -m pip install playwright==1.57.0
+          python -m playwright install --with-deps chromium
+      - name: Current V14 interface, slots and injected quota failures
+        run: python tests/v14_browser.py
+      - name: Real HTTP origin storage and reloads in desktop Chromium
+        env:
+          QINGLAN_REAL_ORIGIN: '1'
+        run: python tests/v14_browser.py
+      - name: Both races complete all eleven tutorial steps using real controls
+        run: python tests/v14_onboarding.py
+      - name: Materialized source has reproducible standalone and manual
+        shell: bash
+        run: |
+          if git cat-file -e HEAD:docs/V14_source_manifest.json 2>/dev/null; then
+            git diff --exit-code -- '青岚问道_V14_人妖同途.html' 'docs/完整文字教程.html' 'docs/完整文字教程.md' 'docs/当前游戏数据.json' 'docs/V14_种族与命格数值.md'
+          fi
+  publish_verified_source:
+    name: Materialize verified source on the authorized V14 branch only
+    needs: validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/feat/v14-races-talents'
     runs-on: ubuntu-latest
-    needs: core
-    timeout-minutes: 23
+    timeout-minutes: 5
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
       - uses: actions/setup-node@v4
         with: {node-version: '22'}
       - uses: actions/setup-python@v5
         with: {python-version: '3.12'}
-      - run: python -m pip install playwright==1.57.0
-      - run: python -m playwright install --with-deps chromium
-      - name: Reconstruct genuine player save fixtures from actual campaigns
-        run: node tests/v12_ascension.test.js
-      - name: Historical browser regression
+      - name: Commit exact tested sources once without force or main changes
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
         run: |
-          python tests/v10_browser_smoke.py
-          python tests/v10_lifespan_browser.py
-          python tests/v11_browser.py
-      - name: V12 character slots, ascension, maps and layout
-        run: python tests/v12_browser.py
-      - name: V13.1 full-screen character and archive screens
-        run: python tests/v13_fullscreen_browser.py
+          if git cat-file -e HEAD:docs/V14_source_manifest.json 2>/dev/null; then
+            echo 'Already materialized; no automatic write.'
+            exit 0
+          fi
+          python tools/apply_v14.py
+          python build_docs.py
+          python build.py
+          python - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+          names = list(json.loads(Path('docs/V14_source_manifest.json').read_text())['files'])
+          names += ['docs/V14_source_manifest.json', 'docs/完整文字教程.html', 'docs/完整文字教程.md', 'docs/当前游戏数据.json', 'docs/V14_种族与命格数值.md', '青岚问道_V14_人妖同途.html']
+          subprocess.run(['git', 'add', '--', *names], check=True)
+          PY
+          REMOTE_SHA=$(git ls-remote origin refs/heads/feat/v14-races-talents | cut -f1)
+          test "$REMOTE_SHA" = "$EXPECTED_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'feat(v14): materialize tested human and demon races, talents and save pages'
+          git push origin HEAD:refs/heads/feat/v14-races-talents
