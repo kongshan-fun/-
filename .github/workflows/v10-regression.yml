@@ -63,3 +63,5 @@ jobs:
           python tests/v11_browser.py
       - name: V12 character slots, ascension, maps and layout
         run: python tests/v12_browser.py
+      - name: V13.1 full-screen character and archive screens
+        run: python tests/v13_fullscreen_browser.py
