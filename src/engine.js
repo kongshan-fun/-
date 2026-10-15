@@ -11,7 +11,7 @@ const pos=p=>obj(p)&&Number.isInteger(p.x)&&Number.isInteger(p.y)&&p.x>=0&&p.x<8
 const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
 function fresh(seed=261014,character='human',birth=null){const born=birth?B.validate(birth,character):B.roll(character,(Number(seed)>>>0)||1);const c=B.profile(born);return {
  version:14,character,race:character,birth:born,xpCarry:0,seed:integer(seed,1,4294967295),zone:0,unlocked:1,ritual:Array(D.ZONES.length).fill(false),cleared:Array(D.ZONES.length).fill(false),
- pos:{x:1,y:5},last:{x:1,y:5},minutes:420,seen:{},visited:{},scouted:{},nodeHarvest:{},events:{},sites:{},campRests:{},bossDaily:{},
+ pos:{x:1,y:5},last:{x:1,y:5},minutes:420,seen:{},visited:{},scouted:{},nodeHarvest:{},encounters:{},events:{},sites:{},campRests:{},bossDaily:{},
  hp:c.hp,maxHp:c.hp,hunger:84,water:81,spirit:c.spirit-8,maxSpirit:c.spirit,attack:c.attack,level:1,xp:0,
  settlements:Array(D.ZONES.length).fill(null),major:0,daoXp:0,ascended:false,caches:{},pillDaily:{day:1,uses:0},life:{left:c.years*D.LIFE.yearMinutes,losses:0,elixirs:0},ended:false,
  inv:{wood:2,stone:1,fiber:2,berry:4,water:3,salve:2},stash:{},gears:[],pending:[],equipped:{weapon:null,armor:null},nextGear:1,
@@ -70,8 +70,9 @@ function normalize(raw,requestedCharacter='human'){
  }
  n.nodeHarvest={};for(let [k,v] of Object.entries(obj(o.nodeHarvest)?o.nodeHarvest:{})){
   if(o.version<=2&&!k.includes(':'))k='0:'+k;
-  if(/^(?:[0-9]|1[01]):[0-7],[0-7]#[0-9]$/.test(k)&&obj(v))n.nodeHarvest[k]={day:integer(v.day,1,50000),used:integer(v.used,0,20)};
+  if(/^(?:[0-9]|1[01]):[0-7],[0-7]#(?:[0-9]|1[0-9]|2[0-3])$/.test(k)&&obj(v))n.nodeHarvest[k]={day:integer(v.day,1,50000),used:integer(v.used,0,20)};
  }
+ n.encounters={};for(const [k,v] of Object.entries(obj(o.encounters)?o.encounters:{})){if(/^(?:[0-9]|1[01]):[0-7],[0-7]#m(?:10|16|22)$/.test(k)&&obj(v))n.encounters[k]={day:integer(v.day,1,50000),used:integer(v.used,0,2)};}
  for(const key of ['sites','bossDaily','campRests']){
   for(const [k,v] of Object.entries(obj(o[key])?o[key]:{}).slice(0,300))if(/^[\w:,-]+$/.test(k))n[key][k]=integer(v,0,50000);
  }
@@ -240,7 +241,11 @@ class Game{
   if(!this.s.life.left){this.expire('重伤折寿'+D.LIFE.defeatYears+'年');return;}
   for(const [k,q] of Object.entries(this.s.inv))if(D.ITEMS[k]?.type==='material'&&k!=='dust')this.s.inv[k]=q-Math.floor(q/2);this.s.pos=this.entry();this.s.last=copy(this.s.pos);this.s.combat=null;this.s.hp=Math.max(50,Math.round(this.s.maxHp*.6));this.s.spirit=Math.round(this.s.maxSpirit*.75);this.s.hunger=48;this.s.water=52;this.reveal();this.log((this.camp?'负伤返回洞府':'负伤返回旧营坪')+'，折寿'+D.LIFE.defeatYears+'年，遗失一半随身普通材料。','bad');this.note(this.camp?'负伤回府 · 设施与仓库保留':'返回旧营坪 · 装备与境界保留','warn');}
  entry(z=this.s.zone){return this.s.settlements[z]?copy(this.s.settlements[z].pos):z?{x:0,y:5}:{x:1,y:5};}
- resource(i){return Number.isInteger(i)&&i>=0&&i<10?D.RESOURCE_LAYOUT[this.land()]?.[i]:null;}
+ resource(i){return Number.isInteger(i)&&i>=0&&i<24?this.sceneNodes()[i]?.kind||null:null;}
+ sceneEnemy(){const l=this.land(),z=this.s.zone;if(this.atCamp||['campsite','sect','camp','bazaar','gate','shrine'].includes(l))return null;if(l==='boss')return this.zone.boss;if(z===0)return l==='plain'?'rabbit':l==='mine'||l==='ruins'?'guard':l==='forest'?'wolf':'sprite';if(z===1)return l==='pond'?'fishbeast':'river';if(z>=5)return 'realm'+z;return ['','','firebeast','wraith','sentinel'][z];}
+ sceneNodes(){const a=D.RESOURCE_LAYOUT[this.land()]||[], out=Array.from({length:24},(_,i)=>({kind:i<10?(a[i]||null):a.length?a[(i*7+3)%a.length]||null:null}));const enemy=this.sceneEnemy();if(enemy){for(const i of [10,16,22])out[i]={enemy};}return out;}
+ enemyLeft(i){if(![10,16,22].includes(i)||!this.sceneNodes()[i]?.enemy)return 0;const e=this.s.encounters[this.key()+'#m'+i];return e?.day===this.day?Math.max(0,1-e.used):1;}
+ challenge(i){if(this.s.combat)return this.fail('正在斗法');i=Number(i);const e=this.sceneNodes()[i]?.enemy;if(!e)return this.fail('此处没有可挑战的妖兽');if(!this.enemyLeft(i))return this.fail('今日已挑战，次日再战');if(this.land()==='boss'&&!this.s.ritual[this.s.zone])return this.fail('先完成本境封印');if(this.s.hp<=0||this.s.ended)return this.fail('无法战斗');const key=this.key()+'#m'+i;this.s.encounters[key]={day:this.day,used:1};const r=this.startBattle(e,this.land()==='boss'&&this.s.cleared[this.s.zone]);if(!r?.ok)delete this.s.encounters[key];return r;}
  left(i){const k=this.resource(i);if(!k)return 0;const h=this.s.nodeHarvest[this.key()+'#'+i];return h?.day===this.day?Math.max(0,D.RES[k].max-h.used):D.RES[k].max;}
  requirement(k){const r=D.RES[k];if(!r)return '没有可采集的资源';if(r.tool&&!this.s.inv[r.tool])return '缺少'+D.ITEMS[r.tool].name+'（须随身携带）';if(r.level&&this.s.level<r.level)return `需${this.character.start}${r.level}层`;const need=(r.spirit||3)+this.extra(r.minutes).spirit;if(this.s.spirit<need)return '灵力不足，需'+need;return '';}
  gather(i){if(this.s.combat)return this.fail('斗法中不能采集');const k=this.resource(i);if(!k)return this.fail('这里没有可采资源');if(!this.left(i))return this.fail('已采完，次日恢复');const r=D.RES[k],why=this.requirement(k);if(why)return this.fail(why);const w=Object.entries(r.loot).reduce((n,[k,v])=>n+D.ITEMS[k].wt*v,0);if(this.weight+w>this.capacity)return this.fail('负重不足，先归营存仓');
@@ -542,7 +547,7 @@ const batches=this.farmBatches,loot=Object.fromEntries(Object.entries(D.FARM_LOO
   switch(name){
    case 'settle':result=this.settle(!!args.relocate);break;case 'build':result=this.build(args.id);break;
    case 'farm':result=this.harvestFarm();break;case 'provision':result=this.provision();break;case 'pickup':result=this.pickup(args.id,Number(args.qty)||999);break;
-   case 'gather':result=this.gather(Number(args.index));break;case 'move':result=this.move(Number(args.x),Number(args.y));break;
+   case 'gather':result=this.gather(Number(args.index));break;case 'challenge':result=this.challenge(Number(args.index));break;case 'move':result=this.move(Number(args.x),Number(args.y));break;
    case 'travel':result=this.travel(Number(args.zone),!!args.home);break;case 'scout':result=this.scout();break;
    case 'rest':result=this.rest(args.mode);break;case 'consume':result=this.consume(args.id);break;
    case 'craft':result=this.craft(args.id);break;case 'store':result=this.store(args.id,Number(args.qty)||999999);break;case 'withdraw':result=this.withdraw(args.id,Number(args.qty)||1);break;
