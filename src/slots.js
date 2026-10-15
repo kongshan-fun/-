@@ -16,18 +16,18 @@ class CharacterSlots{
   const raw=this.readKey(this.key(id)),backup=this.readKey(this.backupKey(id));
   for(const [content,source] of [[raw,'主存档'],[backup,'自动备份']])if(content){try{
    const parsed=JSON.parse(content);
-   if(parsed.version!==11||parsed.character!==id)throw Error('存档角色不匹配');
+   if(![11,12].includes(parsed.version)||parsed.character!==id)throw Error('存档角色不匹配');
    const game=new Game(parsed,261014,id);return {game,source};
   }catch(e){if(source==='自动备份')throw Error(id+'存档损坏，备份也无法读取');}}
   if(raw||backup)throw Error(id+'存档无法解析，不会自动覆盖');
   return null;
  }
- status(id){try{if(this.dead(id))return {status:'dead',role:id};const result=this.read(id);if(!result)return {status:'empty',role:id};const s=result.game.s;return {status:'ready',role:id,source:result.source,zone:s.zone,level:s.level,day:result.game.day,years:+result.game.lifeYears.toFixed(1)};}catch(e){return {status:'invalid',role:id,message:String(e.message)};}}
+ status(id){try{if(this.dead(id))return {status:'dead',role:id};const result=this.read(id);if(!result)return {status:'empty',role:id};const s=result.game.s;return {status:'ready',role:id,source:result.source,zone:s.zone,level:s.level,realm:result.game.realm,ascended:s.ascended,day:result.game.day,years:+result.game.lifeYears.toFixed(1)};}catch(e){return {status:'invalid',role:id,message:String(e.message)};}}
  list(){return Object.keys(D.CHARACTERS).map(id=>this.status(id));}
  save(id,game){this.check(id);if(this.dead(id))throw Error('此角色已寿尽，不能保存');
   if(game.s.ended||game.s.character!==id)throw Error('拒绝写入错误角色或终结存档');
   const raw=JSON.stringify(game.state()),prior=this.readKey(this.key(id));
-  if(prior&&prior!==raw){try{const parsed=JSON.parse(prior);if(parsed.version===11&&parsed.character===id)new Game(parsed,261014,id),this.storage.setItem(this.backupKey(id),prior);}catch{}}
+  if(prior&&prior!==raw){try{const parsed=JSON.parse(prior);if([11,12].includes(parsed.version)&&parsed.character===id)new Game(parsed,261014,id),this.storage.setItem(this.backupKey(id),prior);}catch{}}
   this.storage.setItem(this.key(id),raw);return true;
  }
  newGame(id,seed=261014){this.check(id);const game=new Game(null,seed,id);

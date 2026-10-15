@@ -1,4 +1,4 @@
-/* V7 data: preserves the five V5 maps; adds real event and equipment data. */
+/* V12: twelve mortal-world regions, two independent character branches and final ascension. */
 (function(root){
 "use strict";
  const ZONES=[
@@ -369,7 +369,7 @@ const HELP=[
   "paragraphs": [
    "原来开局赠送的青岚山门已经移除。第一境要在你自己选址的洞府中，消耗灵木4、灵石3、阵纹2修建山门与护山阵，才开放噬灵妖魇的妖窟。山门是实际建筑，不要求回原始旧营坪。",
    "第二至第五境保留地图上的固定祭坛：碧溪净泉需碧灵露3、碧灵花3、止血草2；赤岭镇火需赤铜晶4、焰心砂2、玄铁矿2；幽沼镇魂需玄阴苔4、幽魂砂2、止血草2；天阙启门需星髓矿4、雷霆髓2、阵纹2。祭坛不能建府，任务材料必须随身带到现场。",
-   "主线顺序为青岚山麓、碧溪灵谷、赤砂火岭、玄阴幽沼、天阙遗境。每境先仪式后首领，击败后开放下一境，五境各有64格。已开放区域可往返，最终通关仍能探索和营建。",
+   "主线顺序为青岚山麓、碧溪灵谷、赤砂火岭、玄阴幽沼、天阙遗境。每境先仪式后首领，击败后开放下一境，先期五境各有64格，结丹到渡劫新增七境，每境亦有64格。已开放区域可往返，仙界玩法待续。",
    "不必在每境把全部建筑造满才能打首领。已解锁配方可在具备等级的旧府制作，然后携装备前往新境；新境定居的价值在于休整、补给、独立仓储与更少折返。顶部任务可展开查看材料缺口与首领地点。"
   ]
  },
@@ -515,11 +515,79 @@ const lifeHelp=HELP.find(h=>h.id==='lifespan');if(lifeHelp)lifeHelp.paragraphs[3
 const saveHelp=HELP.find(h=>h.id==='save');if(saveHelp)saveHelp.paragraphs=[
  '选择玄锋剑修或青木丹修后，每个角色在当前浏览器来源分别拥有一个独立存档。两人不共享洞府、材料、地图进度、图鉴或寿元。可从顶部“角色”随时切换，切换前会保存当前角色。',
  '原V10同一浏览器来源的存档不会自动绑定角色；第一次进入时可在尚未创建的角色卡上主动选择“继承一次旧档”。继承完成会设置一次性迁移记录，旧存档仍保留，但不能再自动导入另一角色。',
- '手工JSON导入V11进度时，剑修文件只能进入剑修档、丹修文件只能进入丹修档；导入前会确认。跨设备需分别导出两角色的进度文件。',
+ '手工JSON导入V11/V12进度时，剑修文件只能进入剑修档、丹修文件只能进入丹修档；导入前会确认。跨设备需分别导出两角色的进度文件。',
  '某角色寿元归零时，只清理该分支当前存档和自动备份，并写入不可自动恢复的陨落标记。另一角色保留原进度。必须点击“重新轮回”才会重新创建已故角色。',
  '当前离线单机无法清除电脑外部备份文件；同一来源的本地存储也可能被浏览器隐私设置清理。请定期导出重要进度，测试环境不等于手机长期存储保证。'
 ];
-const D={CHARACTERS,SLOT_PREFIX:'qinglan-wendao-v11-',MIGRATION_KEY:'qinglan-wendao-v11-legacy-used',ACTIVE_KEY:'qinglan-wendao-v11-current',VERSION:11,SAVE:'qinglan-wendao-v10',DEATH_KEY:'qinglan-wendao-v10-permadeath',LIFE,LEGACY:['qinglan-wendao-v9','qinglan-wendao-v8','qinglan-wendao-v7','qinglan-cultivation-five-v5','qinglan-cultivation-demo-v2','qinglan-cultivation-demo-v1'],ZONES,LAND,ITEMS,RECIPES,ENEMIES,NAMED,EVENTS,RES,RESOURCE_LAYOUT,SITES,QUALITIES,QUALITY_WEIGHTS,AFFIXES,BOOK_REWARDS,GUIDE,HELP,BUILDINGS,CAMP_LANDS,SETTLE_COST,MOVE_CAMP_COST,FARM_LOOT};
+
+// The seven new 8x8 areas extend the original five without erasing their save keys.
+// Each area has its own two harvest families, local boss, main ritual and gear tier.
+const ASCENSION_RULE={dao:150,life:1000,cost:{tribulationCrystal:3,ascendToken:2}};
+const REALMS=['炼气','筑基','金丹','元婴','化神','炼虚','合体','大乘','渡劫','飞升'];
+const ASCENSION_STAGES=[
+ {name:'丹霞雷渊',short:'丹霞',realm:'金丹',bossMark:'丹',bossName:'结丹雷蛟',wild:'雷纹妖蜥',kind:['coreCrag','coreGrove'],primary:'coreOre',secondary:'coreHerb',needDao:60,life:35,hp:85,atk:12,spirit:30,hpBoss:590,atkBoss:53,armorBoss:21,weapon:76,armor:27},
+ {name:'婴灵古墟',short:'婴灵',realm:'元婴',bossMark:'婴',bossName:'夺舍魂君',wild:'古墟噬魂者',kind:['infantRuin','infantPool'],primary:'soulJade',secondary:'soulDew',needDao:110,life:65,hp:120,atk:18,spirit:45,hpBoss:820,atkBoss:72,armorBoss:30,weapon:105,armor:38},
+ {name:'化神云海',short:'云海',realm:'化神',bossMark:'神',bossName:'云海化神尊',wild:'云岚翼魔',kind:['cloudShrine','cloudWoods'],primary:'godSilk',secondary:'godFruit',needDao:160,life:110,hp:160,atk:25,spirit:60,hpBoss:1120,atkBoss:96,armorBoss:42,weapon:144,armor:52},
+ {name:'炼虚裂隙',short:'裂隙',realm:'炼虚',bossMark:'虚',bossName:'虚界裂空兽',wild:'虚影行者',kind:['voidCrag','voidRift'],primary:'voidStone',secondary:'riftEssence',needDao:220,life:170,hp:230,atk:36,spirit:80,hpBoss:1520,atkBoss:127,armorBoss:61,weapon:194,armor:70},
+ {name:'合体仙城',short:'仙城',realm:'合体',bossMark:'合',bossName:'千面合灵傀',wild:'合灵傀儡',kind:['unionForge','unionGrove'],primary:'unionGold',secondary:'unionBark',needDao:280,life:240,hp:310,atk:49,spirit:100,hpBoss:2070,atkBoss:168,armorBoss:84,weapon:264,armor:94},
+ {name:'大乘古道',short:'古道',realm:'大乘',bossMark:'乘',bossName:'大道镇界灵',wild:'悟道守碑人',kind:['daoStele','daoSpring'],primary:'mahayaRune',secondary:'mahayaJade',needDao:350,life:360,hp:430,atk:68,spirit:135,hpBoss:2830,atkBoss:224,armorBoss:121,weapon:354,armor:123},
+ {name:'渡劫天门',short:'天门',realm:'渡劫',bossMark:'劫',bossName:'九霄天劫主',wild:'劫云雷魇',kind:['stormPeak','heavenGate'],primary:'tribulationCrystal',secondary:'ascendToken',needDao:430,life:600,hp:570,atk:95,spirit:175,hpBoss:3820,atkBoss:300,armorBoss:170,weapon:480,armor:158}
+];
+const NEW_TERRAINS=[
+ ['coreCrag','雷凝砂岩','砂','coreOre'],['coreGrove','丹霞芝谷','芝','coreHerb'],
+ ['infantRuin','婴元石窟','婴','soulJade'],['infantPool','养魂灵潭','露','soulDew'],
+ ['cloudShrine','神念云台','念','godSilk'],['cloudWoods','化神仙林','果','godFruit'],
+ ['voidCrag','裂虚矿崖','虚','voidStone'],['voidRift','裂界地缝','隙','riftEssence'],
+ ['unionForge','合灵金脉','金','unionGold'],['unionGrove','同心灵林','同','unionBark'],
+ ['daoStele','大道残碑','道','mahayaRune'],['daoSpring','道源玉泉','玉','mahayaJade'],
+ ['stormPeak','劫雷断峰','雷','tribulationCrystal'],['heavenGate','天门符阵','门','ascendToken']
+];
+const NEW_ITEMS=[
+ ['coreOre','雷凝砂'],['coreHerb','丹霞芝'],['soulJade','婴元玉'],['soulDew','养魂露'],
+ ['godSilk','神念丝'],['godFruit','化神果'],['voidStone','虚空石'],['riftEssence','裂界髓'],
+ ['unionGold','合灵金'],['unionBark','同心灵木'],['mahayaRune','大道残章'],['mahayaJade','道源玉'],
+ ['tribulationCrystal','劫雷晶'],['ascendToken','天门符']
+];
+for(const [id,name] of NEW_ITEMS)ITEMS[id]={name,wt:1,type:'material'};
+for(const [land,name,mark,item] of NEW_TERRAINS){
+ LAND[land]={name,mark,risk:'高'};
+ RES[item]={mark:ITEMS[item].name[0],name:ITEMS[item].name,tool:land==='coreGrove'||land.endsWith('Woods')||land.endsWith('Grove')?'axe':'pick',loot:{[item]:1},max:2,minutes:25,spirit:7,xp:4};
+ if(ASCENSION_STAGES.some(t=>t.secondary===item))RES[item].tool=null;
+ RESOURCE_LAYOUT[land]=[item,'spring',item,'fruit','stone',item,'twig',null,'grass',item];
+}
+// Ascension areas always contain survival nodes and have a genuine 8x8 board.
+function makeRealmMap(t,seed){const [a,b]=t.kind,arr=[];
+ const kinds=['plain','forest',a,b,'spring','ridge',a,b];
+ for(let y=0;y<8;y++){let row=[];for(let x=0;x<8;x++)row.push(kinds[(x*3+y*5+x*y+seed)%kinds.length]);arr.push(row);}
+ arr[5][0]='campsite';arr[4][4]='shrine';arr[2][7]='boss';arr[5][7]='gate';
+ arr[5][1]='plain';arr[5][2]='forest';arr[5][3]='spring';arr[4][1]=a;arr[4][2]=b;arr[3][3]=a;arr[3][4]=b;
+ return arr;
+}
+ASCENSION_STAGES.forEach((t,i)=>{
+ const z=i+5,boss='boss'+z,wild='realm'+z;
+ ZONES.push({name:t.name,short:t.short,bossMark:t.bossMark,boss,altar:t.name+'问道坛',verb:i===6?'应九霄天劫':'凝炼'+t.realm+'道印',need:{[t.primary]:4,[t.secondary]:2},stage:i,requiredMajor:i+1,map:makeRealmMap(t,i+2)});
+ ENEMIES[wild]={name:t.wild,hp:Math.round(t.hpBoss*.32),atk:Math.round(t.atkBoss*.75),armor:Math.round(t.armorBoss*.65),xp:Math.ceil(t.needDao*.48),loot:{[t.primary]:2,[t.secondary]:1}};
+ ENEMIES[boss]={name:t.bossName,hp:t.hpBoss,atk:t.atkBoss,armor:t.armorBoss,xp:t.needDao+30,loot:{[t.primary]:3,[t.secondary]:2}};
+ const rareMap={[''+z+':1,1']:{text:t.name+'拾得'+ITEMS[t.primary].name+'×2。',loot:{[t.primary]:2}},[''+z+':2,6']:{text:t.name+'探得'+ITEMS[t.secondary].name+'×1。',loot:{[t.secondary]:1}}};Object.assign(EVENTS,rareMap);
+ NAMED[z+':0,5']=[t.name+'旧营坪'];NAMED[z+':4,4']=[t.name+'问道坛'];NAMED[z+':7,2']=[t.bossName];NAMED[z+':7,5']=[i===6?'飞升天门':'前往'+ASCENSION_STAGES[i+1].name];
+ const weapon='realmSword'+z,armor='realmRobe'+z;
+ RECIPES.push({id:weapon,name:t.realm+'道剑',type:'剑 +'+t.weapon,zone:z,home:true,room:'forge',tier:3,realmReq:i+1,gear:'weapon',bonus:t.weapon,cost:{[t.primary]:2,[t.secondary]:1,wood:1}});
+ RECIPES.push({id:armor,name:t.realm+'法衣',type:'衣 +'+t.armor,zone:z,home:true,room:'forge',tier:3,realmReq:i+1,gear:'armor',bonus:t.armor,cost:{[t.primary]:2,[t.secondary]:1,fiber:1}});
+ QUALITY_WEIGHTS.push([Math.max(7,28-i*3),Math.max(20,37-i*3),Math.min(34,26+i),Math.min(30,8+i*3),1+i*2]);
+});
+// Normalize weight distributions to total 100, maintaining both deterministic and random loot integrity.
+for(let z=5;z<QUALITY_WEIGHTS.length;z++){let v=QUALITY_WEIGHTS[z],sum=v.reduce((a,b)=>a+b,0);QUALITY_WEIGHTS[z]=v.map((n,i)=>i===0?0:Math.round(n/sum*100));QUALITY_WEIGHTS[z][0]=100-QUALITY_WEIGHTS[z].slice(1).reduce((a,b)=>a+b,0);}
+BOOK_REWARDS.push({id:'b80',name:'万物初识',need:80,loot:{stone:10,water:6}},{id:'b110',name:'九天见闻',need:110,loot:{star:6,thunder:3}});
+HELP.push({id:'ascension',title:'凡界九境与飞升试炼',paragraphs:[
+ '境界顺序：炼气、筑基、金丹、元婴、化神、炼虚、合体、大乘、渡劫，最后飞升。飞升只是凡界终章，仙界内容将在后续版本开放。炼气共九层，筑基包括初中后期；旧版本的等级与筑基境界保持不变。',
+ '原五图维持从青岚至天阙的入门与筑基故事，随后有七张独立8×8地图：丹霞雷渊、婴灵古墟、化神云海、炼虚裂隙、合体仙城、大乘古道、渡劫天门。每张有两种核心材料、独立封印和首领、高阶法器配方。',
+ '每张新区域先采集两种道材，在中心问道坛交付4份主材和2份副材，击败本境首领。随后前往本境自建洞府的修炼面板，点击“破境”，满足修为积累和道材条件后进入下一境界。不能只靠刷经验自动跳过主境界。',
+ '筑基后期（炼气起累计等级18）转为积累“道行”。每完成一次大境界突破，道行重新结算为0；当境界符合才开放下一图。角色差异、跨境仓储隔离和寿元归零永久死亡继续生效。',
+ '晋升大境界会增加气血、灵力、攻击上限和寿元，帮助挑战逐步加强的敌人。高阶道剑与法衣必须采集对应地图的道材，使用三阶炼器室，不存在绕过建筑的虚假制作入口。',
+ '渡劫天门首领击败且完成最后“飞升”突破后，记录成功飞升、保留角色与存档。仙界大地图和飞升后战斗尚未开放，不会伪装成能游玩的空系统。'
+]});
+
+const D={ASCENSION_RULE,REALMS,ASCENSION_STAGES,CHARACTERS,SLOT_PREFIX:'qinglan-wendao-v11-',MIGRATION_KEY:'qinglan-wendao-v11-legacy-used',ACTIVE_KEY:'qinglan-wendao-v11-current',VERSION:12,SAVE:'qinglan-wendao-v10',DEATH_KEY:'qinglan-wendao-v10-permadeath',LIFE,LEGACY:['qinglan-wendao-v9','qinglan-wendao-v8','qinglan-wendao-v7','qinglan-cultivation-five-v5','qinglan-cultivation-demo-v2','qinglan-cultivation-demo-v1'],ZONES,LAND,ITEMS,RECIPES,ENEMIES,NAMED,EVENTS,RES,RESOURCE_LAYOUT,SITES,QUALITIES,QUALITY_WEIGHTS,AFFIXES,BOOK_REWARDS,GUIDE,HELP,BUILDINGS,CAMP_LANDS,SETTLE_COST,MOVE_CAMP_COST,FARM_LOOT};
 root.QData=D;
 if(typeof module!=='undefined'&&module.exports)module.exports=D;
 })(globalThis);
