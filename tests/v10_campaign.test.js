@@ -3,6 +3,9 @@
 'use strict';
 const A=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const G=require('../src/engine.js'),D=require('../src/data.js'),OUT=path.join(__dirname,'../evidence');
+// CI checkouts do not contain generated evidence or optional save fixtures.
+fs.mkdirSync(OUT,{recursive:true});
+fs.mkdirSync(path.join(__dirname,'fixtures'),{recursive:true});
 function campaign(seed,write=false){
  const g=new G(null,seed),trace=[],stages=[];let n=0,depth=0;const buildingGoals={};
  function act(a,b={}){if(++n>14000)throw Error('14000 action limit');const r=g.act(a,b);trace.push({n,zone:g.s.zone,pos:{...g.s.pos},day:g.day,a,b,ok:r.ok,msg:r.msg});return r;}

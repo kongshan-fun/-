@@ -15,7 +15,11 @@ def boot(page,mem=None):
     page.wait_for_function('typeof QinglanDemo!=="undefined"')
 def snapshot(page):return page.evaluate('window.__testStorage()')
 with sync_playwright() as p:
-    browser=p.chromium.launch(headless=True,executable_path='/usr/bin/chromium',args=['--no-sandbox'])
+    executable=os.environ.get('CHROMIUM_PATH') or ('/usr/bin/chromium' if Path('/usr/bin/chromium').exists() else None)
+    options={'headless':True}
+    if executable: options['executable_path']=executable
+    if hasattr(os,'geteuid') and os.geteuid()==0: options['args']=['--no-sandbox']
+    browser=p.chromium.launch(**options)
     for width,height in [(320,568),(390,844),(1440,900)]:
         ctx=browser.new_context(viewport={'width':width,'height':height},device_scale_factor=1)
         page=ctx.new_page();errors=[];page.on('pageerror',lambda x:errors.append(str(x)))
