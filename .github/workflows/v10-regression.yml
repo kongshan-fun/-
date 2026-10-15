@@ -1,4 +1,4 @@
-name: V14 races, full-screen creation and current-build regression
+name: V15 24-node scene + legacy regression
 on:
   push:
     branches: [main, 'chore/**', 'feat/**', 'fix/**', 'release/**']
@@ -31,6 +31,7 @@ jobs:
           node tests/v14_core.test.js
           node tests/v14_lifespan.test.js
           node tests/v14_races.test.js
+          node tests/v15_scene.test.js
       - name: Six natural initial-resource campaigns and both ascensions
         run: |
           node tests/v14_campaign.test.js --all --both-roles
@@ -47,6 +48,8 @@ jobs:
         run: python tests/v14_browser.py
       - name: Both races complete all eleven tutorial steps using real controls
         run: python tests/v14_onboarding.py
+      - name: V15 Chromium 24-node checks
+        run: python tests/v15_browser.py
       - name: Materialized source has reproducible standalone and manual
         shell: bash
         run: |
