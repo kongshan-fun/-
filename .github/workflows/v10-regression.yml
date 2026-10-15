@@ -1,4 +1,4 @@
-name: V12 mortal realm and ascension regression
+name: V13 character 100-slot regression
 on:
   push:
     branches: [main, 'chore/**', 'feat/**', 'release/**']
@@ -28,7 +28,7 @@ jobs:
           node tests/smoke.test.js
           node tests/v10_regression.test.js
           node tests/v10_lifespan.test.js
-          node tests/v11_characters.test.js
+          node tests/v11_characters.test.js\n          node tests/v13_slots.test.js
       - name: Six old region full campaigns (3 seeds x 2 roles)
         run: node tests/v10_campaign.test.js --all --both-roles
       - name: Actual mortal-world ascension (two roles)
@@ -39,7 +39,7 @@ jobs:
           python build.py
       - name: Verify committed HTML and tutorial match source
         run: |
-          git diff --exit-code -- '青岚问道_V12_凡界飞升.html' 'docs/完整文字教程.html' 'docs/完整文字教程.md' 'docs/营建与炼制数值.md' 'docs/当前游戏数据.json'
+          git diff --exit-code -- '青岚问道_V13_百档角色.html' 'docs/完整文字教程.html' 'docs/完整文字教程.md' 'docs/营建与炼制数值.md' 'docs/当前游戏数据.json'
   browser:
     name: Chromium mobile layout, storage and ascension UI (test adapter)
     runs-on: ubuntu-latest
