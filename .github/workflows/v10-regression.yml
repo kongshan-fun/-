@@ -28,7 +28,8 @@ jobs:
           node tests/smoke.test.js
           node tests/v10_regression.test.js
           node tests/v10_lifespan.test.js
-          node tests/v11_characters.test.js\n          node tests/v13_slots.test.js
+          node tests/v11_characters.test.js
+          node tests/v13_slots.test.js
       - name: Six old region full campaigns (3 seeds x 2 roles)
         run: node tests/v10_campaign.test.js --all --both-roles
       - name: Actual mortal-world ascension (two roles)
