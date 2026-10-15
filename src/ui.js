@@ -95,11 +95,11 @@ function renderScene(){
  if(game.s.combat){$('scene-content').innerHTML=renderCombat();$('scene-content').scrollTop=old;return;}
  const t=game.atCamp?{...D.LAND[game.land()],risk:'安全'}:D.LAND[game.land()],s=game.s;
  const resources=game.sceneNodes().map((node,i)=>{
-  if(node.enemy){const mob=D.ENEMIES[node.enemy],left=game.enemyLeft(i);return `<button class="resource scene-monster ${left?'':'exhausted'}" data-a="challenge" data-index="${i}" aria-label="${esc(mob.name)}，${left?'点击挑战':'今日已挑战'}" title="${esc(mob.name)}"><b>${esc(mob.name.slice(0,2))}</b><small>${left?'挑战':'次日'}</small></button>`;}
+  if(node.enemy){const mob=D.ENEMIES[node.enemy],left=game.enemyLeft(i);return `<button class="resource scene-monster ${left?'':'exhausted'}" data-a="challenge" data-index="${i}" aria-label="${esc(mob.name)}，${left?'点击挑战':'今日已挑战'}" title="${esc(mob.name)}"><b>${esc(mob.name.slice(-2))}</b><small>${left?'挑战':'次日'}</small></button>`;}
   const k=node.kind;if(!k)return '<div class="resource empty" aria-hidden="true">·</div>';
   const r=D.RES[k],left=game.left(i),why=game.requirement(k);
   const tag=r.tool&&!s.inv[r.tool]?({axe:'斧',pick:'镐',rod:'竿'}[r.tool]):r.level&&s.level<r.level?r.level+'层':'';
-  return `<button class="resource ${left?'':'exhausted'}" data-a="gather" data-index="${i}" aria-label="${esc(r.name+'，'+(left?'剩余'+left+'次':'已采完')+(why?'，'+why:''))}" title="${esc(r.name+(why?' · '+why:''))}"><b>${esc(r.mark)}</b><small>${left?'×'+left:'—'}</small>${left&&tag?'<i>'+tag+'</i>':''}</button>`;
+  return `<button class="resource ${left?'':'exhausted'}" data-a="gather" data-index="${i}" aria-label="${esc(r.name+'，'+(left?'剩余'+left+'次':'已采完')+(why?'，'+why:''))}" title="${esc(r.name+(why?' · '+why:''))}"><b>${esc(r.name.length<=3?r.name:r.name.slice(-3))}</b><small>${left?'×'+left:'—'}</small>${left&&tag?'<i>'+tag+'</i>':''}</button>`;
  }).join('');
  $('scene-content').innerHTML=`<article class="scene-card"><div class="location-head"><h1>${esc(game.name)}</h1><span class="risk ${t.risk==='高'||t.risk==='极高'?'danger':''}">${t.risk==='安全'?'安全':t.risk+'危'}</span></div><div class="location-tools"><span>斧${s.inv.axe?'✓':'—'}　镐${s.inv.pick?'✓':'—'}${s.inv.rod?'　竿✓':''}</span><div class="location-actions">${locationActions()}</div></div><div class="resources" id="resources" role="group" aria-label="资源采集和主动挑战">${resources}</div></article>`;
  $('scene-content').scrollTop=old;
