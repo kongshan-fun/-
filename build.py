@@ -8,6 +8,6 @@ for kind in ['style','entry']:
 for name in ['birth','help','data','engine','slots','entry','ui']:
     text=text.replace(f'<script src="src/{name}.js"></script>','<script>\n'+(ROOT/'src'/f'{name}.js').read_text(encoding='utf-8')+'\n</script>')
 if re.search(r'(?:src|href)="src/',text):raise SystemExit('Unbundled local dependency')
-out=ROOT/'青岚问道_V14_人妖同途.html'
+out=ROOT/'青岚问道_V14.1_场景24格主动挑战.html'
 out.write_text(text,encoding='utf-8')
 print('Built',out.name,len(text.encode('utf-8')),'bytes')

@@ -80,7 +80,11 @@ function campaign(seed,write=false,character='human',includeState=false){
    const r=act('repair');A.equal(r.ok,true,'ritual '+z+': '+r.msg);
    for(let i=0;total('salve')<4&&i<4;i++)make('salve');stock();service();if(z)act('travel',{zone:z});
    if(write)fs.writeFileSync(path.join(__dirname,`fixtures/v9_natural_zone_${z+1}.json`),JSON.stringify(g.state(),null,2));
-   for(let i=0;!g.s.cleared[z]&&i<4;i++){go(7,2,z);if(g.s.combat)fight();if(!g.s.cleared[z]){stock();service();}}
+   for(let i=0;!g.s.cleared[z]&&i<4;i++){
+    go(7,2,z);if(g.s.combat)fight();
+    if(!g.s.cleared[z]){const node=g.sceneNodes().find(n=>n.boss);A.ok(node,'visible boss');const r=act('challenge',{index:node.index});A.equal(r.ok,true,'boss click '+z);fight();}
+    if(!g.s.cleared[z]){stock();service();}
+   }
    A.equal(g.s.cleared[z],true,'boss '+z);stages.push({zone:D.ZONES[z].name,actions:n,day:g.day,level:g.s.level,defeats:g.s.stats.defeats});
    for(const b of D.BOOK_REWARDS)if(!g.s.codex.claims[b.id]&&g.bookCount>=b.need)act('claim-book',{id:b.id});
   }

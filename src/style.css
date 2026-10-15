@@ -36,12 +36,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 .location-tools{height:34px;flex:none;margin-bottom:8px;color:#777;font-size:11px}
 .location-actions{gap:5px}.location-actions button{height:29px;min-width:44px;border:1px solid #ccc;background:#fff;color:#333;font-size:11px;padding:0 8px}
 .location-actions .important{border:1px solid #444;background:#fff;color:#111}
-.resources{flex:1;min-height:0;max-height:none;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:6px}
-.resource,.resource.mineral,.resource.aqua,.resource.fire,.resource.yin,.resource.star{background:#fff;color:#111;border:1px solid #bfbfbf;border-radius:2px;gap:5px;padding:2px;min-height:0;min-width:0}
-.resource b{font-size:28px;font-weight:500;line-height:1.15}.resource small{color:#777;font-size:11px;font-variant-numeric:tabular-nums}
+.resources{flex:1;min-height:0;max-height:none;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr));gap:3px;align-content:stretch}
+.resource,.resource.mineral,.resource.aqua,.resource.fire,.resource.yin,.resource.star{background:#fff;color:#111;border:1px solid #c5c5c5;border-radius:2px;gap:1px;padding:2px 1px;min-height:0;min-width:0;overflow:hidden;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.resource b{font-size:16px;font-weight:600;line-height:1.04}.resource small{color:#555;font-size:9px;font-variant-numeric:tabular-nums;max-width:100%;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.resource em{font-style:normal;font-size:9px;line-height:1.1;color:#888;white-space:nowrap}.resource.beast{border:1px solid #595959;background:#f3f3f3;color:#111}.resource.beast small{color:#222}.resource.beast em{font-weight:600;color:#111}.resource.beast.cleared{border-style:dashed;background:#fbfbfb}.resource.beast.cleared b,.resource.beast.cleared em{color:#aaa}
 .resource i{color:#555;background:#f5f5f5;border:0;top:3px;right:3px;line-height:1.4;font-size:9px;padding:0 3px;border-radius:0}
 .resource.empty{background:#fafafa;border:1px dotted #e2e2e2;color:#ccc;font-size:18px}
-.resource.exhausted{color:#b7b7b7;background:#fafafa;border:1px dashed #ddd;opacity:1}.resource.exhausted small{color:#bbb}
+.resource.exhausted{color:#aaa;background:#fafafa;border:1px dashed #ddd;opacity:1}.resource.exhausted small,.resource.exhausted em{color:#b7b7b7}
 .inventory-peek{height:98px;flex:none;border-top:1px solid #ddd;padding:5px 12px 8px;background:#fff;overflow:hidden}
 .peek-heading{height:24px;display:flex;align-items:center;gap:9px;font-size:10px;color:#777;white-space:nowrap}
 .peek-heading b{font-weight:600;color:#222;font-size:11px}.peek-heading>span{flex:1;font-variant-numeric:tabular-nums}.peek-heading button{background:transparent;border:0;padding:0 2px;color:#555;font-size:10px;height:24px}
@@ -213,3 +213,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 .entry-save-footer p{margin-top:7px}
 @media(max-width:360px){.entry-header{padding:11px 13px;min-height:56px}.entry-heading{padding:16px 13px}.entry-heading h1{font-size:25px}.entry-character-content{padding:12px 10px}.entry-character-grid{grid-template-columns:minmax(90px,36%) minmax(0,1fr);gap:9px}.entry-role-menu{padding-right:8px}.entry-role-option{padding:10px 5px;min-height:91px}.entry-role-option strong{font-size:13px}.entry-role-detail h2{font-size:18px}.entry-role-detail h3{margin-top:12px}.entry-stat-grid>div{padding:6px 4px}.entry-footer{padding:9px 13px max(12px,env(safe-area-inset-bottom))}.entry-save-content{padding:9px}.entry-save-grid{gap:5px}.entry-save-cell{padding:7px 5px;min-height:60px;gap:5px}.entry-save-id{font-size:12px}.entry-save-info b{font-size:10px}.entry-heading-slots{padding:12px 13px}}
 @media(max-height:620px){.entry-heading{padding-top:13px;padding-bottom:11px}.entry-heading h1{font-size:24px}.entry-header{min-height:51px;padding-top:8px;padding-bottom:8px}.entry-character-content{padding-top:11px}.entry-footer{padding-top:8px}.entry-role-option{min-height:78px}.entry-heading-slots .entry-save-stats{margin-top:7px;padding-top:7px}.entry-save-cell{min-height:55px}}
+
+/* V14.1 / 24 fixed text nodes, monochrome compact presentation */
+@media(max-height:730px){.resources{gap:2px}.resource b{font-size:15px}.resource small,.resource em{font-size:8px}.resource i{font-size:7px}}
+@media(max-height:620px){.resources{gap:2px}.resource b{font-size:13px}.resource small,.resource em{font-size:7px}.resource i{font-size:7px;right:1px;top:1px}}

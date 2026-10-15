@@ -1,0 +1,45 @@
+name: V14.1 scene 24 / active enemy regression
+on:
+  push:
+    branches: [feat/v14-scene24-monsters]
+  pull_request:
+    branches: [feat/v14-races-talents]
+permissions:
+  contents: read
+jobs:
+  validate:
+    name: 24 scene cells, save compatibility, mortal ascensions and mobile UI
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Syntax and reproducible game / manual
+        run: |
+          for f in src/*.js; do node --check "$f"; done
+          python build_docs.py
+          python build.py
+          git diff --exit-code -- '青岚问道_V14.1_场景24格主动挑战.html' 'docs/完整文字教程.md' 'docs/完整文字教程.html' 'docs/当前游戏数据.json' 'docs/V14_种族与命格数值.md'
+      - name: Historic rules and current scene tests
+        run: |
+          node tests/v14_core.test.js
+          node tests/v14_lifespan.test.js
+          node tests/v14_races.test.js
+          node tests/v14_scene24.test.js
+      - name: 6 five-zone expeditions and two full ascensions
+        run: |
+          node tests/v14_campaign.test.js --all --both-roles
+          node tests/v14_ascension.test.js
+      - name: Setup Chromium
+        run: |
+          python -m pip install playwright==1.57.0
+          python -m playwright install --with-deps chromium
+      - name: 320 / 360 / 390 / desktop 6-by-4 scene UI
+        run: python tests/v14_scene24_browser.py
+      - name: Existing role, save and UI regression
+        run: python tests/v14_browser.py
+      - name: Eleven-step tutorial for both races
+        run: python tests/v14_onboarding.py
