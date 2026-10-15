@@ -486,8 +486,18 @@ RECIPES.push(
  {id:'elixir',name:'培元丹',type:'丹药',cost:{moss:2,ancient:1,dew:1},item:'elixir',home:true,room:'alchemy',tier:3,zone:3}
 );
 const FARM_LOOT=[{}, {herb:2,berry:2}, {herb:3,berry:3,waterherb:1}];
+// A calendar day ages the player by a quarter year. Defeat is a much bigger irreversible loss.
+const LIFE={yearMinutes:5760,initialYears:56,defeatYears:16,elixirYears:8,elixirLimit:2,breakthroughYears:{3:3,6:4,9:4,12:5,15:6,18:8}};
+ITEMS.lifespanPill={name:'延寿丹',wt:1,type:'food',effect:'寿元+8年，整局最多服用2次'};
+RECIPES.push({id:'lifespanPill',name:'延寿丹',type:'丹药',cost:{star:2,thunder:1,soul:2,ancient:1},item:'lifespanPill',home:true,room:'alchemy',tier:3,zone:4});
+HELP.push({id:'lifespan',title:'寿元与轮回（重要）',paragraphs:[
+ '新角色剩余寿元56年。每经过4个游戏日，寿元减少1年。所有会推进游戏时间的行动都算在内，包括长休。关闭网页并不会推动游戏时间。',
+ '每次战败或因饥渴倒下额外折寿16年，回营疗伤另需半个游戏日。突破到炼气三、六、九层及筑基初中后期等指定等级，会获得一次寿元增长。',
+ '三阶丹房可炼延寿丹，首次服用增加8年寿元；整局至多2次。游戏内“设置”和顶部状态可以查看寿元剩余。',
+ '寿元降为0后本轮永久结束：当前V10存档、V10自动备份以及同来源旧版本的继承存档会被清除；点击“重新轮回”才能新开。提前备份或外部导入属于离线游戏无法完全阻止的手动回档，不等于游戏内自动复活。'
+]});
 
-const D={VERSION:9,SAVE:'qinglan-wendao-v9',LEGACY:['qinglan-wendao-v8','qinglan-wendao-v7','qinglan-cultivation-five-v5','qinglan-cultivation-demo-v2','qinglan-cultivation-demo-v1'],ZONES,LAND,ITEMS,RECIPES,ENEMIES,NAMED,EVENTS,RES,RESOURCE_LAYOUT,SITES,QUALITIES,QUALITY_WEIGHTS,AFFIXES,BOOK_REWARDS,GUIDE,HELP,BUILDINGS,CAMP_LANDS,SETTLE_COST,MOVE_CAMP_COST,FARM_LOOT};
+const D={VERSION:10,SAVE:'qinglan-wendao-v10',DEATH_KEY:'qinglan-wendao-v10-permadeath',LIFE,LEGACY:['qinglan-wendao-v9','qinglan-wendao-v8','qinglan-wendao-v7','qinglan-cultivation-five-v5','qinglan-cultivation-demo-v2','qinglan-cultivation-demo-v1'],ZONES,LAND,ITEMS,RECIPES,ENEMIES,NAMED,EVENTS,RES,RESOURCE_LAYOUT,SITES,QUALITIES,QUALITY_WEIGHTS,AFFIXES,BOOK_REWARDS,GUIDE,HELP,BUILDINGS,CAMP_LANDS,SETTLE_COST,MOVE_CAMP_COST,FARM_LOOT};
 root.QData=D;
 if(typeof module!=='undefined'&&module.exports)module.exports=D;
 })(globalThis);
