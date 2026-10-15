@@ -4,7 +4,7 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
-HTML = (ROOT / '青岚问道_V10_寿元与洞府.html').read_text(encoding='utf-8')
+HTML = (ROOT / '青岚问道_V11_双角色独立存档.html').read_text(encoding='utf-8')
 STORAGE = """<script>(()=>{const mem={};Object.defineProperty(window,'localStorage',{configurable:true,value:{getItem:k=>Object.hasOwn(mem,k)?mem[k]:null,setItem:(k,v)=>{mem[k]=String(v)},removeItem:k=>{delete mem[k]},key:n=>Object.keys(mem)[n]||null,clear:()=>{for(const k of Object.keys(mem))delete mem[k]},get length(){return Object.keys(mem).length}}})})();</script>"""
 SIZES = [(320,568),(360,640),(390,844),(430,932),(1440,900)]
 
@@ -21,6 +21,9 @@ with sync_playwright() as p:
         page.on('pageerror',lambda err:errors.append(str(err)))
         page.set_content(HTML.replace('<head>','<head>'+STORAGE,1))
         page.wait_for_function("typeof QinglanDemo !== 'undefined'")
+        assert page.locator('.role-card').count()==2
+        page.locator('[data-a="slot-open"][data-role="sword"]').click()
+        page.locator('[data-a="slot-confirm-new"]').click()
         start=page.locator('[data-a="guide"][data-mode="skip"]')
         if start.count():start.click()
         assert page.locator('#map .tile').count()==9,(width,'minimap')

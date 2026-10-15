@@ -129,3 +129,14 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 /* Keep long overlay content scrollable without exposing scrollbar tracks. */
 .panel-body,.travel-menu,.modal,#scene-content{scrollbar-width:none}
 .panel-body::-webkit-scrollbar,.travel-menu::-webkit-scrollbar,.modal::-webkit-scrollbar{display:none;width:0;height:0}
+/* V11 role selection overlays: fixed panel, no changes to game-shell dimensions. */
+.role-list{display:grid;grid-template-columns:minmax(0,1fr);gap:9px;margin:10px 0 13px}
+.role-card{padding:11px 12px;border:1px solid #aaa;background:#fafafa;border-radius:3px;color:#222}
+.role-card-head{display:flex;flex-direction:column;gap:1px}
+.role-card-head b{font-size:17px;font-weight:700;letter-spacing:.035em}
+.role-card-head small{font-size:11px;color:#444}
+.role-card p{font-size:12px;margin:7px 0;color:#333;line-height:1.65}
+.role-card .micro{color:#777}
+.role-card .btn{min-height:35px}
+.top-buttons{gap:4px}.top-buttons button{padding:0 6px;min-width:38px}
+@media(max-width:340px){.role-card{padding:9px}.role-card p{font-size:11px}.top-buttons button{padding:0 4px;min-width:32px}}

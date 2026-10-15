@@ -2,35 +2,38 @@
 (function(){
 'use strict';
 const D=QData,$=id=>document.getElementById(id),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let game,saveStatus='未保存',bootMessage='',saveAvailable=true,deathBoot=false,panel=null,travelOpen=false,mapOpen=false,modal=null,route=[],timer=null,toastTimer=null,guideRAF=null,focusBeforeModal=null,guideSignature='',importCandidate=null;
+let game,activeRole=null,slots,saveStatus='未保存',bootMessage='',saveAvailable=true,deathBoot=false,panel=null,travelOpen=false,mapOpen=false,modal=null,route=[],timer=null,toastTimer=null,guideRAF=null,focusBeforeModal=null,guideSignature='',importCandidate=null;
 let mapFocus=null;
 let filter='all',search='',panelScroll={},openEntries=new Set(),helpOpen=new Set(['start']);
-const oldRaw=()=>{for(const k of D.LEGACY){const raw=localStorage.getItem(k);if(raw)try{return {key:k,state:JSON.parse(raw)};}catch{} }return null;};
+// Store lifetime and backups by ROLE, never by game-global key.
+try{slots=new QCharacterSlots(window.localStorage);}catch{saveAvailable=false;slots=new QCharacterSlots({getItem(){return null;},setItem(){throw Error('本地存储不可用');},removeItem(){throw Error('本地存储不可用');}});}
 function clearAllSaves(){
- try{for(const key of [D.SAVE,D.SAVE+'-backup',...D.LEGACY])localStorage.removeItem(key);
-  localStorage.setItem(D.DEATH_KEY,JSON.stringify({endedAt:new Date().toISOString(),reason:'寿元归零'}));
-  saveStatus='寿元已尽 · 角色进度已清除';return true;
- }catch{saveStatus='存储受限 · 无法保证删档';return false;}
+ if(!activeRole)return false;
+ try{slots.expire(activeRole);saveStatus='寿元已尽 · 仅本角色存档已清除';deathBoot=true;return true;}
+ catch{saveStatus='存储受限 · 无法保证删档';deathBoot=true;return false;}
 }
-function load(){
- try{
-  if(localStorage.getItem(D.DEATH_KEY)){deathBoot=true;game=new QGame();saveStatus='寿元已尽 · 等待重新轮回';return;}
-  const raw=localStorage.getItem(D.SAVE);
-  if(raw){try{game=new QGame(JSON.parse(raw));saveStatus='已载入';return;}catch{bootMessage='当前存档损坏，正在尝试备份。';}}
-  const backup=localStorage.getItem(D.SAVE+'-backup');
-  if(raw&&backup){try{game=new QGame(JSON.parse(backup));saveStatus='已恢复备份';bootMessage='已从上次备份恢复。';return;}catch{}}
-  const prior=oldRaw();if(prior){try{game=new QGame(prior.state);bootMessage='已复制继承旧版进度，原存档仍保留。';saveStatus='旧版已迁移';return;}catch{bootMessage='旧存档无法识别，原文件未改动。';}}
- }catch{saveAvailable=false;saveStatus='本地存储被阻止';bootMessage='浏览器不允许本地保存，请用设置导出进度。';}
- game=new QGame();
-}
+function load(){game=new QGame();activeRole=null;deathBoot=false;saveStatus=saveAvailable?'请选择角色':'浏览器存储受限';}
 function persist(){
- if(game.s.ended){clearAllSaves();return;}
+ if(!activeRole)return;
+ if(game.s.ended){if(!deathBoot)clearAllSaves();return;}
  if(deathBoot)return;
+ try{slots.save(activeRole,game);saveAvailable=true;saveStatus='自动保存成功';}
+ catch{const first=saveAvailable;saveAvailable=false;saveStatus='未能落盘 · 请导出';if(first)notify('本地存储失败，请到设置导出进度','warn');}
+}
+function selectCharacter(id,mode='open'){
+ if(!D.CHARACTERS[id])return;
  try{
-  const value=JSON.stringify(game.s),prior=localStorage.getItem(D.SAVE);
-  if(prior&&prior!==value){try{QGame.normalize(JSON.parse(prior));localStorage.setItem(D.SAVE+'-backup',prior);}catch{}}
-  localStorage.setItem(D.SAVE,value);saveAvailable=true;saveStatus='自动保存成功';
- }catch{const first=saveAvailable;saveAvailable=false;saveStatus='未能落盘 · 请导出';if(first)notify('本地存储失败，请到设置导出进度','warn');}
+  if(mode==='migrate')game=slots.migrate(id);
+  else if(mode==='new')game=slots.newGame(id);
+  else{const found=slots.read(id);if(!found){showModal({kind:'new-character-confirm',role:id});return;}game=found.game;}
+  activeRole=id;deathBoot=false;panel=null;modal=null;stop();travelOpen=false;mapOpen=false;search='';filter='all';
+  try{localStorage.setItem(D.ACTIVE_KEY,id);}catch{}
+  renderModal();persist();render();if(game.s.guide.status==='new')showModal({kind:'intro'});
+ }catch(e){notify('角色操作失败：'+e.message,'warn');showModal({kind:'characters'});}
+}
+function showCharacters(){
+ if(activeRole&&!deathBoot&&game&&!game.s.ended)persist();
+ stop();panel=null;travelOpen=false;mapOpen=false;showModal({kind:'characters'});
 }
 function notify(message,tone='info'){
  clearTimeout(toastTimer);const tool=message.includes('缺少')&&(/木斧|石镐|钓竿/.test(message));const room=/需.*(炼器室|丹房|洞府)|先.*(筑庐|仓房|洞府)/.test(message);
@@ -49,7 +52,7 @@ function flush(result){
 }
 function run(name,args={}){const result=game.act(name,args);return flush(result);}
 function bar(k,label,value,max){const pct=Math.max(0,Math.min(100,value/max*100));return `<div class="bar"><div class="bar-label"><span>${label}</span><b>${value}/${max}</b></div><div class="track"><div class="fill ${k} ${pct<=20?'low':''}" style="width:${pct}%"></div></div></div>`;}
-function renderStatus(){const s=game.s;$('status').innerHTML=`<div class="status-line"><b>${game.realm}<span class="xp">修 ${s.xp}/${game.required}</span></b><span class="life-label" title="寿元归零将清除存档">寿 ${game.lifeYears.toFixed(1)}年 · ${game.day}日 ${game.clock}</span></div><div class="bars">${bar('hp','气血',s.hp,s.maxHp)}${bar('spirit','灵力',s.spirit,s.maxSpirit)}${bar('hunger','饱腹',s.hunger,100)}${bar('water','饮水',s.water,100)}</div>`;
+function renderStatus(){const s=game.s;$('status').innerHTML=`<div class="status-line"><b>${game.realm}<span class="xp">${game.character.short} · 修 ${s.xp}/${game.required}</span></b><span class="life-label" title="寿元归零将清除存档">寿 ${game.lifeYears.toFixed(1)}年 · ${game.day}日 ${game.clock}</span></div><div class="bars">${bar('hp','气血',s.hp,s.maxHp)}${bar('spirit','灵力',s.spirit,s.maxSpirit)}${bar('hunger','饱腹',s.hunger,100)}${bar('water','饮水',s.water,100)}</div>`;
  $('zone-label').textContent=game.zone.name;
  const short={wood:'木',stone:'石',rune:'纹',dew:'露',blossom:'花',herb:'药',copper:'铜',cinder:'火',ore:'矿',moss:'苔',soul:'魂',star:'星',thunder:'雷'};
  const text=s.cleared[s.zone]?(s.zone===4?'五境通关 · 可继续历练':'已开 '+D.ZONES[s.zone+1].name):s.ritual[s.zone]?'前往「'+game.zone.bossMark+'」挑战首领':Object.entries(game.zone.need).map(([id,n])=>(short[id]||D.ITEMS[id].name)+' '+game.has(id)+'/'+n).join('　');
@@ -86,8 +89,8 @@ function renderScene(){
 }
 function renderCombat(){const b=game.s.combat,s=game.s,e=D.ENEMIES[b.type],hint=b.intent==='heavy'?'重击将至 · 宜防守':b.intent==='recover'?'敌人调息 · 可进攻':'普通攻击';
  return `<article class="combat-card"><div class="combat-title"><h2>${esc(e.name)}</h2><small>${b.training?'练习 · ':b.repeat?'再战 · ':''}${b.turn}回合</small></div><div class="enemy-hp">气血 ${b.hp}/${b.maxHp}<div class="enemy-track"><div style="width:${b.hp/b.maxHp*100}%"></div></div></div><div class="intent">${hint}</div><div class="fight-log" title="${esc(s.logs[0]?.msg)}">${esc(s.logs[0]?.msg||'')}</div><div class="combat-actions">
- <button data-a="fight" data-mode="attack">剑击<small>基础 ${s.attack+game.weapon}</small></button><button class="spell" data-a="fight" data-mode="spell">剑诀<small>灵力 −9</small></button><button data-a="fight" data-mode="guard">防守<small>减伤 · 蓄势</small></button>
- <button data-a="fight" data-mode="heal">回春散<small>${b.training?'练习药'+b.virtualHeals:'余'+(s.inv.salve||0)}</small></button><button data-a="fight" data-mode="mana">回灵丹<small>${b.training?'练习用':'余'+(s.inv.mana||0)}</small></button><button data-a="fight" data-mode="escape" ${b.type.startsWith('boss')?'disabled':''}>${b.training?'结束':'撤离'}<small>${b.type.startsWith('boss')?'不可撤离':b.training?'恢复原状态':'成功率80%'}</small></button></div></article>`;
+ <button data-a="fight" data-mode="attack">剑击<small>基础 ${s.attack+game.weapon}</small></button><button class="spell" data-a="fight" data-mode="spell">${s.character==='herb'?'灵焰诀':'剑诀'}<small>灵力 −${game.spellCost}</small></button><button data-a="fight" data-mode="guard">防守<small>减伤 · 蓄势</small></button>
+ <button data-a="fight" data-mode="heal">${s.character==='herb'?'回春术':'回春散'}<small>${s.character==='herb'&&s.spirit>=14?'灵力−14':b.training?'练习药'+b.virtualHeals:'药'+(s.inv.salve||0)}</small></button><button data-a="fight" data-mode="mana">回灵丹<small>${b.training?'练习用':'余'+(s.inv.mana||0)}</small></button><button data-a="fight" data-mode="escape" ${b.type.startsWith('boss')?'disabled':''}>${b.training?'结束':'撤离'}<small>${b.type.startsWith('boss')?'不可撤离':b.training?'恢复原状态':'成功率80%'}</small></button></div></article>`;
 }
 function tileClass(l){return ['forest','plain'].includes(l)?'':['spring','pond','flowerfield'].includes(l)?'water':['mine','ridge','crag','volcano'].includes(l)?'rock':['marsh','tomb'].includes(l)?'yin':['astral','spire'].includes(l)?'star':['sect','camp','shrine','gate','bazaar'].includes(l)?'landmark':l==='boss'?'boss':'';}
 function mapTile(x,y,small=false){
@@ -209,7 +212,7 @@ function bookBody(){let rows=bookRows().filter(r=>filter==='all'||r.cat===filter
  rows.sort((a,b)=>Number(b.known)-Number(a.known));return rewards+(rows.map(r=>`<details class="book-entry ${r.known?'':'unknown'}" data-entry="${r.key}" ${openEntries.has(r.key)?'open':''}><summary><b>${r.known?r.mark:'?'}</b><span>${r.known?esc(r.name):'未发现'}</span><small>${r.known?'已识':'线索'} ›</small></summary><div class="book-content">${r.known?r.detail:'线索：'+esc(r.hint)+'。获得或遭遇后解锁。'}</div></details>`).join('')||'<div class="empty">没有符合条件的条目</div>');}
 function helpBody(){const g=game.s.guide;return `<div class="help-intro"><p>当前引导：${{new:'尚未开始',active:'进行中',paused:'已暂停',skipped:'已跳过',done:'已完成'}[g.status]}${g.step<D.GUIDE.length?' · '+(g.step+1)+'/'+D.GUIDE.length:''}</p><div class="inline-buttons"><button class="btn primary" data-a="guide" data-mode="${g.status==='new'?'start':g.step>=D.GUIDE.length?'replay':'resume'}">${g.step>=D.GUIDE.length?'重播引导':'继续引导'}</button><button class="btn" data-a="guide" data-mode="skip">跳过引导</button></div></div>${D.HELP.map(c=>`<details class="help-chapter" data-help="${c.id}" ${helpOpen.has(c.id)?'open':''}><summary>${c.title}</summary>${c.paragraphs.map(p=>'<p>'+esc(p)+'</p>').join('')}</details>`).join('')}`;}
 function questBody(){const s=game.s,z=game.zone,altar=s.zone?{x:4,y:4}:(game.camp?.pos||{x:1,y:5});return `<p>青岚灵脉断裂，五处旧封印正在失效。你从一座草庐出发，修复各境阵眼，追查天阙遗留的魔念。</p><h3>当前：${z.name} · ${z.verb}</h3><p>${s.ritual[s.zone]?'封印已经稳定。':(s.zone?'前往'+z.altar+'提交材料。':'在洞府营建山门，自动完成本境护山阵。')}</p>${Object.entries(z.need).map(([id,n])=>`<div class="line">${D.ITEMS[id].name} <b class="${game.has(id)<n?'danger-text':'accent'}">${game.has(id)}/${n}</b> <span class="micro">${s.zone>0?'坛前只用随身物资':'府内可用本仓'}</span></div>`).join('')}<div class="inline-buttons" style="margin-top:9px"><button class="btn primary" data-a="map" data-x="${s.ritual[s.zone]?7:altar.x}" data-y="${s.ritual[s.zone]?2:altar.y}">${s.cleared[s.zone]?'前往首领再战':s.ritual[s.zone]?'前往首领':'前往阵眼'}</button></div><h3>五境进度</h3>${D.ZONES.map((z,i)=>`<div class="task-stage"><b>${i+1}</b><span>${z.name} · ${s.cleared[i]?'已平定':s.ritual[i]?'封印已修，待挑战首领':i<s.unlocked?'待修封印':'未解锁'}</span></div>`).join('')}`;}
-function settingsBody(){return `<div class="stat-chips"><span>V10 · 洞府经营与寿元</span><span>${saveAvailable?'可本地保存':'存储受限'}</span></div><p>${esc(saveStatus)}</p><p class="danger-text">寿元：${game.lifeYears.toFixed(1)}年 · 倒下 ${game.s.life.losses}次 · 延寿丹 ${game.s.life.elixirs}/${D.LIFE.elixirLimit}。寿元归零会清除V10、自动备份及本来源旧版继承存档。离线外部JSON仍可手动回档。</p><div class="inline-buttons"><button class="btn primary" data-a="export">导出存档</button><button class="btn" data-a="import">导入存档</button><button class="btn" data-a="restore">恢复上次备份</button></div><p class="muted">换文件路径、浏览器、设备或网址前先导出。正常迁移会保留旧档，寿元耗尽时清除同来源旧档，避免自动复活。</p><h3>体验</h3><div class="inline-buttons"><button class="btn" data-a="motion">${game.s.settings.motion?'减少动效':'恢复动效'}</button><button class="btn" data-a="panel" data-name="log">行记</button><button class="btn" data-a="panel" data-name="help">完整教程</button></div><h3>重新修行</h3><button class="btn warn" data-a="reset">新开存档</button><p class="micro">新开存档需要再次确认，不会删除旧版存档。</p>`;}
+function settingsBody(){return `<div class="stat-chips"><span>V11 · ${game.character.name}</span><span>${saveAvailable?'可本地保存':'存储受限'}</span></div><p>${esc(saveStatus)}</p><p class="danger-text">寿元：${game.lifeYears.toFixed(1)}年 · 倒下 ${game.s.life.losses}次 · 延寿丹 ${game.s.life.elixirs}/${D.LIFE.elixirLimit}。寿元归零会只清除当前角色分支主档与备份，不影响另一角色。外部JSON仍可手动回档。</p><div class="inline-buttons"><button class="btn primary" data-a="export">导出存档</button><button class="btn" data-a="import">导入存档</button><button class="btn" data-a="restore">恢复上次备份</button></div><p class="muted">换文件路径、浏览器、设备或网址前先导出。继承旧版存档只可主动进行一次；寿元耗尽只删除当前角色存档。</p><h3>角色</h3><div class="inline-buttons"><button class="btn primary" data-a="characters">切换角色 · 双分支存档</button></div><p class="micro">两个角色的寿元、背包、地图和洞府完全独立。</p><h3>体验</h3><div class="inline-buttons"><button class="btn" data-a="motion">${game.s.settings.motion?'减少动效':'恢复动效'}</button><button class="btn" data-a="panel" data-name="log">行记</button><button class="btn" data-a="panel" data-name="help">完整教程</button></div><h3>重新修行</h3><button class="btn warn" data-a="reset">新开存档</button><p class="micro">新开存档需要再次确认，不会删除旧版存档。</p>`;}
 function renderPanel(){const root=$('panel-root');if(!panel){root.innerHTML='';return;}
  const old=$('panel-body')?.scrollTop??panelScroll[panel]??0;
  const focus=document.activeElement,focusId=focus?.id,start=focus?.selectionStart,end=focus?.selectionEnd;
@@ -229,13 +232,22 @@ function showModal(value){stop();mapOpen=false;travelOpen=false;modal=value;focu
 function closeModal(){modal=null;renderModal();renderCoach();focusBeforeModal?.focus?.({preventScroll:true});}
 function eventDescription(c){return [c.tool?'需'+D.ITEMS[c.tool].name:'',c.cost?'需'+Object.entries(c.cost).map(([k,n])=>D.ITEMS[k].name+n).join('、'):'',c.loot?Object.entries(c.loot).map(([k,n])=>D.ITEMS[k].name+'×'+n).join('、'):'',c.enemy?'挑战'+D.ENEMIES[c.enemy].name:'',c.gear?'寻获遗器':'',c.restore?'恢复全部气血与灵力':'',c.damage?'未避火时气血−'+c.damage:''].filter(Boolean).join(' · ');}
 function renderModal(){const r=$('modal-root');syncLayers();if(!modal){r.innerHTML='';return;}
- let body='';if(modal.kind==='item'){const id=modal.id,it=D.ITEMS[id];body=`<div class="kicker">随身物品</div><h2>${it.name}</h2><p>随身 ${game.s.inv[id]||0} · 本境仓内 ${game.camp?.stash[id]||0}<br>单件负重 ${it.wt}</p><p>${esc(it.effect||'可在图鉴查看来源与炼制用途。')}</p><div class="inline-buttons">${it.type==='food'?`<button class="btn primary" data-a="item-use" data-id="${id}">使用</button>`:''}<button class="btn" data-a="item-pack">打开背包</button><button class="btn" data-a="modal-close">关闭</button></div>`;}
- else if(modal.kind==='intro')body=`<div class="kicker">青岚旧营坪 · 初入仙途</div><h2>从一草一木，开始。</h2><p>上方点字采集，左下角九宫格走路。「我」固定在中央，点周围格子移动。</p><div class="steps">拾材料 → 择地筑庐 → 建仓炼器<br>立山门 → 战妖兽 → 开新境</div><p>看远处，点九宫格旁「展开」。十一段实操引导跟随实际操作，随时可在「教程」继续。寿元归零会结束本轮并清除进度。</p><div class="inline-buttons"><button class="btn primary" data-a="guide" data-mode="start">跟着学</button><button class="btn" data-a="guide" data-mode="skip">自行探索</button><button class="btn" data-a="intro-help">先读教程</button></div><p><small>离线单机 · 本地存档 · 没有广告与付费入口</small></p>`;
+ let body='';if(modal.kind==='characters'){
+  const available=slots.legacyCandidate();
+  const cards=slots.list().map(slot=>{const c=D.CHARACTERS[slot.role];const status=slot.status==='ready'?`炼气${slot.level}层 · 第${slot.day}日 · 寿元${slot.years}年 · ${D.ZONES[slot.zone].short}`:slot.status==='dead'?'寿元已尽 · 可重新轮回':slot.status==='invalid'?'存档损坏 · 请检查备份':'尚未创建';
+   return `<div class="role-card"><div class="role-card-head"><b>${c.name}</b><small>${c.intro}</small></div><p>${esc(c.detail)}</p><p class="micro">${esc(status)}</p><div class="inline-buttons"><button class="btn primary" data-a="slot-open" data-role="${slot.role}">${slot.status==='ready'?'继续修行':slot.status==='dead'?'重新轮回':slot.status==='invalid'?'检查存档':'创建角色'}</button>${available&&slot.status==='empty'?`<button class="btn" data-a="slot-migrate" data-role="${slot.role}">继承一次旧档</button>`:''}</div></div>`;
+  }).join('');
+  body=`<div class="kicker">V11 · 双角色独立存档</div><h2>选择修行角色</h2><p class="micro">两个角色独立成长 · 寿尽只删除自己的存档</p><div class="role-list">${cards}</div>${activeRole&&!deathBoot?'<button class="btn" data-a="slot-back">返回当前角色</button>':''}<p class="micro">遗留V10存档需要手动选择继承角色，不能复制到两个分支。</p>`;
+ }
+ else if(modal.kind==='new-character-confirm')body=`<div class="kicker">角色创建</div><h2>开始${D.CHARACTERS[modal.role].name}？</h2><p>将从青岚旧营坪开始，独立获取材料、建造洞府并探索五境。</p><div class="inline-buttons"><button class="btn primary" data-a="slot-confirm-new" data-role="${modal.role}">创建并开始</button><button class="btn" data-a="characters">返回角色列表</button></div>`;
+ else if(modal.kind==='slot-migrate-confirm')body=`<div class="kicker">旧档迁移 · 只能继承一次</div><h2>继承到${D.CHARACTERS[modal.role].name}？</h2><p>将同一来源中的V10旧存档绑定到此角色。另一角色只能新建，不会复制物资、境界或洞府。旧版存储键保留，但不会再次自动继承。</p><div class="inline-buttons"><button class="btn primary" data-a="slot-confirm-migrate" data-role="${modal.role}">确认继承</button><button class="btn" data-a="characters">返回</button></div>`;
+ else if(modal.kind==='item'){const id=modal.id,it=D.ITEMS[id];body=`<div class="kicker">随身物品</div><h2>${it.name}</h2><p>随身 ${game.s.inv[id]||0} · 本境仓内 ${game.camp?.stash[id]||0}<br>单件负重 ${it.wt}</p><p>${esc(it.effect||'可在图鉴查看来源与炼制用途。')}</p><div class="inline-buttons">${it.type==='food'?`<button class="btn primary" data-a="item-use" data-id="${id}">使用</button>`:''}<button class="btn" data-a="item-pack">打开背包</button><button class="btn" data-a="modal-close">关闭</button></div>`;}
+ else if(modal.kind==='intro')body=`<div class="kicker">${game.character.name} · 初入仙途</div><h2>从一草一木，开始。</h2><p>上方点字采集，左下角九宫格走路。「我」固定在中央，点周围格子移动。</p><div class="steps">拾材料 → 择地筑庐 → 建仓炼器<br>立山门 → 战妖兽 → 开新境</div><p>看远处，点九宫格旁「展开」。十一段实操引导跟随实际操作，随时可在「教程」继续。寿元归零会结束本轮并清除进度。</p><div class="inline-buttons"><button class="btn primary" data-a="guide" data-mode="start">跟着学</button><button class="btn" data-a="guide" data-mode="skip">自行探索</button><button class="btn" data-a="intro-help">先读教程</button></div><p><small>离线单机 · 本地存档 · 没有广告与付费入口</small></p>`;
  else if(modal.kind==='settle')body=`<div class="kicker">${esc(game.zone.name)} · ${modal.relocate?'迁居':'定居'}</div><h2>${modal.relocate?'搬到这里？':'在此筑起草庐？'}</h2><p>${esc(game.name)} · ${game.s.pos.x+1}列${game.s.pos.y+1}行</p><div class="steps">${cost(modal.relocate?D.MOVE_CAMP_COST:D.SETTLE_COST)}</div><p>${modal.relocate?'整座洞府连同设施与仓物搬移。不会返还材料、复制仓物或刷新灵田。':'每境只能有一座洞府。之后可以迁居，仓房与炼器室需要另行修建。'}</p><div class="inline-buttons"><button class="btn primary" data-a="confirm-settle">${modal.relocate?'确认迁居':'确认筑庐'}</button><button class="btn" data-a="modal-close">取消</button></div>`;
  else if(modal.kind==='site'){const e=game.site;body=`<div class="kicker">${game.zone.name} · 奇遇</div><h2>${esc(e?.name)}</h2><p>${esc(e?.text)}</p>${e?.choices.map((c,i)=>{const bad=(c.tool&&!game.s.inv[c.tool])||(c.cost&&!game.enough(c.cost));return `<button class="event-choice ${bad?'unavailable':''}" data-a="event-choice" data-choice="${i}">${c.label}<small>${esc(eventDescription(c))}</small></button>`;}).join('')}<p class="micro">每个游戏日仅可完成一个选择。现在离开不消耗次数。</p><button class="btn" data-a="modal-close">离开</button>`;}
- else if(modal.kind==='permadeath')body=`<div class="kicker">寿元终结 · 轮回</div><h2>寿元已尽</h2><p>本轮修行结束。角色的自动存档、备份及本来源旧版继承记录已清除，不会因刷新恢复。</p><p>五境等待下一位修行者。新的角色将从青岚旧营坪重新开始。</p><div class="inline-buttons"><button class="btn primary" data-a="rebirth">重新轮回</button></div>`;
- else if(modal.kind==='victory')body=`<div class="kicker">五境灵脉 · 重归安宁</div><h2>五境问道 · 初成</h2><p>${game.day}日 · ${game.realm} · 已平定五境</p><p>封印已经稳定。你仍可返回旧地，探访每日奇遇、收集图鉴、重炼法器与再战首领。</p><div class="inline-buttons"><button class="btn primary" data-a="modal-close">继续修行</button><button class="btn" data-a="export">导出此刻进度</button></div>`;
- else if(modal.kind==='reset')body=`<h2>重新开始修行？</h2><p>当前V10进度将被新存档替换，旧进度留作上次备份。先导出可额外保留一份。</p><div class="inline-buttons"><button class="btn" data-a="export">导出存档</button><button class="btn" data-a="modal-close">取消</button><button class="btn warn" data-a="confirm-reset">确认新开</button></div>`;
+ else if(modal.kind==='permadeath')body=`<div class="kicker">${game.character.name} · 寿元终结</div><h2>本角色寿元已尽</h2><p>${saveStatus==='存储受限 · 无法保证删档'?'浏览器拒绝删除本地存储，请手动清理该角色数据。':'仅'+game.character.short+'档的主存档与自动备份已清除。另一个角色进度不受影响。'}</p><div class="inline-buttons"><button class="btn primary" data-a="rebirth">本角色重新轮回</button><button class="btn" data-a="characters">选择其他角色</button></div>`;
+ else if(modal.kind==='victory')body=`<div class="kicker">五境灵脉 · 重归安宁</div><h2>五境问道 · 初成</h2><p>${game.character.name} · ${game.day}日 · ${game.realm} · 已平定五境</p><p>封印已经稳定。你仍可返回旧地，探访每日奇遇、收集图鉴、重炼法器与再战首领。</p><div class="inline-buttons"><button class="btn primary" data-a="modal-close">继续修行</button><button class="btn" data-a="export">导出此刻进度</button></div>`;
+ else if(modal.kind==='reset')body=`<h2>重新开始修行？</h2><p>仅当前角色分支重置，另一角色不受影响。此操作清除当前角色自动备份，请先导出存档。</p><div class="inline-buttons"><button class="btn" data-a="export">导出存档</button><button class="btn" data-a="modal-close">取消</button><button class="btn warn" data-a="confirm-reset">确认新开</button></div>`;
  else if(modal.kind==='import')body=`<h2>载入这份进度？</h2><p>${esc(modal.label||'导入存档')}<br>${D.ZONES[importCandidate.s.zone].name} · ${importCandidate.realm}<br>五境已平定 ${importCandidate.s.cleared.filter(Boolean).length}/5</p><p>确认前不会覆盖当前进度。当前进度将保留为备份。</p><div class="inline-buttons"><button class="btn" data-a="modal-close">取消</button><button class="btn primary" data-a="confirm-import">确认载入</button></div>`;
  r.innerHTML=`<div class="modal-backdrop"><div class="modal" role="dialog" aria-modal="true" aria-label="${modal.kind==='intro'?'新手入门':modal.kind==='site'?'奇遇选择':'游戏提示'}" tabindex="-1">${body}</div></div>`;
  requestAnimationFrame(()=>r.querySelector('button')?.focus({preventScroll:true}));
@@ -355,13 +367,23 @@ function travelTo(x,y){
   const n=route.shift(),r=game.act('move',n);if(!r.ok||r.stop||game.s.combat)stop();flush(r);if(route.length)timer=setTimeout(advance,game.s.settings.motion?155:70);
  };timer=setTimeout(advance,85);
 }
-function exportSave(){const envelope={format:'QinglanWendao',version:D.VERSION,exportedAt:new Date().toISOString(),state:game.state()};const blob=new Blob([JSON.stringify(envelope,null,2)],{type:'application/json'}),u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='青岚问道_第'+game.day+'日_V10存档.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),3000);notify('已生成存档文件，请妥善保存','ok');}
-async function importFile(file){if(!file)return;try{if(file.size>2*1024*1024)throw Error('文件超过2MB');const data=JSON.parse(await file.text());if(data.format&&data.format!=='QinglanWendao')throw Error('不是青岚问道存档');importCandidate=new QGame(data.state||data);showModal({kind:'import',label:file.name});}catch(e){notify('导入失败：'+e.message,'warn');}finally{$('import-file').value='';}}
+function exportSave(){const envelope={format:'QinglanWendao',version:D.VERSION,character:activeRole,exportedAt:new Date().toISOString(),state:game.state()};const blob=new Blob([JSON.stringify(envelope,null,2)],{type:'application/json'}),u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='青岚问道_'+game.character.short+'_第'+game.day+'日_V11存档.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),3000);notify('已生成存档文件，请妥善保存','ok');}
+async function importFile(file){if(!file)return;try{if(file.size>2*1024*1024)throw Error('文件超过2MB');const data=JSON.parse(await file.text());if(data.format&&data.format!=='QinglanWendao')throw Error('不是青岚问道存档');importCandidate=new QGame(data.state||data,261014,activeRole);showModal({kind:'import',label:file.name});}catch(e){notify('导入失败：'+e.message,'warn');}finally{$('import-file').value='';}}
 function handle(a,b){
- if(a==='rebirth'&&modal?.kind==='permadeath'){
-  try{for(const k of [D.DEATH_KEY,D.SAVE,D.SAVE+'-backup',...D.LEGACY])localStorage.removeItem(k);}catch{}
-  deathBoot=false;game=new QGame();panel=null;modal=null;route=[];persist();render();showModal({kind:'intro'});return;
+ if(a==='characters'){showCharacters();return;}
+ if(a==='slot-back'&&activeRole&&!deathBoot){modal=null;renderModal();render();return;}
+ if(a==='slot-open'){
+  const id=b.dataset.role,slot=slots.status(id);
+  if(slot.status==='ready')selectCharacter(id,'open');
+  else if(slot.status==='empty')showModal({kind:'new-character-confirm',role:id});
+  else if(slot.status==='dead')showModal({kind:'new-character-confirm',role:id});
+  else notify('当前分支数据损坏，请导出后检查，禁止直接覆盖','warn');return;
  }
+ if(a==='slot-confirm-new'&&modal?.kind==='new-character-confirm'){selectCharacter(modal.role,'new');return;}
+ if(a==='slot-migrate'){showModal({kind:'slot-migrate-confirm',role:b.dataset.role});return;}
+ if(a==='slot-confirm-migrate'&&modal?.kind==='slot-migrate-confirm'){selectCharacter(modal.role,'migrate');return;}
+ if(a==='rebirth'&&modal?.kind==='permadeath'){selectCharacter(activeRole,'new');return;}
+ if(modal?.kind==='characters'||!activeRole)return;
  if(game.s.ended||deathBoot)return;
  if(a==='modal-close'){closeModal();return;}
  if(a==='guide'){stop();modal=null;panel=null;travelOpen=false;renderModal();run('guide',{mode:b.dataset.mode});return;}
@@ -373,8 +395,8 @@ function handle(a,b){
   if(modal.key!==game.key()){closeModal();notify('位置已经变化，请重新选址','warn');return;}
   const result=game.act('settle',{relocate:modal.relocate});if(result.ok){modal=null;panel='camp';renderModal();}flush(result);return;
  }
- if(a==='confirm-reset'){try{localStorage.setItem(D.SAVE+'-backup',JSON.stringify(game.s));}catch{}game=new QGame();panel=null;modal=null;persist();render();showModal({kind:'intro'});return;}
- if(a==='confirm-import'&&importCandidate){try{localStorage.setItem(D.SAVE+'-backup',JSON.stringify(game.s));}catch{}game=importCandidate;importCandidate=null;panel=null;modal=null;renderModal();persist();render();notify('已载入，原进度留在备份','ok');return;}
+ if(a==='confirm-reset'){selectCharacter(activeRole,'new');return;}
+ if(a==='confirm-import'&&importCandidate){game=importCandidate;importCandidate=null;panel=null;modal=null;renderModal();persist();render();notify('已载入当前角色分支，原进度已备份','ok');return;}
  if(a==='event-choice'){const r=game.act('event',{choice:Number(b.dataset.choice)});if(r.ok){modal=null;renderModal();panel=null;}flush(r);return;}
  if(modal)return;
  if(a==='plan-settle'){
@@ -402,7 +424,7 @@ function handle(a,b){
  if(a==='map'){travelTo(Number(b.dataset.x),Number(b.dataset.y));return;}
  if(a==='site'){stop();const why=game.siteReady();if(why)notify(why,'warn');else showModal({kind:'site'});return;}
  if(a==='import'){$('import-file').click();return;}
- if(a==='restore'){try{const raw=localStorage.getItem(D.SAVE+'-backup');if(!raw)throw Error('没有可用备份');importCandidate=new QGame(JSON.parse(raw));showModal({kind:'import',label:'恢复上次自动备份'});}catch(e){notify(e.message,'warn');}return;}
+ if(a==='restore'){try{const raw=localStorage.getItem(slots.backupKey(activeRole));if(!raw)throw Error('没有可用备份');importCandidate=new QGame(JSON.parse(raw),261014,activeRole);showModal({kind:'import',label:'恢复上次自动备份'});}catch(e){notify(e.message,'warn');}return;}
  if(a==='reset'){showModal({kind:'reset'});return;}
  if(a==='motion'){game.s.settings.motion=!game.s.settings.motion;persist();render();return;}
  stop();travelOpen=false;
@@ -420,13 +442,13 @@ document.addEventListener('toggle',e=>{const t=e.target;if(t.dataset?.entry){if(
 document.addEventListener('keydown',e=>{
  if(mapOpen&&e.key==='Tab'){const f=[...$('map-overlay').querySelectorAll('button:not(:disabled)')],first=f[0],last=f.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}return;}
  if(modal&&e.key==='Tab'){const f=[...$('modal-root').querySelectorAll('button:not(:disabled),input,[tabindex="0"]')];if(f.length){const first=f[0],last=f.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}return;}
- if(e.key==='Escape'){e.preventDefault();if(modal?.kind==='permadeath')return;if(modal){if(modal.kind==='intro')game.act('guide',{mode:'skip'});closeModal();persist();}else if(mapOpen){setMap(false);}else if(travelOpen){travelOpen=false;render();}else if(panel){panel=null;render();}else if(game.s.guide.status==='active')run('guide',{mode:'pause'});else{stop();render();}return;}
+ if(e.key==='Escape'){e.preventDefault();if(['permadeath','characters','new-character-confirm','slot-migrate-confirm'].includes(modal?.kind))return;if(modal){if(modal.kind==='intro')game.act('guide',{mode:'skip'});closeModal();persist();}else if(mapOpen){setMap(false);}else if(travelOpen){travelOpen=false;render();}else if(panel){panel=null;render();}else if(game.s.guide.status==='active')run('guide',{mode:'pause'});else{stop();render();}return;}
  if(modal||mapOpen||panel||travelOpen||game.s.combat||e.target.closest('input,textarea,select,button'))return;
  const moves={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],s:[0,1],a:[-1,0],d:[1,0]};if(moves[e.key]){e.preventDefault();stop();const [dx,dy]=moves[e.key];run('move',{x:game.s.pos.x+dx,y:game.s.pos.y+dy});}
 });
 window.addEventListener('resize',()=>{renderTravel();renderCoach();});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){stop();persist();}});
 window.addEventListener('pagehide',()=>{stop();persist();});
-load();render();persist();if(deathBoot)showModal({kind:'permadeath'});else if(game.s.guide.status==='new')showModal({kind:'intro'});if(bootMessage)setTimeout(()=>notify(bootMessage,saveAvailable?'ok':'warn'),300);
-window.QinglanDemo={getState:()=>game.state(),metadata:{version:10,saveKey:D.SAVE,width:8,height:8,regions:D.ZONES.map(z=>({name:z.name,need:z.need,boss:z.boss})),recipes:D.RECIPES.map(r=>r.id),bookTotal:bookRows().length},getNode:i=>({kind:game.resource(i),left:game.left(i),condition:game.resource(i)?game.requirement(game.resource(i)):null}),getUI:()=>({panel,travelOpen,mapOpen,modal:modal?.kind||null,route:route.length,saveStatus,deathBoot})};
+load();render();showModal({kind:'characters'});if(bootMessage)setTimeout(()=>notify(bootMessage,saveAvailable?'ok':'warn'),300);
+window.QinglanDemo={getState:()=>activeRole?game.state():null,getSlots:()=>slots.list(),getActiveRole:()=>activeRole,metadata:{version:11,saveKeyPrefix:D.SLOT_PREFIX,width:8,height:8,regions:D.ZONES.map(z=>({name:z.name,need:z.need,boss:z.boss})),recipes:D.RECIPES.map(r=>r.id),bookTotal:bookRows().length},getNode:i=>({kind:game.resource(i),left:game.left(i),condition:game.resource(i)?game.requirement(game.resource(i)):null}),getUI:()=>({panel,travelOpen,mapOpen,modal:modal?.kind||null,route:route.length,saveStatus,deathBoot,activeRole})};
 })();
