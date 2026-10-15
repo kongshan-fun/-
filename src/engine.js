@@ -9,10 +9,10 @@ const obj=x=>x&&typeof x==='object'&&!Array.isArray(x);
 const pos=p=>obj(p)&&Number.isInteger(p.x)&&Number.isInteger(p.y)&&p.x>=0&&p.x<8&&p.y>=0&&p.y<8;
 const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
 function fresh(seed=261014,character='sword'){const c=D.CHARACTERS[character];if(!c)throw Error('未知修行角色');return {
- version:11,character,seed:integer(seed,1,4294967295),zone:0,unlocked:1,ritual:Array(5).fill(false),cleared:Array(5).fill(false),
+ version:12,character,seed:integer(seed,1,4294967295),zone:0,unlocked:1,ritual:Array(D.ZONES.length).fill(false),cleared:Array(D.ZONES.length).fill(false),
  pos:{x:1,y:5},last:{x:1,y:5},minutes:420,seen:{},visited:{},scouted:{},nodeHarvest:{},events:{},sites:{},campRests:{},bossDaily:{},
  hp:c.hp,maxHp:c.hp,hunger:84,water:81,spirit:c.spirit-8,maxSpirit:c.spirit,attack:c.attack,level:1,xp:0,
- settlements:Array(5).fill(null),caches:{},pillDaily:{day:1,uses:0},life:{left:c.years*D.LIFE.yearMinutes,losses:0,elixirs:0},ended:false,
+ settlements:Array(D.ZONES.length).fill(null),major:0,daoXp:0,ascended:false,caches:{},pillDaily:{day:1,uses:0},life:{left:c.years*D.LIFE.yearMinutes,losses:0,elixirs:0},ended:false,
  inv:{wood:2,stone:1,fiber:2,berry:4,water:3,salve:2},stash:{},gears:[],pending:[],equipped:{weapon:null,armor:null},nextGear:1,
  codex:{items:{},enemies:{},gears:{},claims:{}},buffs:{fireward:0,detox:0},
  flags:{repaired:false,boss:false,talisman:false,complete:false},meditation:{day:1,uses:0},combat:null,
@@ -20,14 +20,14 @@ function fresh(seed=261014,character='sword'){const c=D.CHARACTERS[character];if
  guide:{status:'new',step:0,base:{},rewarded:false},settings:{motion:true},logs:[]
 };}
 function normalize(raw,requestedCharacter='sword'){
- if(!obj(raw)||![1,2,5,7,8,9,10,11].includes(raw.version)||!obj(raw.inv)||!pos(raw.pos))throw Error('不是可识别的青岚问道存档');
+ if(!obj(raw)||![1,2,5,7,8,9,10,11,12].includes(raw.version)||!obj(raw.inv)||!pos(raw.pos))throw Error('不是可识别的青岚问道存档');
  if(!D.CHARACTERS[requestedCharacter])throw Error('未知修行角色');
- const o=copy(raw),character=o.version===11?o.character:requestedCharacter;
+ const o=copy(raw),character=o.version>=11?o.character:requestedCharacter;
  if(!D.CHARACTERS[character])throw Error('存档角色身份无效');
- if(o.version===11&&character!==requestedCharacter)throw Error('存档角色与当前分支不符');
+ if(o.version>=11&&character!==requestedCharacter)throw Error('存档角色与当前分支不符');
  const n=fresh(o.seed,character),c=D.CHARACTERS[character],legacy=o.version<7;
  if(o.version>=10){
-  if(o.ended||!obj(o.life)||!Number.isInteger(o.life.left)||o.life.left<=0||o.life.left>200*D.LIFE.yearMinutes)throw Error('寿元已尽或寿元数据无效，无法恢复');
+  if(o.ended||!obj(o.life)||!Number.isInteger(o.life.left)||o.life.left<=0||o.life.left>10000*D.LIFE.yearMinutes)throw Error('寿元已尽或寿元数据无效，无法恢复');
   n.life={left:o.life.left,losses:integer(o.life.losses,0,999),elixirs:integer(o.life.elixirs,0,D.LIFE.elixirLimit)};
  }else{
   // V9 and earlier migration starts a *new* lifespan era: never retroactively erase years of valid saves.
@@ -35,25 +35,37 @@ function normalize(raw,requestedCharacter='sword'){
   const penalties=Math.min(2,integer(o.stats?.defeats,0,10000))*D.LIFE.defeatYears;
   n.life={left:Math.max(8,D.LIFE.initialYears+boosts-penalties)*D.LIFE.yearMinutes,losses:Math.min(2,integer(o.stats?.defeats,0,10000)),elixirs:0};
  }
- n.level=integer(o.level,1,18);n.maxHp=c.hp+9*(n.level-1);n.maxSpirit=c.spirit+2*(n.level-1);n.attack=c.attack+n.level-1;
+ n.level=integer(o.level,1,18);n.major=o.version>=12?integer(o.major,0,9):(n.level>=10?1:0);
+ n.daoXp=o.version>=12?integer(o.daoXp,0,1000000):0;n.ascended=o.version>=12&&!!o.ascended;
+ n.maxHp=c.hp+9*(n.level-1);n.maxSpirit=c.spirit+2*(n.level-1);n.attack=c.attack+n.level-1;
+ if(o.version>=12){for(let i=0;i<Math.min(7,Math.max(0,n.major-1));i++){const t=D.ASCENSION_STAGES[i];n.maxHp+=t.hp;n.maxSpirit+=t.spirit;n.attack+=t.atk;}}
  n.minutes=integer(o.minutes,0,52560000);n.hp=integer(o.hp,1,n.maxHp);n.spirit=integer(o.spirit,0,n.maxSpirit);
  n.hunger=integer(o.hunger,0,100);n.water=integer(o.water,0,100);n.xp=integer(o.xp,0,10+n.level*5-1);
- n.zone=integer(o.zone,0,4);n.pos=copy(o.pos);n.last=pos(o.last)?copy(o.last):copy(o.pos);
- n.ritual=Array.from({length:5},(_,i)=>!!o.ritual?.[i]);n.cleared=Array.from({length:5},(_,i)=>!!o.cleared?.[i]);
+ n.zone=integer(o.zone,0,D.ZONES.length-1);n.pos=copy(o.pos);n.last=pos(o.last)?copy(o.last):copy(o.pos);
+ n.ritual=Array.from({length:D.ZONES.length},(_,i)=>!!o.ritual?.[i]);n.cleared=Array.from({length:D.ZONES.length},(_,i)=>!!o.cleared?.[i]);
+ if(o.version>=12){let highest=1;for(let i=5;i<D.ZONES.length&&n.cleared[i];i++)highest++;
+  if(n.major>highest+Number(n.ascended))throw Error('大境界和首领进度不一致');
+  if(n.ascended&&!(n.major===9&&n.cleared.every(Boolean)))throw Error('飞升记录不完整');
+  if(n.major<1&&n.level>=10)n.major=1;
+ }
  if(o.version<=2){n.zone=0;n.ritual[0]=!!o.flags?.repaired;n.cleared[0]=!!o.flags?.boss;}
- let unlocked=1;for(let i=0;i<5;i++){if(!n.cleared[i])break;n.ritual[i]=true;unlocked=Math.min(5,i+2);}n.unlocked=unlocked;
+ let unlocked=1;for(let i=0;i<D.ZONES.length;i++){
+   if(!n.cleared[i])break;n.ritual[i]=true;
+   if(i>=5&&n.major<i-3)break; // boss clear alone cannot bypass realm breakthrough
+   unlocked=Math.min(D.ZONES.length,i+2);
+  }n.unlocked=unlocked;
  if(n.zone>=n.unlocked){n.zone=n.unlocked-1;n.pos=n.zone?{x:0,y:5}:{x:1,y:5};n.last=copy(n.pos);}
- n.flags={repaired:n.ritual[0],boss:n.cleared[0],talisman:!!o.flags?.talisman,complete:n.cleared.every(Boolean)};
+ n.flags={repaired:n.ritual[0],boss:n.cleared[0],talisman:!!o.flags?.talisman,complete:n.ascended};
  for(const bag of ['inv','stash']){n[bag]={};for(const k of Object.keys(D.ITEMS)){let v=integer(o[bag]?.[k]);if(v)n[bag][k]=v;}}
  for(const kind of ['seen','visited','scouted','events']){
   n[kind]={};for(let [k,v] of Object.entries(obj(o[kind])?o[kind]:{})){
    if(o.version<=2&&!k.includes(':'))k='0:'+k;
-   if(/^[0-4]:[0-7],[0-7]$/.test(k)&&v)n[kind][k]=true;
+   if(/^(?:[0-9]|1[01]):[0-7],[0-7]$/.test(k)&&v)n[kind][k]=true;
   }
  }
  n.nodeHarvest={};for(let [k,v] of Object.entries(obj(o.nodeHarvest)?o.nodeHarvest:{})){
   if(o.version<=2&&!k.includes(':'))k='0:'+k;
-  if(/^[0-4]:[0-7],[0-7]#[0-9]$/.test(k)&&obj(v))n.nodeHarvest[k]={day:integer(v.day,1,50000),used:integer(v.used,0,20)};
+  if(/^(?:[0-9]|1[01]):[0-7],[0-7]#[0-9]$/.test(k)&&obj(v))n.nodeHarvest[k]={day:integer(v.day,1,50000),used:integer(v.used,0,20)};
  }
  for(const key of ['sites','bossDaily','campRests']){
   for(const [k,v] of Object.entries(obj(o[key])?o[key]:{}).slice(0,300))if(/^[\w:,-]+$/.test(k))n[key][k]=integer(v,0,50000);
@@ -64,7 +76,7 @@ function normalize(raw,requestedCharacter='sword'){
   let id=typeof g.id==='string'&&/^g\d{1,9}$/.test(g.id)?g.id:'g'+n.nextGear++;
   if([...n.gears,...n.pending].some(x=>x.id===id))id='g'+n.nextGear++;
   n.nextGear=Math.max(n.nextGear,Number(id.slice(1))+1);
-  const q={id,recipe:r.id,quality:integer(g.quality,0,4),refine:integer(g.refine,0,3),affixes:[],source:String(g.source||'旧物').slice(0,24)};if(pending)q.where=/^[0-4]:[0-7],[0-7]$/.test(g.where)?g.where:'0:1,5';
+  const q={id,recipe:r.id,quality:integer(g.quality,0,4),refine:integer(g.refine,0,3),affixes:[],source:String(g.source||'旧物').slice(0,24)};if(pending)q.where=/^(?:[0-9]|1[01]):[0-7],[0-7]$/.test(g.where)?g.where:'0:1,5';
   const seen=new Set();for(const a of (Array.isArray(g.affixes)?g.affixes:[]).slice(0,2))if(D.AFFIXES[a.id]?.slot===r.gear&&!seen.has(a.id)){q.affixes.push({id:a.id,value:integer(a.value,1,20)});seen.add(a.id);}
   q.affixes=q.affixes.slice(0,D.QUALITIES[q.quality].count);(pending?n.pending:n.gears).push(q);return id;
  };
@@ -103,8 +115,8 @@ function normalize(raw,requestedCharacter='sword'){
  // V9 migration is isolated to the new save key. Source saves remain untouched.
  const cleanBag=raw=>{const b={};for(const k of Object.keys(D.ITEMS)){const v=integer(raw?.[k]);if(v)b[k]=v;}return b;};
  if(o.version>=9){
-  if(!Array.isArray(o.settlements)||o.settlements.length!==5)throw Error('洞府数据不完整');
-  n.settlements=o.settlements.map((c,z)=>{
+  if(!Array.isArray(o.settlements)||o.settlements.length!==(o.version>=12?12:5))throw Error('洞府数据不完整');
+  n.settlements=Array.from({length:D.ZONES.length},(_,z)=>{const c=o.settlements[z]??null;
    if(c===null)return null;
    if(!obj(c)||!pos(c.pos)||!D.CAMP_LANDS.includes(D.ZONES[z].map[c.pos.y][c.pos.x])||D.SITES[z+':'+c.pos.x+','+c.pos.y]||D.EVENTS[z+':'+c.pos.x+','+c.pos.y])throw Error('洞府选址无效');
    const v={pos:copy(c.pos),level:integer(c.level,1,3),buildings:{},stash:cleanBag(c.stash),foundedAt:integer(c.foundedAt,0,n.minutes),farmAt:integer(c.farmAt,0,n.minutes)};
@@ -112,12 +124,12 @@ function normalize(raw,requestedCharacter='sword'){
    if(Object.keys(v.stash).length&&!v.buildings.warehouse)throw Error('未建仓房却存在仓物，请检查存档');
    return v;
   });
-  n.caches={};for(const [k,v] of Object.entries(obj(o.caches)?o.caches:{}))if(/^[0-4]:[0-7],[0-7]$/.test(k)&&obj(v))n.caches[k]=cleanBag(v);
+  n.caches={};for(const [k,v] of Object.entries(obj(o.caches)?o.caches:{}))if(/^(?:[0-9]|1[01]):[0-7],[0-7]$/.test(k)&&obj(v))n.caches[k]=cleanBag(v);
   n.pillDaily={day:integer(o.pillDaily?.day,1,50000),uses:integer(o.pillDaily?.uses,0,2)};
   n.stash={};
  }else{
   const tier=n.unlocked>=4?3:n.unlocked>=2?2:1;
-  n.settlements=Array.from({length:5},(_,z)=>z<n.unlocked?{
+  n.settlements=Array.from({length:D.ZONES.length},(_,z)=>z<n.unlocked?{
    pos:z?{x:0,y:5}:{x:1,y:5},level:tier,buildings:{warehouse:z?1:3,forge:tier,alchemy:tier,gate:z===0&&n.ritual[0]?1:0},
    stash:z?{}:copy(n.stash),foundedAt:n.minutes,farmAt:n.minutes
   }:null);
@@ -130,13 +142,13 @@ class Game{
  get data(){return D;} state(){return copy(this.s);} get zone(){return D.ZONES[this.s.zone];}
  get day(){return Math.floor(this.s.minutes/1440)+1;} get hour(){return Math.floor(this.s.minutes%1440/60);}
  get clock(){const m=this.s.minutes%1440;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');}
- get night(){return this.hour>=18||this.hour<6;} get realm(){const l=this.s.level;return l<=9?'炼气'+['','一','二','三','四','五','六','七','八','九'][l]+'层':l<=12?'筑基初期':l<=15?'筑基中期':'筑基后期';}
+ get night(){return this.hour>=18||this.hour<6;} get realm(){const l=this.s.level,m=this.s.major;return m>1?D.REALMS[m]:l<=9?'炼气'+['','一','二','三','四','五','六','七','八','九'][l]+'层':l<=12?'筑基初期':l<=15?'筑基中期':'筑基后期';} get tribulationNeed(){return this.s.major===8&&!this.s.ascended?D.ASCENSION_RULE.dao:D.ASCENSION_STAGES[this.s.major-1]?.needDao||0;}
  get character(){return D.CHARACTERS[this.s.character];}
  get spellCost(){return this.character.spellCost;}
  get lifeYears(){return Math.max(0,this.s.life.left/D.LIFE.yearMinutes);} get required(){return 10+this.s.level*5;} key(x=this.s.pos.x,y=this.s.pos.y,z=this.s.zone){return `${z}:${x},${y}`;}
  land(x=this.s.pos.x,y=this.s.pos.y){return this.zone.map[y]?.[x];}
  get site(){return D.SITES[this.key()]||null;} get name(){return this.atCamp?this.campName():this.site?.name||D.NAMED[this.key()]?.[0]||D.LAND[this.land()]?.name;}
- get weight(){return Object.entries(this.s.inv).reduce((n,[k,q])=>n+(D.ITEMS[k]?.wt||0)*q,0);} get capacity(){return 46+3*(this.s.level-1);}
+ get weight(){return Object.entries(this.s.inv).reduce((n,[k,q])=>n+(D.ITEMS[k]?.wt||0)*q,0);} get capacity(){return 46+3*(this.s.level-1)+Math.max(0,this.s.major-1)*8;}
  has(id){return (this.s.inv[id]||0)+(this.localStash[id]||0);}
  random(){this.s.seed=(Math.imul(this.s.seed,1664525)+1013904223)>>>0;return this.s.seed/4294967296;}
  dice(a,b){return Math.floor(a+this.random()*(b-a+1));}
@@ -158,7 +170,52 @@ class Game{
   const summary=parts.join(' · ')+(dropped.length?'；原地待拾 '+dropped.join(' · '):'');
   if(summary)this.log(source+'：'+summary,'good');return summary;
  }
- xp(amount){if(this.s.level>=18)return;this.s.xp+=amount;while(this.s.level<18&&this.s.xp>=this.required){this.s.xp-=this.required;this.s.level++;this.s.attack++;this.s.maxHp+=9;this.s.maxSpirit+=2;this.s.hp=Math.min(this.s.maxHp,this.s.hp+12);this.s.spirit=Math.min(this.s.maxSpirit,this.s.spirit+9);const years=D.LIFE.breakthroughYears[this.s.level]||0;if(years){this.s.life.left+=years*D.LIFE.yearMinutes;this.log('突破增寿 '+years+'年','good');}this.log('突破 · '+this.realm,'good');}if(this.s.level>=18)this.s.xp=0;}
+ xp(amount){
+  let remaining=amount;
+  if(this.s.level<18){this.s.xp+=remaining;remaining=0;
+   while(this.s.level<18&&this.s.xp>=this.required){const required=this.required;this.s.xp-=required;this.s.level++;this.s.attack++;this.s.maxHp+=9;this.s.maxSpirit+=2;this.s.hp=Math.min(this.s.maxHp,this.s.hp+12);this.s.spirit=Math.min(this.s.maxSpirit,this.s.spirit+9);
+    if(this.s.level===10)this.s.major=1;
+    const years=D.LIFE.breakthroughYears[this.s.level]||0;if(years){this.s.life.left+=years*D.LIFE.yearMinutes;this.log('突破增寿 '+years+'年','good');}
+    this.log('突破 · '+this.realm,'good');
+   }
+   if(this.s.level>=18){remaining=this.s.xp;this.s.xp=0;}
+  }
+  if(this.s.level>=18&&remaining>0&&!this.s.ascended)this.s.daoXp=Math.min(1000000,this.s.daoXp+remaining);
+ }
+ breakthrough(){
+  if(this.s.combat)return this.fail('斗法中无法破境');
+  if(this.s.ascended)return this.fail('飞升已成，仙界待后续版本开启');
+  if(this.s.zone<5)return this.fail('请先完成天阙后续的结丹试炼');
+  if(!this.s.cleared[this.s.zone])return this.fail('先修复道坛并击败本境首领');
+  const t=D.ASCENSION_STAGES[this.s.zone-5];
+  if(!t||this.s.major!==this.s.zone-4)return this.fail('此境已突破，继续向下一境修行');
+  if(this.s.level<18)return this.fail('筑基后期方可参悟大道，继续积累修为');
+  if(!this.atCamp)return this.fail('需回本境洞府静修破境');
+  if(this.s.daoXp<t.needDao)return this.fail('道行不足：'+this.s.daoXp+'/'+t.needDao);
+  const cost={[t.primary]:2,[t.secondary]:1};if(!this.enough(cost))return this.fail(this.missing(cost));
+  if(!this.tick(240,5,5,10))return {ok:false};
+  this.spend(cost);this.s.daoXp=0;this.s.major=this.s.zone-3;
+  this.s.attack+=t.atk;this.s.maxHp+=t.hp;this.s.maxSpirit+=t.spirit;
+  this.s.hp=this.s.maxHp;this.s.spirit=this.s.maxSpirit;
+  this.s.life.left+=t.life*D.LIFE.yearMinutes;
+  this.log('破境成功 · '+this.realm+'，延寿'+t.life+'年','good');
+  if(this.s.zone===11)return this.note('渡劫境已成 · 前往天门完成飞升大劫','ok','unlock');
+  this.s.unlocked=Math.max(this.s.unlocked,Math.min(D.ZONES.length,this.s.zone+2));
+  return this.note('突破'+this.realm+' · 开放'+D.ZONES[this.s.zone+1].name,'ok','unlock');
+ }
+ ascend(){
+  if(this.s.ascended)return this.fail('已成功飞升，仙界篇章待更新');
+  if(this.s.zone!==D.ZONES.length-1||this.land()!=='gate')return this.fail('请前往渡劫天门的飞升界碑');
+  if(this.s.major!==8||!this.s.cleared.every(Boolean))return this.fail('先达到渡劫境，平定凡界十二境');
+  if(this.s.daoXp<D.ASCENSION_RULE.dao)return this.fail('飞升道行不足：'+this.s.daoXp+'/'+D.ASCENSION_RULE.dao);
+  if(!this.enough(D.ASCENSION_RULE.cost))return this.fail(this.missing(D.ASCENSION_RULE.cost));
+  if(!this.tick(180,4,4,8))return {ok:false};this.spend(D.ASCENSION_RULE.cost);
+  this.s.major=9;this.s.ascended=true;this.s.flags.complete=true;
+  this.s.life.left+=D.ASCENSION_RULE.life*D.LIFE.yearMinutes;
+  this.s.hp=this.s.maxHp;this.s.spirit=this.s.maxSpirit;
+  this.log('飞升天门已启，凡界篇章完结。','good');
+  return this.note('飞升成功 · 仙界未开放，角色进度保留','ok','victory');
+ }
  expire(reason){if(this.s.ended)return;this.s.ended=true;this.s.life.left=0;this.s.hp=0;this.s.combat=null;this.log('寿元耗尽 · '+reason,'bad');this.effects.push({msg:'寿元耗尽 · 本轮已终结',tone:'warn',kind:'permadeath'});}
  age(minutes){if(this.s.ended)return false;this.s.life.left=Math.max(0,this.s.life.left-minutes);if(!this.s.life.left){this.expire('修行岁月已尽');return false;}return true;}
  extra(minutes){return {water:this.s.zone===2&&this.s.buffs.fireward<=this.s.minutes?Math.ceil(minutes/30):0,spirit:(this.s.zone===4||(this.s.zone===3&&this.s.buffs.detox<=this.s.minutes))?Math.ceil(minutes/30):0};}
@@ -195,16 +252,16 @@ class Game{
   if(this.site){this.note('发现'+this.site.name+' · 可探查');return {ok:true,stop:true};}
   const protect=this.s.zone===0&&!this.s.equipped.weapon&&this.s.stats.steps<12;
   const safe=this.atCamp||['campsite','bazaar','spring'].includes(land);
-  const rate={plain:.055,forest:.08,ridge:.09,mine:.12,ruins:.13,flowerfield:.07,pond:.07,crag:.14,volcano:.15,marsh:.14,tomb:.16,astral:.15,spire:.18,shrine:.05}[land]||0;
+  const rate={plain:.055,forest:.08,ridge:.09,mine:.12,ruins:.13,flowerfield:.07,pond:.07,crag:.14,volcano:.15,marsh:.14,tomb:.16,astral:.15,spire:.18,shrine:.05}[land]||(this.s.zone>=5?.10:0);
   if(!protect&&!safe&&this.s.stats.steps>3&&this.random()<rate+(this.night?.02:0)){
-   const enemy=this.s.zone===0?(land==='mine'||land==='ruins'?'guard':land==='plain'?'rabbit':this.random()<.55?'wolf':'sprite'):this.s.zone===1?(land==='pond'?'fishbeast':'river'):['','','firebeast','wraith','sentinel'][this.s.zone];this.startBattle(enemy);return {ok:true,stop:true};
+   const enemy=this.s.zone===0?(land==='mine'||land==='ruins'?'guard':land==='plain'?'rabbit':this.random()<.55?'wolf':'sprite'):this.s.zone===1?(land==='pond'?'fishbeast':'river'):(this.s.zone>=5?'realm'+this.s.zone:['','','firebeast','wraith','sentinel'][this.s.zone]);this.startBattle(enemy);return {ok:true,stop:true};
   }return {ok:true};
  }
  path(x,y){if(!pos({x,y}))return [];const p=this.s.pos,start=p.x+','+p.y,end=x+','+y,queue=[copy(p)],seen=new Set([start]),prev={};
   for(let i=0;i<queue.length;i++){const v=queue[i];if(v.x===x&&v.y===y)break;for(const [dx,dy] of [[1,0],[-1,0],[0,-1],[0,1],[1,-1],[-1,-1],[1,1],[-1,1]]){const nx=v.x+dx,ny=v.y+dy,k=nx+','+ny;if(!pos({x:nx,y:ny})||seen.has(k))continue;const l=this.land(nx,ny);if(l==='boss'&&(!this.s.ritual[this.s.zone]||k!==end))continue;if(l==='gate'&&(!this.s.cleared[this.s.zone]||k!==end))continue;seen.add(k);prev[k]=v;queue.push({x:nx,y:ny});}}
   if(!seen.has(end))return [];const out=[];let n={x,y};while(n.x+','+n.y!==start){out.push(n);n=prev[n.x+','+n.y];if(!n)return [];}return out.reverse();
  }
- travel(z,home=false){if(this.s.combat)return this.fail('斗法中不能出行');if(!Number.isInteger(z)||z<0||z>4)return this.fail('无效目的地');if(z>=this.s.unlocked)return this.fail('先击败'+D.ENEMIES[D.ZONES[this.s.unlocked-1].boss].name);if(z===this.s.zone&&!home)return this.note('已在'+this.zone.name);
+ travel(z,home=false){if(this.s.combat)return this.fail('斗法中不能出行');if(!Number.isInteger(z)||z<0||z>=D.ZONES.length)return this.fail('无效目的地');if(z>=this.s.unlocked)return this.fail(this.s.cleared[this.s.unlocked-1]&&this.s.unlocked>5?'先在洞府破境，再前往下一境':'先击败'+D.ENEMIES[D.ZONES[this.s.unlocked-1].boss].name);if(z>=5&&this.s.major<z-4)return this.fail('先完成'+D.REALMS[z-4]+'修行');if(z===this.s.zone&&!home)return this.note('已在'+this.zone.name);
   if(home&&!this.s.settlements[z])return this.fail('本境尚未定居，请先筑庐');if(z===this.s.zone&&this.workshop)return this.note('已经在洞府');if(!this.tick(z===this.s.zone?30:60,z===this.s.zone?2:5,z===this.s.zone?3:6,z===this.s.zone?3:5))return {ok:false};
   this.s.zone=z;this.s.pos=this.entry(z);this.s.last=copy(this.s.pos);this.reveal();this.log('抵达'+(this.camp?this.campName():this.zone.name+'旧营坪'));return this.note(this.camp?'抵达自建洞府':'抵达旧营坪 · 尚未定居','ok');
  }
@@ -231,7 +288,7 @@ class Game{
    this.log('服用延寿丹 · 寿元+'+D.LIFE.elixirYears+'年','good');return this.note('寿元+'+D.LIFE.elixirYears+'年 · '+this.s.life.elixirs+'/'+D.LIFE.elixirLimit,'ok');
   }
   if(['focus','elixir'].includes(id)){
-   if(this.s.level>=18)return this.fail('已达境界上限，不消耗修为丹');
+   if(this.s.ascended)return this.fail('飞升后暂不支持消耗修为丹');
    if(this.s.pillDaily.day===this.day&&this.s.pillDaily.uses>=2)return this.fail('今日修为丹已服2次');
    if(this.s.pillDaily.day!==this.day)this.s.pillDaily={day:this.day,uses:0};
    this.s.inv[id]--;this.s.pillDaily.uses++;const xp=id==='focus'?18:36,sp=id==='focus'?20:30;
@@ -305,6 +362,7 @@ class Game{
   return this.note(id==='gate'?'山门落成 · 妖窟封印解除':def.name+' · '+level+'阶落成','ok');
  }
  recipeRequirement(r){
+  if(r.realmReq&&this.s.major<r.realmReq)return '需要先达到'+D.REALMS[r.realmReq]+'境';
   if(r.room){if(!this.atCamp)return '需在洞府的'+D.BUILDINGS[r.room].name+'炼制';
    if(this.roomLevel(r.room)<r.tier)return '需'+D.BUILDINGS[r.room].name+r.tier+'阶（当前'+this.roomLevel(r.room)+'阶）';}
   else if(r.home&&!this.atCamp)return '请回到洞府炼制';
@@ -374,7 +432,7 @@ const batches=this.farmBatches,loot=Object.fromEntries(Object.entries(D.FARM_LOO
  gearScore(g){return this.gearBonus(g)+(g?.affixes||[]).reduce((n,a)=>n+a.value*.15,0);}
  get weapon(){return this.gearBonus(this.gear(this.s.equipped.weapon));}get armor(){return this.gearBonus(this.gear(this.s.equipped.armor));}
  affix(id){return ['weapon','armor'].reduce((n,slot)=>n+(this.gear(this.s.equipped[slot])?.affixes.find(a=>a.id===id)?.value||0),0);}
- rollQuality(z=this.s.zone){const v=this.random()*100,w=D.QUALITY_WEIGHTS[z];let t=0;for(let i=0;i<w.length;i++){t+=w[i];if(v<t)return i;}return 0;}
+ rollQuality(z=this.s.zone){const v=this.random()*100,w=D.QUALITY_WEIGHTS[Math.min(D.QUALITY_WEIGHTS.length-1,z)];let t=0;for(let i=0;i<w.length;i++){t+=w[i];if(v<t)return i;}return 0;}
  createGear(recipe,minQuality=0,source='炼制'){
   const r=this.recipe(recipe),quality=Math.max(minQuality,this.rollQuality());const g={id:'g'+this.s.nextGear++,recipe,quality,refine:0,affixes:[],source};
   let pool=Object.keys(D.AFFIXES).filter(k=>D.AFFIXES[k].slot===r.gear&&(k!=='fire'||(r.zone||0)>=2));
@@ -399,7 +457,7 @@ const batches=this.farmBatches,loot=Object.fromEntries(Object.entries(D.FARM_LOO
  refine(id){if(this.s.combat||!this.workshop)return this.fail('精炼需回到炼器室');const g=this.gear(id);if(!g)return this.fail('装备不存在');if(g.refine>=3)return this.fail('已精炼至上限');if(this.roomLevel('forge')<g.refine+1)return this.fail('精炼+'+(g.refine+1)+'需炼器室'+(g.refine+1)+'阶');const cost={dust:(g.refine+1)*4};if(!this.enough(cost))return this.fail(this.missing(cost));this.spend(cost);g.refine++;return this.note('精炼+'+g.refine+' · 属性已更新','ok');}
  claimGear(id){if(this.s.combat)return this.fail('斗法中不能拾取');if(this.s.gears.length>=36)return this.fail('器囊仍然已满');const i=this.s.pending.findIndex(x=>x.id===id);if(i<0)return this.fail('没有这件待领取装备');if(this.s.pending[i].where!==this.key())return this.fail('请回到发现地点拾取');const g=this.s.pending.splice(i,1)[0];this.acceptGear(g,false);return this.note('已领取遗器','ok');}
  meditate(){
-  if(!this.workshop||this.s.combat)return this.fail('吐纳需回洞府');if(this.s.level>=18)return this.fail('已达本版境界上限');
+  if(!this.workshop||this.s.combat)return this.fail('吐纳需回洞府');if(this.s.ascended)return this.fail('已飞升，后续修炼待扩展');
   if(this.s.meditation.day===this.day&&this.s.meditation.uses>=3)return this.fail('今日吐纳已满3次');if(!this.enough({stone:1}))return this.fail('吐纳需灵石1');
   const startDay=this.day,uses=this.s.meditation.day===startDay?this.s.meditation.uses:0;
   if(!this.tick(60,3,4,0))return {ok:false};this.spend({stone:1});this.s.meditation={day:startDay,uses:uses+1};
@@ -448,8 +506,8 @@ const batches=this.farmBatches,loot=Object.fromEntries(Object.entries(D.FARM_LOO
  }
  win(){const b=this.s.combat;if(!b)return;const e=D.ENEMIES[b.type],boss=b.type.startsWith('boss');this.s.combat=null;this.s.stats.kills++;this.s.codex.enemies[b.type]=(this.s.codex.enemies[b.type]||1)+1;this.xp(e.xp);this.loot(e.loot,'战利品');
   this.log('战胜'+e.name+' · 修为+'+e.xp,'good');if(boss||this.random()<.22)this.dropGear(boss?1:0,'击败'+e.name);if(b.siteReward)this.eventReward(b.siteReward.key,b.siteReward.choice);
-  if(boss){const i=Number(b.type.slice(4)),first=!this.s.cleared[i];this.s.cleared[i]=true;this.s.bossDaily[i]=this.day;this.s.stats.bossWins++;this.s.flags.boss=this.s.cleared[0];this.s.unlocked=Math.max(this.s.unlocked,Math.min(5,i+2));
-   if(first&&i<4)this.note('已解锁 '+D.ZONES[i+1].name,'ok','unlock');if(first&&i===4){this.s.flags.complete=true;this.note('五境已平定，仍可继续历练。','ok','victory');}
+  if(boss){const i=Number(b.type.slice(4)),first=!this.s.cleared[i];this.s.cleared[i]=true;this.s.bossDaily[i]=this.day;this.s.stats.bossWins++;this.s.flags.boss=this.s.cleared[0];if(i<=4)this.s.unlocked=Math.max(this.s.unlocked,Math.min(D.ZONES.length,i+2));
+   if(first&&i<4)this.note('已解锁 '+D.ZONES[i+1].name,'ok','unlock');else if(first&&i===4)this.note('筑基之路已通，已解锁丹霞雷渊','ok','unlock');else if(first&&i>=5)this.note('道坛试炼已过 · 回本境洞府破境','ok','unlock');
   }else this.note('战胜'+e.name+' · 修为+'+e.xp,'ok');
  }
  get bookCount(){return ['items','enemies','gears'].reduce((n,k)=>n+Object.keys(this.s.codex[k]).filter(id=>id!=='dummy').length,0)+Object.keys(D.BUILDINGS).filter(id=>this.s.settlements.some(c=>this.roomLevel(id,c)>0)).length;}
@@ -481,7 +539,7 @@ const batches=this.farmBatches,loot=Object.fromEntries(Object.entries(D.FARM_LOO
    case 'craft':result=this.craft(args.id);break;case 'store':result=this.store(args.id,Number(args.qty)||999999);break;case 'withdraw':result=this.withdraw(args.id,Number(args.qty)||1);break;
    case 'discard':result=this.discard(args.id);break;case 'equip':result=this.equip(args.id);break;case 'salvage':result=this.salvage(args.id);break;
    case 'refine':result=this.refine(args.id);break;case 'claim-gear':result=this.claimGear(args.id);break;
-   case 'meditate':result=this.meditate();break;case 'repair':result=this.repair();break;case 'barter':result=this.barter();break;
+   case 'meditate':result=this.meditate();break;case 'breakthrough':result=this.breakthrough();break;case 'ascend':result=this.ascend();break;case 'repair':result=this.repair();break;case 'barter':result=this.barter();break;
    case 'event':result=this.event(Number(args.choice));break;case 'train':result=this.train();break;case 'hunt':result=this.hunt();break;case 'fight':result=this.fight(args.mode);break;
    case 'claim-book':result=this.claimBook(args.id);break;case 'guide':result=this.guide(args.mode);break;
    case 'book-open':this.s.stats.books++;result={ok:true};break;case 'travel-open':this.s.stats.travels++;result={ok:true};break;
