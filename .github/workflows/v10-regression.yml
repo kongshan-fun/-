@@ -1,4 +1,4 @@
-name: V15 24-node scene + legacy regression
+name: V16 low-realm hunt, crafting and boss progression
 on:
   push:
     branches: [main, 'chore/**', 'feat/**', 'fix/**', 'release/**']
@@ -8,7 +8,7 @@ permissions:
   contents: read
 jobs:
   validate:
-    name: V14 current source, two races, saves and Chromium
+    name: V16 hunt/crafting, two races, lifespan, build & Chromium
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -31,6 +31,7 @@ jobs:
           node tests/v14_core.test.js
           node tests/v14_lifespan.test.js
           node tests/v14_races.test.js
+          node tests/v16_hunt.test.js
           node tests/v15_scene.test.js
       - name: Six natural initial-resource campaigns and both ascensions
         run: |
@@ -41,20 +42,20 @@ jobs:
           python -m pip install playwright==1.57.0
           python -m playwright install --with-deps chromium
       - name: Current V14 interface, slots and injected quota failures
-        run: python tests/v14_browser.py
+        run: |
+          python tests/v16_fullbrowser.py
+          python tests/v16_browser.py
       - name: Real HTTP origin storage and reloads in desktop Chromium
         env:
           QINGLAN_REAL_ORIGIN: '1'
-        run: python tests/v14_browser.py
+        run: python tests/v16_fullbrowser.py
       - name: Both races complete all eleven tutorial steps using real controls
-        run: python tests/v14_onboarding.py
-      - name: V15 Chromium 24-node checks
-        run: python tests/v15_browser.py
+        run: python tests/v16_onboarding.py
       - name: Materialized source has reproducible standalone and manual
         shell: bash
         run: |
           if git cat-file -e HEAD:docs/V14_source_manifest.json 2>/dev/null; then
-            git diff --exit-code -- '青岚问道_V14_人妖同途.html' 'docs/完整文字教程.html' 'docs/完整文字教程.md' 'docs/当前游戏数据.json' 'docs/V14_种族与命格数值.md'
+            git diff --exit-code -- '青岚问道_V16_猎妖炼器.html' 'docs/完整文字教程.html' 'docs/完整文字教程.md' 'docs/当前游戏数据.json' 'docs/V16_种族与命格数值.md'
           fi
   publish_verified_source:
     name: Materialize verified source on the authorized V14 branch only

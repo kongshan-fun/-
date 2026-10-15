@@ -18,7 +18,7 @@ function fresh(seed=261014,character='human',birth=null){const born=birth?B.vali
  codex:{items:{},enemies:{},gears:{},claims:{}},buffs:{fireward:0,detox:0},
  flags:{repaired:false,boss:false,talisman:false,complete:false},meditation:{day:1,uses:0},combat:null,
  stats:{steps:0,kills:0,defeats:0,gathers:0,scouts:0,wood:0,drinks:0,books:0,travels:0,training:0,forestMoves:0,crafted:0,events:0,bossWins:0,settled:0,built:0,stores:0,withdraws:0,farms:0,pillsMade:0,relocations:0},
- guide:{status:'new',step:0,base:{},rewarded:false},settings:{motion:true},logs:[]
+ guide:{status:'new',step:0,base:{},rewarded:false},huntPrepared:Array(5).fill(false),settings:{motion:true},logs:[]
 };}
 function normalize(raw,requestedCharacter='human'){
  if(!obj(raw)||![1,2,5,7,8,9,10,11,12,13,14].includes(raw.version)||!obj(raw.inv)||!pos(raw.pos))throw Error('不是可识别的青岚问道存档');
@@ -102,6 +102,7 @@ function normalize(raw,requestedCharacter='human'){
  for(const r of D.BOOK_REWARDS)if(o.codex?.claims?.[r.id])n.codex.claims[r.id]=true;
  for(const [id,count] of Object.entries({...n.inv,...n.stash}))if(count>0)n.codex.items[id]||=1;
  for(const g of [...n.gears,...n.pending])n.codex.gears[g.recipe]||=1;
+ n.huntPrepared=Array.from({length:5},(_,z)=>!!o.huntPrepared?.[z]||n.cleared[z]||n.gears.some(g=>g.source==='炼制'&&D.HUNT_TIERS[z].ready.includes(g.recipe)));
  if(!legacy){
   const g=o.guide||{};n.guide={status:['new','active','paused','skipped','done'].includes(g.status)?g.status:'paused',step:integer(g.step,0,D.GUIDE.length),base:{},rewarded:!!g.rewarded};
   for(const k of Object.keys(n.stats))n.guide.base[k]=integer(g.base?.[k],0,10000000);
@@ -242,14 +243,29 @@ class Game{
   for(const [k,q] of Object.entries(this.s.inv))if(D.ITEMS[k]?.type==='material'&&k!=='dust')this.s.inv[k]=q-Math.floor(q/2);this.s.pos=this.entry();this.s.last=copy(this.s.pos);this.s.combat=null;this.s.hp=Math.max(50,Math.round(this.s.maxHp*.6));this.s.spirit=Math.round(this.s.maxSpirit*.75);this.s.hunger=48;this.s.water=52;this.reveal();this.log((this.camp?'负伤返回洞府':'负伤返回旧营坪')+'，折寿'+D.LIFE.defeatYears+'年，遗失一半随身普通材料。','bad');this.note(this.camp?'负伤回府 · 设施与仓库保留':'返回旧营坪 · 装备与境界保留','warn');}
  entry(z=this.s.zone){return this.s.settlements[z]?copy(this.s.settlements[z].pos):z?{x:0,y:5}:{x:1,y:5};}
  resource(i){return Number.isInteger(i)&&i>=0&&i<24?this.sceneNodes()[i]?.kind||null:null;}
- sceneEnemy(){const l=this.land(),z=this.s.zone;if(this.atCamp||['campsite','sect','camp','bazaar','gate','shrine'].includes(l))return null;if(l==='boss')return null;if(z===0)return l==='plain'?'rabbit':l==='mine'||l==='ruins'?'guard':l==='forest'?'wolf':'sprite';if(z===1)return l==='pond'?'fishbeast':'river';if(z>=5)return 'realm'+z;return ['','','firebeast','wraith','sentinel'][z];}
- sceneNodes(){const a=D.RESOURCE_LAYOUT[this.land()]||[], out=Array.from({length:24},(_,i)=>({kind:i<10?(a[i]||null):a.length?a[(i*7+3)%a.length]||null:null}));const enemy=this.sceneEnemy();if(enemy){for(const i of [10,16,22])out[i]={enemy};}return out;}
+ // Two or three native beast species per low realm / terrain; later realms stay unchanged.
+ sceneEnemies(){const l=this.land(),z=this.s.zone;
+  if(this.atCamp||['campsite','sect','camp','bazaar','gate','shrine','boss'].includes(l))return [];
+  if(z===0){if(l==='plain')return ['rabbit','sprite','rabbit'];if(l==='forest')return ['sprite','wolf','sprite'];if(l==='mine')return ['rockbeetle','guard','rockbeetle'];if(l==='ruins')return ['sprite','guard','rockbeetle'];if(l==='ridge')return ['rockbeetle','wolf','guard'];return ['rabbit','sprite','wolf'];}
+  if(z===1)return l==='pond'?['fishbeast','river','watercrab']:['river','watercrab','fishbeast'];
+  if(z===2)return ['firebeast','salamander','firebeast'];
+  if(z===3)return ['wraith','ghostspider','wraith'];
+  if(z===4)return ['sentinel','stormbird','sentinel'];
+  return ['realm'+z,'realm'+z,'realm'+z];
+ }
+ sceneEnemy(){return this.sceneEnemies()[0]||null;}
+ sceneNodes(){const a=D.RESOURCE_LAYOUT[this.land()]||[],out=Array.from({length:24},(_,i)=>({kind:i<10?(a[i]||null):a.length?a[(i*7+3)%a.length]||null:null}));const enemies=this.sceneEnemies();for(let j=0;j<3;j++)if(enemies[j])out[[10,16,22][j]]={enemy:enemies[j]};return out;}
  enemyLeft(i){if(![10,16,22].includes(i)||!this.sceneNodes()[i]?.enemy)return 0;const e=this.s.encounters[this.key()+'#m'+i];return e?.day===this.day?Math.max(0,1-e.used):1;}
- challenge(i){if(this.s.combat)return this.fail('正在斗法');i=Number(i);const e=this.sceneNodes()[i]?.enemy;if(!e)return this.fail('此处没有可挑战的妖兽');if(!this.enemyLeft(i))return this.fail('今日已挑战，次日再战');if(this.land()==='boss'&&!this.s.ritual[this.s.zone])return this.fail('先完成本境封印');if(this.s.hp<=0||this.s.ended)return this.fail('无法战斗');const key=this.key()+'#m'+i;this.s.encounters[key]={day:this.day,used:1};const r=this.startBattle(e,this.land()==='boss'&&this.s.cleared[this.s.zone]);if(!r?.ok)delete this.s.encounters[key];return r;}
- left(i){const k=this.resource(i);if(!k)return 0;const h=this.s.nodeHarvest[this.key()+'#'+i];return h?.day===this.day?Math.max(0,D.RES[k].max-h.used):D.RES[k].max;}
+ challenge(i){if(this.s.combat)return this.fail('正在斗法');i=Number(i);const e=this.sceneNodes()[i]?.enemy;if(!e)return this.fail('此处没有可挑战的妖兽');if(!this.enemyLeft(i))return this.fail('今日已挑战，次日再战');if(this.s.hp<=0||this.s.ended)return this.fail('无法战斗');const key=this.key()+'#m'+i;this.s.encounters[key]={day:this.day,used:1};const r=this.startBattle(e);if(!r?.ok)delete this.s.encounters[key];return r;}
+ // V15's 24 squares are display/interaction capacity, not 2.1x free farming.
+ // Extended squares share the original ten nodes' per-day resource inventory.
+ baseLeft(i){const k=D.RESOURCE_LAYOUT[this.land()]?.[i];if(!k)return 0;const h=this.s.nodeHarvest[this.key()+'#'+i];return h?.day===this.day?Math.max(0,D.RES[k].max-h.used):D.RES[k].max;}
+ gatherSlot(i){if(i<10)return i;const kind=this.resource(i);if(!kind)return -1;const a=D.RESOURCE_LAYOUT[this.land()]||[];const ids=a.map((k,j)=>k===kind?j:-1).filter(j=>j>=0);return ids.find(j=>this.baseLeft(j)>0)??ids[0]??-1;}
+ left(i){const kind=this.resource(i);if(!kind)return 0;if(i<10)return this.baseLeft(i);const a=D.RESOURCE_LAYOUT[this.land()]||[];return a.reduce((count,k,j)=>count+(k===kind?this.baseLeft(j):0),0);}
+ bossReadiness(z=this.s.zone){if(z>=5||this.s.cleared[z]||this.s.huntPrepared[z])return '';return '先狩猎本境妖兽，在炼器室打造至少一件本境猎妖法器，再挑战首领';}
  requirement(k){const r=D.RES[k];if(!r)return '没有可采集的资源';if(r.tool&&!this.s.inv[r.tool])return '缺少'+D.ITEMS[r.tool].name+'（须随身携带）';if(r.level&&this.s.level<r.level)return `需${this.character.start}${r.level}层`;const need=(r.spirit||3)+this.extra(r.minutes).spirit;if(this.s.spirit<need)return '灵力不足，需'+need;return '';}
  gather(i){if(this.s.combat)return this.fail('斗法中不能采集');const k=this.resource(i);if(!k)return this.fail('这里没有可采资源');if(!this.left(i))return this.fail('已采完，次日恢复');const r=D.RES[k],why=this.requirement(k);if(why)return this.fail(why);const w=Object.entries(r.loot).reduce((n,[k,v])=>n+D.ITEMS[k].wt*v,0);if(this.weight+w>this.capacity)return this.fail('负重不足，先归营存仓');
-  const startDay=this.day,key=this.key()+'#'+i,used=this.s.nodeHarvest[key]?.day===startDay?this.s.nodeHarvest[key].used:0;
+  const slot=this.gatherSlot(i);if(slot<0)return this.fail('今日资源已尽');const startDay=this.day,key=this.key()+'#'+slot,used=this.s.nodeHarvest[key]?.day===startDay?this.s.nodeHarvest[key].used:0;
   if(!this.tick(r.minutes,2,2,r.spirit||3))return {ok:false,msg:'已负伤归营'};
   // Resource use is charged to the day the action started, even across midnight.
   this.s.nodeHarvest[key]={day:startDay,used:used+1};this.s.stats.gathers++;if(k==='wood')this.s.stats.wood++;
@@ -258,7 +274,7 @@ class Game{
   this.xp(r.xp);return this.note(msg+' · 修为+'+r.xp,'ok');
  }
  move(x,y){if(this.s.combat)return this.fail('斗法中不能移动');if(!pos({x,y})||Math.max(Math.abs(x-this.s.pos.x),Math.abs(y-this.s.pos.y))!==1)return this.fail('只能逐格移动');const land=this.land(x,y);
-  if(land==='boss'&&!this.s.ritual[this.s.zone])return this.fail('先完成'+this.zone.verb);if(land==='gate'&&!this.s.cleared[this.s.zone])return this.fail('击败本境首领后开放');
+  if(land==='boss'&&!this.s.ritual[this.s.zone])return this.fail('先完成'+this.zone.verb);if(land==='boss'&&this.bossReadiness())return this.fail(this.bossReadiness());if(land==='gate'&&!this.s.cleared[this.s.zone])return this.fail('击败本境首领后开放');
   this.s.last=copy(this.s.pos);this.s.pos={x,y};this.s.stats.steps++;if(land==='forest')this.s.stats.forestMoves++;this.reveal();if(!this.tick(30,2,3,3))return {ok:false};
   const oldEvent=D.EVENTS[this.key()];if(oldEvent&&!this.s.events[this.key()]){this.s.events[this.key()]=true;this.loot(oldEvent.loot,'遗迹拾取');}
   if(land==='boss'&&!this.s.cleared[this.s.zone]){this.startBattle(this.zone.boss);return {ok:true,stop:true};}
@@ -268,7 +284,7 @@ class Game{
   const safe=this.atCamp||['campsite','bazaar','spring'].includes(land);
   const rate={plain:.055,forest:.08,ridge:.09,mine:.12,ruins:.13,flowerfield:.07,pond:.07,crag:.14,volcano:.15,marsh:.14,tomb:.16,astral:.15,spire:.18,shrine:.05}[land]||(this.s.zone>=5?.10:0);
   if(!protect&&!safe&&this.s.stats.steps>3&&this.random()<rate+(this.night?.02:0)){
-   const enemy=this.s.zone===0?(land==='mine'||land==='ruins'?'guard':land==='plain'?'rabbit':this.random()<.55?'wolf':'sprite'):this.s.zone===1?(land==='pond'?'fishbeast':'river'):(this.s.zone>=5?'realm'+this.s.zone:['','','firebeast','wraith','sentinel'][this.s.zone]);this.startBattle(enemy);return {ok:true,stop:true};
+   const pool=this.sceneEnemies();const enemy=pool.length?pool[this.dice(0,pool.length-1)]:null;if(enemy)this.startBattle(enemy);return {ok:true,stop:true};
   }return {ok:true};
  }
  path(x,y){if(!pos({x,y}))return [];const p=this.s.pos,start=p.x+','+p.y,end=x+','+y,queue=[copy(p)],seen=new Set([start]),prev={};
@@ -464,7 +480,7 @@ const batches=this.farmBatches,loot=Object.fromEntries(Object.entries(D.FARM_LOO
   const freed=Object.entries(r.cost).reduce((n,[k,v])=>n+Math.min(this.s.inv[k]||0,v)*D.ITEMS[k].wt,0);if(r.item&&this.weight-freed+D.ITEMS[r.item].wt>this.capacity)return this.fail('背包空间不足');
   if(!this.tick(30,2,3,2))return {ok:false};this.spend(r.cost);
   let name=r.name;if(r.gear){const g=this.createGear(id,0,'炼制');this.acceptGear(g);name=D.QUALITIES[g.quality].name+'·'+r.name;}if(r.flag)this.s.flags[r.flag]=true;if(r.item){this.s.inv[r.item]=(this.s.inv[r.item]||0)+1;this.s.codex.items[r.item]=(this.s.codex.items[r.item]||0)+1;}
-  this.s.stats.crafted++;if(r.item&&['pill','mana','focus','elixir','fireward','detox'].includes(r.item))this.s.stats.pillsMade++;this.log('炼成'+name,'good');return this.note('炼成 '+name,'ok');
+  if(Number.isInteger(r.bossPrepZone)&&r.gear)this.s.huntPrepared[r.bossPrepZone]=true;this.s.stats.crafted++;if(r.item&&['pill','mana','focus','elixir','fireward','detox'].includes(r.item))this.s.stats.pillsMade++;this.log('炼成'+name,'good');return this.note('炼成 '+name,'ok');
  }
  equip(id){if(this.s.combat)return this.fail('斗法中不能换装');const g=this.gear(id);if(!g)return this.fail('装备不存在');this.s.equipped[this.recipe(g.recipe).gear]=id;return this.note('已装备'+this.recipe(g.recipe).name,'ok');}
  salvage(id){if(this.s.combat)return this.fail('斗法中不能分解');const g=this.gear(id);if(!g)return this.fail('装备不存在');if(Object.values(this.s.equipped).includes(id))return this.fail('请先换下这件装备');const dust=2+g.quality*2+g.refine*2;this.s.gears=this.s.gears.filter(x=>x.id!==id);this.loot({dust},'分解');return this.note('灵尘+'+dust,'ok');}
@@ -486,7 +502,7 @@ const batches=this.farmBatches,loot=Object.fromEntries(Object.entries(D.FARM_LOO
   this.eventReward(key,choice);return this.note('奇遇完成 · '+e.name,'ok');
  }
  eventReward(key,choice){const c=D.SITES[key]?.choices[choice];if(!c)return;if(c.loot)this.loot(c.loot,'奇遇');if(c.restore){this.s.hp=this.s.maxHp;this.s.spirit=this.s.maxSpirit;this.log('灵泉恢复全部气血与灵力','good');}if(c.damage&&this.s.buffs.fireward<=this.s.minutes){this.s.hp=Math.max(1,this.s.hp-c.damage);this.log('热浪灼伤 · 气血-'+c.damage,'bad');}if(c.gear)this.dropGear(c.minQuality||0,'遗迹寻宝');this.xp(3+this.s.zone);}
- startBattle(type,repeat=false){if(this.s.combat)return this.fail('已经在斗法');const e=D.ENEMIES[type];if(!e)return this.fail('未知对手');const training=!!e.training,maxHp=Math.round(e.hp*(repeat?1.25:1));this.s.combat={type,hp:maxHp,maxHp,atk:Math.round(e.atk*(repeat?1.25:1)),armor:e.armor,turn:1,intent:training?'heavy':'attack',riposte:0,training,repeat,virtualHeals:3};
+ startBattle(type,repeat=false){if(type===this.zone.boss&&this.bossReadiness())return this.fail(this.bossReadiness());if(this.s.combat)return this.fail('已经在斗法');const e=D.ENEMIES[type];if(!e)return this.fail('未知对手');const training=!!e.training,maxHp=Math.round(e.hp*(repeat?1.25:1));this.s.combat={type,hp:maxHp,maxHp,atk:Math.round(e.atk*(repeat?1.25:1)),armor:e.armor,turn:1,intent:training?'heavy':'attack',riposte:0,training,repeat,virtualHeals:3};
   if(training)this.s.combat.before={hp:this.s.hp,spirit:this.s.spirit,hunger:this.s.hunger,water:this.s.water};else this.s.codex.enemies[type]||=1;
   this.log(e.name+'拦住去路。');return this.note(training?'安全试剑 · 重击先防守':'遭遇'+e.name,'warn','battle');
  }
@@ -518,11 +534,11 @@ const batches=this.farmBatches,loot=Object.fromEntries(Object.entries(D.FARM_LOO
   else{let damage=Math.max(1,Math.round(b.atk*(b.intent==='heavy'?1.65:1)*(.88+this.random()*.24))-this.armor-this.affix('ward'));if(guard)damage=Math.max(1,Math.floor(damage*.25));this.s.hp=Math.max(b.training?1:0,this.s.hp-damage);this.log(`受到${damage}伤害${guard?'（已防守）':''}`,'bad');if(!this.s.hp){this.collapse();return {ok:false};}}
   b.turn++;b.intent=b.turn%3===0?'heavy':b.turn%5===0?'recover':'attack';return {ok:true};
  }
- win(){const b=this.s.combat;if(!b)return;const e=D.ENEMIES[b.type],boss=b.type.startsWith('boss');this.s.combat=null;this.s.stats.kills++;this.s.codex.enemies[b.type]=(this.s.codex.enemies[b.type]||1)+1;this.xp(e.xp);this.loot(e.loot,'战利品');
+ win(){const b=this.s.combat;if(!b)return;const e=D.ENEMIES[b.type],boss=b.type.startsWith('boss');this.s.combat=null;this.s.stats.kills++;this.s.codex.enemies[b.type]=(this.s.codex.enemies[b.type]||1)+1;this.xp(e.xp);const lootText=this.loot(e.loot,'战利品');for(const drop of e.bonusLoot||[]){if(this.random()<drop.chance)this.loot({[drop.item]:drop.count||1},'额外战利品');}
   this.log('战胜'+e.name+' · 修为+'+e.xp,'good');if(boss||this.random()<.22)this.dropGear(boss?1:0,'击败'+e.name);if(b.siteReward)this.eventReward(b.siteReward.key,b.siteReward.choice);
   if(boss){const i=Number(b.type.slice(4)),first=!this.s.cleared[i];this.s.cleared[i]=true;this.s.bossDaily[i]=this.day;this.s.stats.bossWins++;this.s.flags.boss=this.s.cleared[0];if(i<=4)this.s.unlocked=Math.max(this.s.unlocked,Math.min(D.ZONES.length,i+2));
    if(first&&i<4)this.note('已解锁 '+D.ZONES[i+1].name,'ok','unlock');else if(first&&i===4)this.note('筑道之路已通，已解锁丹霞雷渊','ok','unlock');else if(first&&i>=5)this.note('道坛试炼已过 · 回本境洞府破境','ok','unlock');
-  }else this.note('战胜'+e.name+' · 修为+'+e.xp,'ok');
+  }else this.note('战胜'+e.name+' · 修为+'+e.xp+(lootText?' · '+lootText.split('；')[0].slice(0,34):''),'ok');
  }
  get bookCount(){return ['items','enemies','gears'].reduce((n,k)=>n+Object.keys(this.s.codex[k]).filter(id=>id!=='dummy').length,0)+Object.keys(D.BUILDINGS).filter(id=>this.s.settlements.some(c=>this.roomLevel(id,c)>0)).length;}
  claimBook(id){if(this.s.combat)return this.fail('请先结束斗法');const r=D.BOOK_REWARDS.find(r=>r.id===id);if(!r)return this.fail('未知奖励');if(this.s.codex.claims[id])return this.fail('此奖励已经领取');if(this.bookCount<r.need)return this.fail('图鉴发现数量不足');this.s.codex.claims[id]=true;const msg=this.loot(r.loot,'图鉴奖励');return this.note('已领取 · '+msg,'ok');}
