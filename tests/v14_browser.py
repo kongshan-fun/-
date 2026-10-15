@@ -7,7 +7,7 @@ from pathlib import Path
 from http.server import ThreadingHTTPServer,SimpleHTTPRequestHandler
 from playwright.sync_api import sync_playwright
 ROOT=Path(__file__).resolve().parents[1];EV=ROOT/'evidence';EV.mkdir(exist_ok=True)
-HTML=(ROOT/'青岚问道_V14_人妖同途.html').read_text(encoding='utf8')
+HTML=(ROOT/'青岚问道_V14.1_场景24格主动挑战.html').read_text(encoding='utf8')
 REAL=os.environ.get('QINGLAN_REAL_ORIGIN')=='1'
 INJECT="""<script>(()=>{const d=SEED;window.__writeFail=false;const api={getItem:k=>Object.hasOwn(d,k)?d[k]:null,setItem:(k,v)=>{if(window.__writeFail)throw Error('quota exceeded');d[k]=String(v)},removeItem:k=>{delete d[k]},key:n=>Object.keys(d)[n]||null,get length(){return Object.keys(d).length}};Object.defineProperty(window,'localStorage',{configurable:true,value:api});window.__snapshot=()=>JSON.parse(JSON.stringify(d));})()</script>"""
 server=None

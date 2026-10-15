@@ -48,7 +48,7 @@ function flythrough(seed,role){
    const r=D.RECIPES.find(x=>x.id===item);const rr=act('craft',{id:r.id});A.equal(rr.ok,true,'gear '+item+': '+rr.msg);
   }
   must('travel',{zone:z});go(4,4);
-  must('repair');go(7,2);if(g.s.combat)fight();if(!g.s.cleared[z])must('hunt'),fight();
+  must('repair');go(7,2);if(g.s.combat)fight();if(!g.s.cleared[z])must('challenge',{index:g.sceneNodes().find(n=>n.boss).index}),fight();
   A.equal(g.s.cleared[z],true,'boss '+z);
   must('travel',{zone:z,home:true});
   if(g.s.level<18){while(g.s.level<18)must('meditate');}

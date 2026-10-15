@@ -83,7 +83,7 @@ function locationActions(){const l=game.land(),s=game.s,hasGround=Object.values(
  const pickup=hasGround?'<button data-a="pickup">拾遗</button>':'';
  if(game.atCamp)return `<button data-a="panel" data-name="camp" class="important">洞府</button>${hasGround?pickup:'<button data-a="rest" data-mode="camp">休息</button>'}`;
  if(l==='shrine')return `<button data-a="rest" data-mode="field">调息</button><button class="important" data-a="repair">${s.ritual[s.zone]?'已完成':game.zone.verb}</button>`;
- if(l==='boss')return `<button data-a="rest" data-mode="field">调息</button><button class="important" data-a="hunt">${s.cleared[s.zone]?'再战':'挑战'}</button>`;
+ if(l==='boss')return '<button data-a="rest" data-mode="field">调息</button>';
  if(l==='gate')return `<button data-a="rest" data-mode="field">调息</button><button data-a="zone" data-zone="${s.zone===4?0:s.zone+1}" class="important">${s.zone===4?'归途':'下一境'}</button>`;
  if(game.site)return '<button data-a="site" class="important">探查</button>'+(pickup||'<button data-a="rest" data-mode="field">调息</button>');
  if(l==='bazaar')return '<button data-a="barter">交易</button>'+(pickup||'<button data-a="rest" data-mode="field">调息</button>');
@@ -94,14 +94,18 @@ function renderScene(){
  const old=$('scene-content').scrollTop;
  if(game.s.combat){$('scene-content').innerHTML=renderCombat();$('scene-content').scrollTop=old;return;}
  const t=game.atCamp?{...D.LAND[game.land()],risk:'安全'}:D.LAND[game.land()],s=game.s;
- const resources=(D.RESOURCE_LAYOUT[game.land()]||Array(10).fill(null)).map((k,i)=>{
-  if(i===7)return '<div class="resource empty" aria-hidden="true">·</div>';
-  if(!k)return '<div class="resource empty" aria-hidden="true">·</div>';
-  const r=D.RES[k],left=game.left(i),why=game.requirement(k),label=left?`剩余${left}次`:'已采完';
+ const resources=game.sceneNodes().map(n=>{
+  if(n.type==='empty')return '<div class="resource empty" aria-hidden="true">·</div>';
+  if(n.type==='enemy'){
+   const enemy=D.ENEMIES[n.id],state=n.cleared?'已清':n.boss?(s.cleared[s.zone]?'再战':'挑战'):'挑战';
+   const label=enemy.name+(n.boss?' · 首领':' · 妖兽')+' · '+state;
+   return `<button type="button" class="resource beast ${n.cleared?'cleared':''}" data-a="challenge" data-index="${n.index}" aria-label="${esc(label)}" title="${esc(label)}"><b>${esc(n.boss?'首':(enemy.name.includes('狼')?'狼':enemy.name.includes('兔')?'兔':enemy.name.includes('鱼')?'鱼':'妖'))}</b><small>${esc(enemy.name)}</small><em>${state}</em></button>`;
+  }
+  const r=D.RES[n.id],left=n.left,why=game.requirement(n.id),label=left?`剩余${left}次`:'已采完';
   const tag=r.tool&&!s.inv[r.tool]?({axe:'斧',pick:'镐',rod:'竿'}[r.tool]):r.level&&s.level<r.level?r.level+'层':'';
-  return `<button class="resource ${resourceStyle(k)} ${left?'':'exhausted'}" data-a="gather" data-index="${i}" aria-label="${esc(r.name+'，'+label+(why?'，'+why:''))}" title="${esc(r.name+(why?' · '+why:''))}"><b>${r.mark}</b><small>${left?'×'+left:'—'}</small>${left&&tag?'<i>'+tag+'</i>':''}</button>`;
+  return `<button type="button" class="resource ${resourceStyle(n.id)} ${left?'':'exhausted'}" data-a="gather" data-index="${n.index}" aria-label="${esc(r.name+'，'+label+(why?'，'+why:''))}" title="${esc(r.name+(why?' · '+why:''))}"><b>${r.mark}</b><small>${esc(r.name)}</small><em>${left?'×'+left:'已采'}</em>${left&&tag?'<i>'+tag+'</i>':''}</button>`;
  }).join('');
- $('scene-content').innerHTML=`<article class="scene-card"><div class="location-head"><h1>${esc(game.name)}</h1><span class="risk ${t.risk==='高'||t.risk==='极高'?'danger':''}">${t.risk==='安全'?'安全':t.risk+'危'}</span></div><div class="location-tools"><span>斧${s.inv.axe?'✓':'—'}　镐${s.inv.pick?'✓':'—'}${s.inv.rod?'　竿✓':''}</span><div class="location-actions">${locationActions()}</div></div><div class="resources" id="resources" role="group" aria-label="点击资源采集">${resources}</div></article>`;
+ $('scene-content').innerHTML=`<article class="scene-card"><div class="location-head"><h1>${esc(game.name)}</h1><span class="risk ${t.risk==='高'||t.risk==='极高'?'danger':''}">${t.risk==='安全'?'安全':t.risk+'危'}</span></div><div class="location-tools"><span>斧${s.inv.axe?'✓':'—'}　镐${s.inv.pick?'✓':'—'}${s.inv.rod?'　竿✓':''}</span><div class="location-actions">${locationActions()}</div></div><div class="resources" id="resources" role="group" aria-label="场景资源与妖兽 · 点击采集或挑战">${resources}</div></article>`;
  $('scene-content').scrollTop=old;
 }
 function renderCombat(){const b=game.s.combat,s=game.s,e=D.ENEMIES[b.type],hint=b.intent==='heavy'?'重击将至 · 宜防守':b.intent==='recover'?'敌人调息 · 可进攻':'普通攻击';
@@ -243,7 +247,7 @@ function questBody(){const s=game.s,z=game.zone,altar=s.zone?{x:4,y:4}:(game.cam
  const questText=s.ascended?'已飞升，仙界篇章待后续开放。':s.zone>=5?'收集道材、修复问道坛、击败首领，再回洞府积累道行完成大境界突破。':'修复五处旧封印，逐步踏上结丹与飞升之路。';
  return `<p>${questText}</p><h3>当前：${z.name} · ${z.verb}</h3><p>${s.ritual[s.zone]?'祭坛已经稳定。':(s.zone?'前往'+z.altar+'提交材料。':'在洞府营建山门，完成本境护山阵。')}</p>${Object.entries(z.need).map(([id,n])=>`<div class="line">${D.ITEMS[id].name} <b class="${game.has(id)<n?'danger-text':'accent'}">${game.has(id)}/${n}</b> <span class="micro">${s.zone>0?'坛前需随身携带':'府内可用本仓'}</span></div>`).join('')}<div class="inline-buttons" style="margin-top:9px"><button class="btn primary" data-a="map" data-x="${s.ritual[s.zone]?7:altar.x}" data-y="${s.ritual[s.zone]?2:altar.y}">${s.cleared[s.zone]?'再访首领':s.ritual[s.zone]?'前往首领':'前往祭坛'}</button>${s.zone>=5&&s.cleared[s.zone]?'<button class="btn" data-a="panel" data-name="cultivate">'+(s.major===8&&s.zone===11?'前往飞升':'破境与飞升')+'</button>':''}</div><h3>凡界十二境 · ${s.cleared.filter(Boolean).length}/${D.ZONES.length}</h3>${D.ZONES.map((z,i)=>`<div class="task-stage"><b>${i+1}</b><span>${z.name} · ${s.cleared[i]?'已通过':s.ritual[i]?'待首领':i<s.unlocked?'探索中':'未解锁'}</span></div>`).join('')}<h3>境界</h3><p>${game.character.realms.join(' → ')}</p>`;
 }
-function settingsBody(){return `<div class="stat-chips"><span>V14 · ${game.character.name} · 档位 ${String(activeSlot).padStart(3,'0')}</span><span>${saveAvailable?'可本地保存':'存储受限'}</span></div><p>${esc(saveStatus)}</p><p class="danger-text">寿元：${game.lifeYears.toFixed(1)}年 · 倒下 ${game.s.life.losses}次 · 延寿丹 ${game.s.life.elixirs}/${D.LIFE.elixirLimit}。寿元归零会只清除当前种族的当前档位及其备份，不影响其他档位。外部JSON仍可手动回档。</p><div class="inline-buttons"><button class="btn primary" data-a="export">导出存档</button><button class="btn" data-a="import">导入存档</button><button class="btn" data-a="restore">恢复上次备份</button></div><p class="muted">换文件路径、浏览器、设备或网址前先导出。继承旧版存档只可主动进行一次；寿元耗尽只删除当前档位。</p><h3>种族与档案</h3><div class="inline-buttons"><button class="btn primary" data-a="characters">种族与百档档案</button></div><p class="micro">两族各100档。各档命格、寿元、背包、地图与洞府完全独立。</p><h3>体验</h3><div class="inline-buttons"><button class="btn" data-a="motion">${game.s.settings.motion?'减少动效':'恢复动效'}</button><button class="btn" data-a="panel" data-name="log">行记</button><button class="btn" data-a="panel" data-name="help">完整教程</button></div><h3>重新修行</h3><button class="btn warn" data-a="reset">新开存档</button><p class="micro">新开存档需要再次确认，不会删除旧版存档。</p>`;}
+function settingsBody(){return `<div class="stat-chips"><span>V14.1 · ${game.character.name} · 档位 ${String(activeSlot).padStart(3,'0')}</span><span>${saveAvailable?'可本地保存':'存储受限'}</span></div><p>${esc(saveStatus)}</p><p class="danger-text">寿元：${game.lifeYears.toFixed(1)}年 · 倒下 ${game.s.life.losses}次 · 延寿丹 ${game.s.life.elixirs}/${D.LIFE.elixirLimit}。寿元归零会只清除当前种族的当前档位及其备份，不影响其他档位。外部JSON仍可手动回档。</p><div class="inline-buttons"><button class="btn primary" data-a="export">导出存档</button><button class="btn" data-a="import">导入存档</button><button class="btn" data-a="restore">恢复上次备份</button></div><p class="muted">换文件路径、浏览器、设备或网址前先导出。继承旧版存档只可主动进行一次；寿元耗尽只删除当前档位。</p><h3>种族与档案</h3><div class="inline-buttons"><button class="btn primary" data-a="characters">种族与百档档案</button></div><p class="micro">两族各100档。各档命格、寿元、背包、地图与洞府完全独立。</p><h3>体验</h3><div class="inline-buttons"><button class="btn" data-a="motion">${game.s.settings.motion?'减少动效':'恢复动效'}</button><button class="btn" data-a="panel" data-name="log">行记</button><button class="btn" data-a="panel" data-name="help">完整教程</button></div><h3>重新修行</h3><button class="btn warn" data-a="reset">新开存档</button><p class="micro">新开存档需要再次确认，不会删除旧版存档。</p>`;}
 function renderPanel(){const root=$('panel-root');if(!panel){root.innerHTML='';return;}
  const old=$('panel-body')?.scrollTop??panelScroll[panel]??0;
  const focus=document.activeElement,focusId=focus?.id,start=focus?.selectionStart,end=focus?.selectionEnd;

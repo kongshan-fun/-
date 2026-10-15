@@ -589,7 +589,16 @@ HELP.push({id:'ascension',title:'凡界九境与飞升试炼',paragraphs:[
 
 const B=globalThis.QBirth||(typeof require==='function'?require('./birth.js'):null);
 const CHARACTERS=B.RACES;
-const D={BIRTH:B,RACES:B.RACES,LEGACY_CHARACTERS,ASCENSION_RULE,REALMS,ASCENSION_STAGES,CHARACTERS,SLOT_PREFIX:'qinglan-wendao-v14-',MIGRATION_KEY:'qinglan-wendao-v11-legacy-used',ACTIVE_KEY:'qinglan-wendao-v14-current',VERSION:14,SAVE:'qinglan-wendao-v10',DEATH_KEY:'qinglan-wendao-v10-permadeath',LIFE,LEGACY:['qinglan-wendao-v9','qinglan-wendao-v8','qinglan-wendao-v7','qinglan-cultivation-five-v5','qinglan-cultivation-demo-v2','qinglan-cultivation-demo-v1'],ZONES,LAND,ITEMS,RECIPES,ENEMIES,NAMED,EVENTS,RES,RESOURCE_LAYOUT,SITES,QUALITIES,QUALITY_WEIGHTS,AFFIXES,BOOK_REWARDS,GUIDE,HELP,BUILDINGS,CAMP_LANDS,SETTLE_COST,MOVE_CAMP_COST,FARM_LOOT};
+// Fixed grid of scene interactions. The first ten harvesting node IDs are
+// inherited from V14; newer harvest nodes use indices 10-23 without changing old saves.
+const SCENE_GRID={columns:6,rows:4,count:24};
+const SCENE_WILDLIFE={
+ plain:['rabbit','sprite'],forest:['sprite','wolf'],ridge:['wolf','guard'],mine:['guard'],
+ ruins:['guard','wolf'],shrine:['sprite','wolf'],spring:['rabbit'],flowerfield:['river'],
+ pond:['fishbeast','river'],crag:['firebeast'],volcano:['firebeast'],marsh:['wraith'],
+ tomb:['wraith'],astral:['sentinel'],spire:['sentinel'],coreCrag:['realm5'],coreGrove:['realm5']
+};
+const D={SCENE_GRID,SCENE_WILDLIFE,BIRTH:B,RACES:B.RACES,LEGACY_CHARACTERS,ASCENSION_RULE,REALMS,ASCENSION_STAGES,CHARACTERS,SLOT_PREFIX:'qinglan-wendao-v14-',MIGRATION_KEY:'qinglan-wendao-v11-legacy-used',ACTIVE_KEY:'qinglan-wendao-v14-current',VERSION:14,SAVE:'qinglan-wendao-v10',DEATH_KEY:'qinglan-wendao-v10-permadeath',LIFE,LEGACY:['qinglan-wendao-v9','qinglan-wendao-v8','qinglan-wendao-v7','qinglan-cultivation-five-v5','qinglan-cultivation-demo-v2','qinglan-cultivation-demo-v1'],ZONES,LAND,ITEMS,RECIPES,ENEMIES,NAMED,EVENTS,RES,RESOURCE_LAYOUT,SITES,QUALITIES,QUALITY_WEIGHTS,AFFIXES,BOOK_REWARDS,GUIDE,HELP,BUILDINGS,CAMP_LANDS,SETTLE_COST,MOVE_CAMP_COST,FARM_LOOT};
 const currentHelp=root.QHelp||(typeof require==='function'?require('./help.js'):null);
 HELP.splice(0,HELP.length,...currentHelp);
 root.QData=D;
