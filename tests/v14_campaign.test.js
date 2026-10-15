@@ -49,9 +49,44 @@ function campaign(seed,write=false,character='human',includeState=false){
   const r=act('gather',{index:t.i});if(r.ok)return;
   if(/负重/.test(r.msg||'')){service();for(const k of ['hide','ore','fiber','wood','stone'])if((g.s.inv[k]||0)>12)for(let d=0;d<4;d++)act('discard',{id:k});}
  }throw Error('cannot gather '+id+' '+JSON.stringify({inv:g.s.inv,stash:g.s.settlements[0]?.stash}));}
+ // Low-realm materials are obtained through actual encounter slots / victory loot.
+ function findHunt(id){let picks=[],oldZone=g.s.zone,oldPos={...g.s.pos};
+  try{for(let z=0;z<Math.min(5,g.s.unlocked);z++){
+   for(let y=0;y<8;y++)for(let x=0;x<8;x++){
+    g.s.zone=z;g.s.pos={x,y};const nodes=g.sceneNodes();
+    for(const i of [10,16,22]){const idMob=nodes[i]?.enemy;if(!idMob||!D.ENEMIES[idMob].loot[id]||!g.enemyLeft(i))continue;
+     picks.push({z,x,y,i,idMob,score:((z===oldZone)?0:23)+Math.max(Math.abs(oldPos.x-x),Math.abs(oldPos.y-y))+Math.max(0,D.ENEMIES[idMob].atk-6)*.03});
+    }
+   }
+  }}finally{g.s.zone=oldZone;g.s.pos=oldPos;}
+  return picks.sort((a,b)=>a.score-b.score)[0];
+ }
+ function huntMaterial(id){for(let t=0;t<110;t++){
+  care();if(g.weight>g.capacity-7&&g.s.settlements[0])service();
+  const o=findHunt(id);
+  if(!o){service();if(g.s.settlements[0])act('rest',{mode:'dawn'});else for(let j=0;j<5;j++)act('rest',{mode:'field'});continue;}
+  go(o.x,o.y,o.z);if(g.s.combat)fight();
+  if(!g.enemyLeft(o.i))continue;
+  const before=total(id),r=act('challenge',{index:o.i});
+  if(r.ok)fight();if(total(id)>before)return true;
+  // Drops in a full bag remain at the monster location; try to reclaim.
+  if(g.ground[id]){service();go(o.x,o.y,o.z);act('pickup',{id});if(total(id)>before)return true;}
+ }throw Error('unable to hunt '+id+' in '+g.zone.name);
+ }
+ function collectSeal(id){const zone=Number(id.slice(4));if(!g.s.cleared[zone])throw Error('previous boss not defeated for '+id);
+  for(let t=0;t<10;t++){
+   care();if(g.s.zone!==zone)act('travel',{zone});go(7,2,zone);
+   if(g.ground[id]){if(g.weight>g.capacity-7)service();if(g.s.zone!==zone)act('travel',{zone});go(7,2,zone);act('pickup',{id});}
+   if(total(id)>0)return;
+   if(g.s.bossDaily[zone]===g.day){service();act('rest',{mode:'dawn'});continue;}
+   const r=act('hunt');if(r.ok)fight();if(total(id)>0)return;
+  }throw Error('cannot acquire boss seal '+id);
+ }
  function ensure(id,need){if(++depth>2500)throw Error('ensure count');
   const level={rune:2,cinder:4,soul:5,thunder:6,ancient:6,venom:5}[id]||1;
   while(g.s.level<level){service();ensure('stone',2);home();const r=act('meditate');if(!r.ok)act('rest',{mode:'dawn'});}
+  if(id.startsWith('seal')&&/^seal[0-4]$/.test(id)){for(let i=0;total(id)<need&&i<20;i++)collectSeal(id);return;}
+  if(D.HUNT_TIERS.some(z=>z.focus.includes(id))){for(let i=0;total(id)<need&&i<25;i++)huntMaterial(id);A.ok(total(id)>=need,'hunt material '+id);return;}
   if(id==='hide'){for(let i=0;total(id)<need&&i<20;i++){go(3,5,0);if(g.siteReady()){service();if(g.has('stone'))act('rest',{mode:'dawn'});continue;}act('event',{choice:1});fight();}return;}
   for(let i=0;total(id)<need&&i<150;i++)gather(id);A.ok(total(id)>=need,'missing '+id);
  }
@@ -73,6 +108,7 @@ function campaign(seed,write=false,character='human',includeState=false){
   make('ironSword');make('hideRobe');build('warehouse',3);
   for(let z=0;z<5;z++){
    if(z)buildRemote(z);
+   make('huntSword'+z);
    if(z){make(['','springSword','emberSword','yinSword','skySword'][z]);make(['','springRobe','emberRobe','yinRobe','skyRobe'][z]);}
    if(z===1){make('rod');build('alchemy',2);}if(z===4)build('alchemy',3);
    ensureCost(D.ZONES[z].need);stock();service();

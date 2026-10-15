@@ -587,9 +587,83 @@ HELP.push({id:'ascension',title:'凡界九境与飞升试炼',paragraphs:[
  '渡劫天门首领击败且完成最后“飞升”突破后，记录成功飞升、保留角色与存档。仙界大地图和飞升后战斗尚未开放，不会伪装成能游玩的空系统。'
 ]});
 
+
+// V16 low-realm hunting supply chain. All required hunt inputs are guaranteed
+// on their corresponding common mobs. Optional bonus drops are never hard gates.
+const HUNT_TIERS=[
+ {area:'青岚山麓',mobs:['sprite','wolf','rabbit','rockbeetle','guard'],ready:['huntSword0','huntRobe0','ironSword','hideRobe'],focus:['woodEssence','wolfFang','rockShell']},
+ {area:'碧溪灵谷',mobs:['river','fishbeast','watercrab'],ready:['huntSword1','huntRobe1','springSword','springRobe'],focus:['creekScale','fishScale','waterShell']},
+ {area:'赤砂火岭',mobs:['firebeast','salamander'],ready:['huntSword2','huntRobe2','emberSword','emberRobe'],focus:['flameNeedle','lavaCrystal']},
+ {area:'玄阴幽沼',mobs:['wraith','ghostspider'],ready:['huntSword3','huntRobe3','yinSword','yinRobe'],focus:['yinPearl','ghostSilk']},
+ {area:'天阙遗境',mobs:['sentinel','stormbird'],ready:['huntSword4','huntRobe4','skySword','skyRobe'],focus:['starCore','thunderFeather']}
+];
+Object.assign(ITEMS,{
+ woodEssence:{name:'草木灵髓',wt:1,type:'material'},wolfFang:{name:'青狼獠牙',wt:1,type:'material'},rockShell:{name:'岩甲虫壳',wt:1,type:'material'},
+ creekScale:{name:'溪鳞',wt:1,type:'material'},fishScale:{name:'灵鱼坚鳞',wt:1,type:'material'},waterShell:{name:'水纹蟹甲',wt:1,type:'material'},
+ flameNeedle:{name:'火蝎尾针',wt:1,type:'material'},lavaCrystal:{name:'熔脊晶骨',wt:1,type:'material'},
+ yinPearl:{name:'幽魂魄珠',wt:1,type:'material'},ghostSilk:{name:'阴魂蛛丝',wt:1,type:'material'},
+ starCore:{name:'星阙灵核',wt:1,type:'material'},thunderFeather:{name:'雷禽翎羽',wt:1,type:'material'},
+ beastPearl:{name:'妖灵小核',wt:1,type:'material'},
+ seal0:{name:'青岚镇境印',wt:1,type:'material'},seal1:{name:'碧溪镇境印',wt:1,type:'material'},seal2:{name:'赤岭镇境印',wt:1,type:'material'},seal3:{name:'幽沼镇境印',wt:1,type:'material'},seal4:{name:'天阙镇境印',wt:1,type:'material'}
+});
+Object.assign(ENEMIES,{
+ rockbeetle:{name:'岩甲灵虫',short:'岩虫',tier:1,hp:30,atk:6,armor:2,xp:7,loot:{rockShell:1,stone:1},bonusLoot:[{item:'beastPearl',chance:.10}]},
+ watercrab:{name:'水纹灵蟹',short:'灵蟹',tier:2,hp:74,atk:14,armor:4,xp:16,loot:{waterShell:1,creekScale:1},bonusLoot:[{item:'fishScale',chance:.30}]},
+ salamander:{name:'熔脊岩蜥',short:'岩蜥',tier:2,hp:110,atk:20,armor:6,xp:23,loot:{lavaCrystal:1,ore:1},bonusLoot:[{item:'flameNeedle',chance:.28}]},
+ ghostspider:{name:'葬魂蛛',short:'魂蛛',tier:2,hp:150,atk:26,armor:8,xp:30,loot:{ghostSilk:1,moss:1},bonusLoot:[{item:'yinPearl',chance:.28}]},
+ stormbird:{name:'雷羽灵禽',short:'雷禽',tier:2,hp:191,atk:35,armor:10,xp:38,loot:{thunderFeather:1,star:1},bonusLoot:[{item:'starCore',chance:.28}]}
+});
+Object.assign(ENEMIES.sprite,{short:'草灵',tier:1,loot:{woodEssence:1,fiber:1},bonusLoot:[{item:'beastPearl',chance:.15},{item:'herb',chance:.25}]});
+Object.assign(ENEMIES.rabbit,{short:'灵兔',tier:1,loot:{berry:2,hide:1},bonusLoot:[{item:'herb',chance:.35}]});
+Object.assign(ENEMIES.wolf,{short:'妖狼',tier:2,loot:{wolfFang:1,hide:1,herb:1},bonusLoot:[{item:'beastPearl',chance:.18},{item:'hide',chance:.30}]});
+Object.assign(ENEMIES.guard,{short:'石傀',tier:2,bonusLoot:[{item:'rockShell',chance:.24}]});
+Object.assign(ENEMIES.river,{short:'妖蜥',tier:1,loot:{creekScale:1,blossom:1,dew:1},bonusLoot:[{item:'fishScale',chance:.18}]});
+Object.assign(ENEMIES.fishbeast,{short:'妖鱼',tier:1,loot:{fishScale:1,fish:2,waterherb:1},bonusLoot:[{item:'creekScale',chance:.18}]});
+Object.assign(ENEMIES.firebeast,{short:'火蝎',tier:1,loot:{flameNeedle:1,copper:2,cinder:1},bonusLoot:[{item:'beastPearl',chance:.24}]});
+Object.assign(ENEMIES.wraith,{short:'魇灵',tier:1,loot:{yinPearl:1,moss:2,soul:1},bonusLoot:[{item:'ghostSilk',chance:.20}]});
+Object.assign(ENEMIES.sentinel,{short:'灵卫',tier:1,loot:{starCore:1,star:2,thunder:1},bonusLoot:[{item:'thunderFeather',chance:.16}]});
+for(let z=0;z<5;z++){
+ const boss=ENEMIES['boss'+z];boss.loot['seal'+z]=2;boss.loot.dust=(boss.loot.dust||0)+2+z;
+ boss.bonusLoot=[{item:'beastPearl',chance:.40}];
+}
+const HUNTER_RECIPES=[
+ ['huntSword0','木灵猎剑',0,'weapon',10,{wood:2,woodEssence:2,stone:1}],
+ ['huntRobe0','岩甲护袍',0,'armor',3,{hide:2,rockShell:1,fiber:1}],
+ ['huntSword1','碧鳞短枪',1,'weapon',17,{creekScale:2,fishScale:1,dew:1}],
+ ['huntRobe1','水纹护衣',1,'armor',6,{waterShell:2,creekScale:1,blossom:1}],
+ ['huntSword2','焰针猎刃',2,'weapon',26,{flameNeedle:2,lavaCrystal:1,copper:1}],
+ ['huntRobe2','赤晶护衣',2,'armor',9,{lavaCrystal:2,flameNeedle:1,hide:1}],
+ ['huntSword3','玄阴逐魂刀',3,'weapon',37,{yinPearl:2,ghostSilk:1,moss:1}],
+ ['huntRobe3','缚魂衣',3,'armor',13,{ghostSilk:2,yinPearl:1,fiber:1}],
+ ['huntSword4','星阙雷刃',4,'weapon',49,{starCore:2,thunderFeather:1,star:1}],
+ ['huntRobe4','雷翎星衣',4,'armor',18,{thunderFeather:2,starCore:1,ore:1}]
+];
+for(const [id,name,zone,gear,bonus,cost]of HUNTER_RECIPES){
+ RECIPES.push({id,name,zone,gear,bonus,cost,type:(gear==='weapon'?'剑 +':'衣 +')+bonus,home:true,room:'forge',tier:1,bossPrepZone:zone,hunter:true});
+}
+// Rare hunt trophies and the final border seal are optional, not story gates.
+RECIPES.push(
+ {id:'spiritBlade',name:'妖核玄刃',zone:0,gear:'weapon',bonus:14,type:'剑 +14',home:true,room:'forge',tier:2,bossPrepZone:0,cost:{beastPearl:2,woodEssence:1,wolfFang:1,wood:1}},
+ {id:'skySigilRobe',name:'天阙镇印法袍',zone:4,gear:'armor',bonus:24,type:'衣 +24',home:true,room:'forge',tier:3,bossPrepZone:4,cost:{seal4:1,starCore:2,thunderFeather:1,ancient:1}}
+);
+// Advanced old recipe IDs remain stable, but their specialized tiers now
+// genuinely require parts harvested from the corresponding dangerous mobs.
+const ADVANCED_HUNT_COST={
+ ironSword:{wolfFang:2},hideRobe:{rockShell:1},
+ springSword:{creekScale:2,seal0:1},springRobe:{fishScale:2,seal0:1},
+ emberSword:{flameNeedle:2,seal1:1},emberRobe:{lavaCrystal:2,seal1:1},
+ yinSword:{yinPearl:2,seal2:1},yinRobe:{ghostSilk:2,seal2:1},
+ skySword:{starCore:2,seal3:1},skyRobe:{thunderFeather:2,seal3:1}
+};
+for(const r of RECIPES){
+ if(ADVANCED_HUNT_COST[r.id])Object.assign(r.cost,ADVANCED_HUNT_COST[r.id]);
+ for(let z=0;z<HUNT_TIERS.length;z++)if(HUNT_TIERS[z].ready.includes(r.id))r.bossPrepZone=z;
+}
+BOOK_REWARDS.push({id:'hunter',name:'百兽识途',need:12,loot:{beastPearl:1,herb:2}});
+
 const B=globalThis.QBirth||(typeof require==='function'?require('./birth.js'):null);
 const CHARACTERS=B.RACES;
-const D={BIRTH:B,RACES:B.RACES,LEGACY_CHARACTERS,ASCENSION_RULE,REALMS,ASCENSION_STAGES,CHARACTERS,SLOT_PREFIX:'qinglan-wendao-v14-',MIGRATION_KEY:'qinglan-wendao-v11-legacy-used',ACTIVE_KEY:'qinglan-wendao-v14-current',VERSION:14,SAVE:'qinglan-wendao-v10',DEATH_KEY:'qinglan-wendao-v10-permadeath',LIFE,LEGACY:['qinglan-wendao-v9','qinglan-wendao-v8','qinglan-wendao-v7','qinglan-cultivation-five-v5','qinglan-cultivation-demo-v2','qinglan-cultivation-demo-v1'],ZONES,LAND,ITEMS,RECIPES,ENEMIES,NAMED,EVENTS,RES,RESOURCE_LAYOUT,SITES,QUALITIES,QUALITY_WEIGHTS,AFFIXES,BOOK_REWARDS,GUIDE,HELP,BUILDINGS,CAMP_LANDS,SETTLE_COST,MOVE_CAMP_COST,FARM_LOOT};
+const D={BIRTH:B,RACES:B.RACES,LEGACY_CHARACTERS,ASCENSION_RULE,REALMS,ASCENSION_STAGES,CHARACTERS,SLOT_PREFIX:'qinglan-wendao-v14-',MIGRATION_KEY:'qinglan-wendao-v11-legacy-used',ACTIVE_KEY:'qinglan-wendao-v14-current',VERSION:14,SAVE:'qinglan-wendao-v10',DEATH_KEY:'qinglan-wendao-v10-permadeath',LIFE,LEGACY:['qinglan-wendao-v9','qinglan-wendao-v8','qinglan-wendao-v7','qinglan-cultivation-five-v5','qinglan-cultivation-demo-v2','qinglan-cultivation-demo-v1'],ZONES,LAND,ITEMS,RECIPES,ENEMIES,NAMED,EVENTS,RES,RESOURCE_LAYOUT,SITES,QUALITIES,QUALITY_WEIGHTS,AFFIXES,BOOK_REWARDS,GUIDE,HELP,BUILDINGS,CAMP_LANDS,SETTLE_COST,MOVE_CAMP_COST,FARM_LOOT,HUNT_TIERS};
 const currentHelp=root.QHelp||(typeof require==='function'?require('./help.js'):null);
 HELP.splice(0,HELP.length,...currentHelp);
 root.QData=D;

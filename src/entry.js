@@ -4,7 +4,7 @@
 const B=root.QBirth||(typeof require==='function'?require('./birth.js'):null);
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const num=n=>String(n).padStart(3,'0');
-function header(step,back='',subtitle='人妖同途 · V14'){return `<header class="entry-header">${back?`<button class="entry-back" data-a="${back}" aria-label="返回">←</button>`:''}<div class="entry-brand"><strong>青岚问道</strong><small>${subtitle}</small></div><span class="entry-step">${step} / 03</span></header>`;}
+function header(step,back='',subtitle='人妖同途 · V16'){return `<header class="entry-header">${back?`<button class="entry-back" data-a="${back}" aria-label="返回">←</button>`:''}<div class="entry-brand"><strong>青岚问道</strong><small>${subtitle}</small></div><span class="entry-step">${step} / 03</span></header>`;}
 function heading(kicker,title,note){return `<section class="entry-heading"><p>${kicker}</p><h1 id="entry-title" tabindex="-1">${title}</h1><span>${note}</span></section>`;}
 function stats(c){return `<div class="entry-stat-grid">${[['气血',c.hp],[c.energy,c.spirit],['攻击',c.attack],['寿元',c.years+'年']].map(([k,v])=>`<div><small>${k}</small><strong>${v}</strong></div>`).join('')}</div>`;}
 function races(selected,active){const c=B.RACES[selected];return header('01')+heading('择一族，入凡界','选择种族','同一片山河，两条修行之路。')+

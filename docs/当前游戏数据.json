@@ -1,5 +1,638 @@
 {
   "version": 14,
+  "appVersion": "V16",
+  "huntTiers": [
+    {
+      "area": "青岚山麓",
+      "mobs": [
+        "sprite",
+        "wolf",
+        "rabbit",
+        "rockbeetle",
+        "guard"
+      ],
+      "ready": [
+        "huntSword0",
+        "huntRobe0",
+        "ironSword",
+        "hideRobe"
+      ],
+      "focus": [
+        "woodEssence",
+        "wolfFang",
+        "rockShell"
+      ]
+    },
+    {
+      "area": "碧溪灵谷",
+      "mobs": [
+        "river",
+        "fishbeast",
+        "watercrab"
+      ],
+      "ready": [
+        "huntSword1",
+        "huntRobe1",
+        "springSword",
+        "springRobe"
+      ],
+      "focus": [
+        "creekScale",
+        "fishScale",
+        "waterShell"
+      ]
+    },
+    {
+      "area": "赤砂火岭",
+      "mobs": [
+        "firebeast",
+        "salamander"
+      ],
+      "ready": [
+        "huntSword2",
+        "huntRobe2",
+        "emberSword",
+        "emberRobe"
+      ],
+      "focus": [
+        "flameNeedle",
+        "lavaCrystal"
+      ]
+    },
+    {
+      "area": "玄阴幽沼",
+      "mobs": [
+        "wraith",
+        "ghostspider"
+      ],
+      "ready": [
+        "huntSword3",
+        "huntRobe3",
+        "yinSword",
+        "yinRobe"
+      ],
+      "focus": [
+        "yinPearl",
+        "ghostSilk"
+      ]
+    },
+    {
+      "area": "天阙遗境",
+      "mobs": [
+        "sentinel",
+        "stormbird"
+      ],
+      "ready": [
+        "huntSword4",
+        "huntRobe4",
+        "skySword",
+        "skyRobe"
+      ],
+      "focus": [
+        "starCore",
+        "thunderFeather"
+      ]
+    }
+  ],
+  "enemies": {
+    "sprite": {
+      "name": "草木精怪",
+      "hp": 23,
+      "atk": 5,
+      "armor": 0,
+      "xp": 5,
+      "loot": {
+        "woodEssence": 1,
+        "fiber": 1
+      },
+      "short": "草灵",
+      "tier": 1,
+      "bonusLoot": [
+        {
+          "item": "beastPearl",
+          "chance": 0.15
+        },
+        {
+          "item": "herb",
+          "chance": 0.25
+        }
+      ]
+    },
+    "wolf": {
+      "name": "青鬃妖狼",
+      "hp": 37,
+      "atk": 8,
+      "armor": 1,
+      "xp": 8,
+      "loot": {
+        "wolfFang": 1,
+        "hide": 1,
+        "herb": 1
+      },
+      "short": "妖狼",
+      "tier": 2,
+      "bonusLoot": [
+        {
+          "item": "beastPearl",
+          "chance": 0.18
+        },
+        {
+          "item": "hide",
+          "chance": 0.3
+        }
+      ]
+    },
+    "guard": {
+      "name": "失控石傀",
+      "hp": 49,
+      "atk": 10,
+      "armor": 2,
+      "xp": 11,
+      "loot": {
+        "ore": 2,
+        "rune": 1
+      },
+      "short": "石傀",
+      "tier": 2,
+      "bonusLoot": [
+        {
+          "item": "rockShell",
+          "chance": 0.24
+        }
+      ]
+    },
+    "river": {
+      "name": "碧潭妖蜥",
+      "hp": 66,
+      "atk": 13,
+      "armor": 3,
+      "xp": 14,
+      "loot": {
+        "creekScale": 1,
+        "blossom": 1,
+        "dew": 1
+      },
+      "short": "妖蜥",
+      "tier": 1,
+      "bonusLoot": [
+        {
+          "item": "fishScale",
+          "chance": 0.18
+        }
+      ]
+    },
+    "firebeast": {
+      "name": "赤岩火蝎",
+      "hp": 91,
+      "atk": 18,
+      "armor": 5,
+      "xp": 19,
+      "loot": {
+        "flameNeedle": 1,
+        "copper": 2,
+        "cinder": 1
+      },
+      "short": "火蝎",
+      "tier": 1,
+      "bonusLoot": [
+        {
+          "item": "beastPearl",
+          "chance": 0.24
+        }
+      ]
+    },
+    "wraith": {
+      "name": "玄阴魇灵",
+      "hp": 131,
+      "atk": 25,
+      "armor": 7,
+      "xp": 25,
+      "loot": {
+        "yinPearl": 1,
+        "moss": 2,
+        "soul": 1
+      },
+      "short": "魇灵",
+      "tier": 1,
+      "bonusLoot": [
+        {
+          "item": "ghostSilk",
+          "chance": 0.2
+        }
+      ]
+    },
+    "sentinel": {
+      "name": "星阙灵卫",
+      "hp": 174,
+      "atk": 32,
+      "armor": 9,
+      "xp": 32,
+      "loot": {
+        "starCore": 1,
+        "star": 2,
+        "thunder": 1
+      },
+      "short": "灵卫",
+      "tier": 1,
+      "bonusLoot": [
+        {
+          "item": "thunderFeather",
+          "chance": 0.16
+        }
+      ]
+    },
+    "boss0": {
+      "name": "噬灵妖魇",
+      "hp": 95,
+      "atk": 13,
+      "armor": 3,
+      "xp": 30,
+      "loot": {
+        "rune": 3,
+        "seal0": 2,
+        "dust": 2
+      },
+      "bonusLoot": [
+        {
+          "item": "beastPearl",
+          "chance": 0.4
+        }
+      ]
+    },
+    "boss1": {
+      "name": "青潭蛟影",
+      "hp": 152,
+      "atk": 17,
+      "armor": 5,
+      "xp": 40,
+      "loot": {
+        "dew": 3,
+        "blossom": 2,
+        "seal1": 2,
+        "dust": 3
+      },
+      "bonusLoot": [
+        {
+          "item": "beastPearl",
+          "chance": 0.4
+        }
+      ]
+    },
+    "boss2": {
+      "name": "赤焰魔猿",
+      "hp": 229,
+      "atk": 23,
+      "armor": 8,
+      "xp": 54,
+      "loot": {
+        "copper": 3,
+        "cinder": 2,
+        "seal2": 2,
+        "dust": 4
+      },
+      "bonusLoot": [
+        {
+          "item": "beastPearl",
+          "chance": 0.4
+        }
+      ]
+    },
+    "boss3": {
+      "name": "渡魂鬼将",
+      "hp": 314,
+      "atk": 31,
+      "armor": 11,
+      "xp": 70,
+      "loot": {
+        "soul": 3,
+        "moss": 3,
+        "seal3": 2,
+        "dust": 5
+      },
+      "bonusLoot": [
+        {
+          "item": "beastPearl",
+          "chance": 0.4
+        }
+      ]
+    },
+    "boss4": {
+      "name": "堕仙残念",
+      "hp": 410,
+      "atk": 39,
+      "armor": 14,
+      "xp": 100,
+      "loot": {
+        "star": 4,
+        "thunder": 3,
+        "seal4": 2,
+        "dust": 6
+      },
+      "bonusLoot": [
+        {
+          "item": "beastPearl",
+          "chance": 0.4
+        }
+      ]
+    },
+    "rabbit": {
+      "name": "山野灵兔",
+      "hp": 18,
+      "atk": 4,
+      "armor": 0,
+      "xp": 4,
+      "loot": {
+        "berry": 2,
+        "hide": 1
+      },
+      "short": "灵兔",
+      "tier": 1,
+      "bonusLoot": [
+        {
+          "item": "herb",
+          "chance": 0.35
+        }
+      ]
+    },
+    "fishbeast": {
+      "name": "灵鳍妖鱼",
+      "hp": 55,
+      "atk": 11,
+      "armor": 2,
+      "xp": 12,
+      "loot": {
+        "fishScale": 1,
+        "fish": 2,
+        "waterherb": 1
+      },
+      "short": "妖鱼",
+      "tier": 1,
+      "bonusLoot": [
+        {
+          "item": "creekScale",
+          "chance": 0.18
+        }
+      ]
+    },
+    "dummy": {
+      "name": "练剑木傀",
+      "hp": 25,
+      "atk": 4,
+      "armor": 0,
+      "xp": 0,
+      "loot": {},
+      "training": true
+    },
+    "realm5": {
+      "name": "雷纹妖蜥",
+      "hp": 189,
+      "atk": 40,
+      "armor": 14,
+      "xp": 29,
+      "loot": {
+        "coreOre": 2,
+        "coreHerb": 1
+      }
+    },
+    "boss5": {
+      "name": "结丹雷蛟",
+      "hp": 590,
+      "atk": 53,
+      "armor": 21,
+      "xp": 90,
+      "loot": {
+        "coreOre": 3,
+        "coreHerb": 2
+      }
+    },
+    "realm6": {
+      "name": "古墟噬魂者",
+      "hp": 262,
+      "atk": 54,
+      "armor": 20,
+      "xp": 53,
+      "loot": {
+        "soulJade": 2,
+        "soulDew": 1
+      }
+    },
+    "boss6": {
+      "name": "夺舍魂君",
+      "hp": 820,
+      "atk": 72,
+      "armor": 30,
+      "xp": 140,
+      "loot": {
+        "soulJade": 3,
+        "soulDew": 2
+      }
+    },
+    "realm7": {
+      "name": "云岚翼魔",
+      "hp": 358,
+      "atk": 72,
+      "armor": 27,
+      "xp": 77,
+      "loot": {
+        "godSilk": 2,
+        "godFruit": 1
+      }
+    },
+    "boss7": {
+      "name": "云海化神尊",
+      "hp": 1120,
+      "atk": 96,
+      "armor": 42,
+      "xp": 190,
+      "loot": {
+        "godSilk": 3,
+        "godFruit": 2
+      }
+    },
+    "realm8": {
+      "name": "虚影行者",
+      "hp": 486,
+      "atk": 95,
+      "armor": 40,
+      "xp": 106,
+      "loot": {
+        "voidStone": 2,
+        "riftEssence": 1
+      }
+    },
+    "boss8": {
+      "name": "虚界裂空兽",
+      "hp": 1520,
+      "atk": 127,
+      "armor": 61,
+      "xp": 250,
+      "loot": {
+        "voidStone": 3,
+        "riftEssence": 2
+      }
+    },
+    "realm9": {
+      "name": "合灵傀儡",
+      "hp": 662,
+      "atk": 126,
+      "armor": 55,
+      "xp": 135,
+      "loot": {
+        "unionGold": 2,
+        "unionBark": 1
+      }
+    },
+    "boss9": {
+      "name": "千面合灵傀",
+      "hp": 2070,
+      "atk": 168,
+      "armor": 84,
+      "xp": 310,
+      "loot": {
+        "unionGold": 3,
+        "unionBark": 2
+      }
+    },
+    "realm10": {
+      "name": "悟道守碑人",
+      "hp": 906,
+      "atk": 168,
+      "armor": 79,
+      "xp": 168,
+      "loot": {
+        "mahayaRune": 2,
+        "mahayaJade": 1
+      }
+    },
+    "boss10": {
+      "name": "大道镇界灵",
+      "hp": 2830,
+      "atk": 224,
+      "armor": 121,
+      "xp": 380,
+      "loot": {
+        "mahayaRune": 3,
+        "mahayaJade": 2
+      }
+    },
+    "realm11": {
+      "name": "劫云雷魇",
+      "hp": 1222,
+      "atk": 225,
+      "armor": 111,
+      "xp": 207,
+      "loot": {
+        "tribulationCrystal": 2,
+        "ascendToken": 1
+      }
+    },
+    "boss11": {
+      "name": "九霄天劫主",
+      "hp": 3820,
+      "atk": 300,
+      "armor": 170,
+      "xp": 460,
+      "loot": {
+        "tribulationCrystal": 3,
+        "ascendToken": 2
+      }
+    },
+    "rockbeetle": {
+      "name": "岩甲灵虫",
+      "short": "岩虫",
+      "tier": 1,
+      "hp": 30,
+      "atk": 6,
+      "armor": 2,
+      "xp": 7,
+      "loot": {
+        "rockShell": 1,
+        "stone": 1
+      },
+      "bonusLoot": [
+        {
+          "item": "beastPearl",
+          "chance": 0.1
+        }
+      ]
+    },
+    "watercrab": {
+      "name": "水纹灵蟹",
+      "short": "灵蟹",
+      "tier": 2,
+      "hp": 74,
+      "atk": 14,
+      "armor": 4,
+      "xp": 16,
+      "loot": {
+        "waterShell": 1,
+        "creekScale": 1
+      },
+      "bonusLoot": [
+        {
+          "item": "fishScale",
+          "chance": 0.3
+        }
+      ]
+    },
+    "salamander": {
+      "name": "熔脊岩蜥",
+      "short": "岩蜥",
+      "tier": 2,
+      "hp": 110,
+      "atk": 20,
+      "armor": 6,
+      "xp": 23,
+      "loot": {
+        "lavaCrystal": 1,
+        "ore": 1
+      },
+      "bonusLoot": [
+        {
+          "item": "flameNeedle",
+          "chance": 0.28
+        }
+      ]
+    },
+    "ghostspider": {
+      "name": "葬魂蛛",
+      "short": "魂蛛",
+      "tier": 2,
+      "hp": 150,
+      "atk": 26,
+      "armor": 8,
+      "xp": 30,
+      "loot": {
+        "ghostSilk": 1,
+        "moss": 1
+      },
+      "bonusLoot": [
+        {
+          "item": "yinPearl",
+          "chance": 0.28
+        }
+      ]
+    },
+    "stormbird": {
+      "name": "雷羽灵禽",
+      "short": "雷禽",
+      "tier": 2,
+      "hp": 191,
+      "atk": 35,
+      "armor": 10,
+      "xp": 38,
+      "loot": {
+        "thunderFeather": 1,
+        "star": 1
+      },
+      "bonusLoot": [
+        {
+          "item": "starCore",
+          "chance": 0.28
+        }
+      ]
+    }
+  },
   "races": {
     "human": {
       "id": "human",
@@ -589,13 +1222,15 @@
       "cost": {
         "wood": 2,
         "ore": 5,
-        "fiber": 1
+        "fiber": 1,
+        "wolfFang": 2
       },
       "home": true,
       "gear": "weapon",
       "bonus": 12,
       "room": "forge",
-      "tier": 2
+      "tier": 2,
+      "bossPrepZone": 0
     },
     {
       "id": "springSword",
@@ -604,14 +1239,17 @@
       "cost": {
         "blossom": 1,
         "dew": 1,
-        "ore": 1
+        "ore": 1,
+        "creekScale": 2,
+        "seal0": 1
       },
       "home": true,
       "gear": "weapon",
       "bonus": 19,
       "zone": 1,
       "room": "forge",
-      "tier": 2
+      "tier": 2,
+      "bossPrepZone": 1
     },
     {
       "id": "emberSword",
@@ -620,14 +1258,17 @@
       "cost": {
         "copper": 2,
         "cinder": 1,
-        "stone": 2
+        "stone": 2,
+        "flameNeedle": 2,
+        "seal1": 1
       },
       "home": true,
       "gear": "weapon",
       "bonus": 29,
       "zone": 2,
       "room": "forge",
-      "tier": 2
+      "tier": 2,
+      "bossPrepZone": 2
     },
     {
       "id": "yinSword",
@@ -636,14 +1277,17 @@
       "cost": {
         "moss": 2,
         "soul": 1,
-        "herb": 1
+        "herb": 1,
+        "yinPearl": 2,
+        "seal2": 1
       },
       "home": true,
       "gear": "weapon",
       "bonus": 40,
       "zone": 3,
       "room": "forge",
-      "tier": 3
+      "tier": 3,
+      "bossPrepZone": 3
     },
     {
       "id": "skySword",
@@ -652,14 +1296,17 @@
       "cost": {
         "star": 2,
         "thunder": 1,
-        "rune": 1
+        "rune": 1,
+        "starCore": 2,
+        "seal3": 1
       },
       "home": true,
       "gear": "weapon",
       "bonus": 52,
       "zone": 4,
       "room": "forge",
-      "tier": 3
+      "tier": 3,
+      "bossPrepZone": 4
     },
     {
       "id": "robe",
@@ -681,13 +1328,15 @@
       "type": "衣 +4",
       "cost": {
         "hide": 2,
-        "fiber": 2
+        "fiber": 2,
+        "rockShell": 1
       },
       "home": true,
       "gear": "armor",
       "bonus": 4,
       "room": "forge",
-      "tier": 1
+      "tier": 1,
+      "bossPrepZone": 0
     },
     {
       "id": "springRobe",
@@ -696,14 +1345,17 @@
       "cost": {
         "blossom": 2,
         "dew": 1,
-        "fiber": 1
+        "fiber": 1,
+        "fishScale": 2,
+        "seal0": 1
       },
       "home": true,
       "gear": "armor",
       "bonus": 7,
       "zone": 1,
       "room": "forge",
-      "tier": 2
+      "tier": 2,
+      "bossPrepZone": 1
     },
     {
       "id": "emberRobe",
@@ -712,14 +1364,17 @@
       "cost": {
         "copper": 2,
         "cinder": 1,
-        "hide": 1
+        "hide": 1,
+        "lavaCrystal": 2,
+        "seal1": 1
       },
       "home": true,
       "gear": "armor",
       "bonus": 11,
       "zone": 2,
       "room": "forge",
-      "tier": 2
+      "tier": 2,
+      "bossPrepZone": 2
     },
     {
       "id": "yinRobe",
@@ -728,14 +1383,17 @@
       "cost": {
         "moss": 2,
         "soul": 1,
-        "fiber": 2
+        "fiber": 2,
+        "ghostSilk": 2,
+        "seal2": 1
       },
       "home": true,
       "gear": "armor",
       "bonus": 15,
       "zone": 3,
       "room": "forge",
-      "tier": 3
+      "tier": 3,
+      "bossPrepZone": 3
     },
     {
       "id": "skyRobe",
@@ -744,14 +1402,17 @@
       "cost": {
         "star": 2,
         "thunder": 1,
-        "ore": 1
+        "ore": 1,
+        "thunderFeather": 2,
+        "seal3": 1
       },
       "home": true,
       "gear": "armor",
       "bonus": 20,
       "zone": 4,
       "room": "forge",
-      "tier": 3
+      "tier": 3,
+      "bossPrepZone": 4
     },
     {
       "id": "talisman",
@@ -1135,6 +1796,222 @@
         "ascendToken": 1,
         "fiber": 1
       }
+    },
+    {
+      "id": "huntSword0",
+      "name": "木灵猎剑",
+      "zone": 0,
+      "gear": "weapon",
+      "bonus": 10,
+      "cost": {
+        "wood": 2,
+        "woodEssence": 2,
+        "stone": 1
+      },
+      "type": "剑 +10",
+      "home": true,
+      "room": "forge",
+      "tier": 1,
+      "bossPrepZone": 0,
+      "hunter": true
+    },
+    {
+      "id": "huntRobe0",
+      "name": "岩甲护袍",
+      "zone": 0,
+      "gear": "armor",
+      "bonus": 3,
+      "cost": {
+        "hide": 2,
+        "rockShell": 1,
+        "fiber": 1
+      },
+      "type": "衣 +3",
+      "home": true,
+      "room": "forge",
+      "tier": 1,
+      "bossPrepZone": 0,
+      "hunter": true
+    },
+    {
+      "id": "huntSword1",
+      "name": "碧鳞短枪",
+      "zone": 1,
+      "gear": "weapon",
+      "bonus": 17,
+      "cost": {
+        "creekScale": 2,
+        "fishScale": 1,
+        "dew": 1
+      },
+      "type": "剑 +17",
+      "home": true,
+      "room": "forge",
+      "tier": 1,
+      "bossPrepZone": 1,
+      "hunter": true
+    },
+    {
+      "id": "huntRobe1",
+      "name": "水纹护衣",
+      "zone": 1,
+      "gear": "armor",
+      "bonus": 6,
+      "cost": {
+        "waterShell": 2,
+        "creekScale": 1,
+        "blossom": 1
+      },
+      "type": "衣 +6",
+      "home": true,
+      "room": "forge",
+      "tier": 1,
+      "bossPrepZone": 1,
+      "hunter": true
+    },
+    {
+      "id": "huntSword2",
+      "name": "焰针猎刃",
+      "zone": 2,
+      "gear": "weapon",
+      "bonus": 26,
+      "cost": {
+        "flameNeedle": 2,
+        "lavaCrystal": 1,
+        "copper": 1
+      },
+      "type": "剑 +26",
+      "home": true,
+      "room": "forge",
+      "tier": 1,
+      "bossPrepZone": 2,
+      "hunter": true
+    },
+    {
+      "id": "huntRobe2",
+      "name": "赤晶护衣",
+      "zone": 2,
+      "gear": "armor",
+      "bonus": 9,
+      "cost": {
+        "lavaCrystal": 2,
+        "flameNeedle": 1,
+        "hide": 1
+      },
+      "type": "衣 +9",
+      "home": true,
+      "room": "forge",
+      "tier": 1,
+      "bossPrepZone": 2,
+      "hunter": true
+    },
+    {
+      "id": "huntSword3",
+      "name": "玄阴逐魂刀",
+      "zone": 3,
+      "gear": "weapon",
+      "bonus": 37,
+      "cost": {
+        "yinPearl": 2,
+        "ghostSilk": 1,
+        "moss": 1
+      },
+      "type": "剑 +37",
+      "home": true,
+      "room": "forge",
+      "tier": 1,
+      "bossPrepZone": 3,
+      "hunter": true
+    },
+    {
+      "id": "huntRobe3",
+      "name": "缚魂衣",
+      "zone": 3,
+      "gear": "armor",
+      "bonus": 13,
+      "cost": {
+        "ghostSilk": 2,
+        "yinPearl": 1,
+        "fiber": 1
+      },
+      "type": "衣 +13",
+      "home": true,
+      "room": "forge",
+      "tier": 1,
+      "bossPrepZone": 3,
+      "hunter": true
+    },
+    {
+      "id": "huntSword4",
+      "name": "星阙雷刃",
+      "zone": 4,
+      "gear": "weapon",
+      "bonus": 49,
+      "cost": {
+        "starCore": 2,
+        "thunderFeather": 1,
+        "star": 1
+      },
+      "type": "剑 +49",
+      "home": true,
+      "room": "forge",
+      "tier": 1,
+      "bossPrepZone": 4,
+      "hunter": true
+    },
+    {
+      "id": "huntRobe4",
+      "name": "雷翎星衣",
+      "zone": 4,
+      "gear": "armor",
+      "bonus": 18,
+      "cost": {
+        "thunderFeather": 2,
+        "starCore": 1,
+        "ore": 1
+      },
+      "type": "衣 +18",
+      "home": true,
+      "room": "forge",
+      "tier": 1,
+      "bossPrepZone": 4,
+      "hunter": true
+    },
+    {
+      "id": "spiritBlade",
+      "name": "妖核玄刃",
+      "zone": 0,
+      "gear": "weapon",
+      "bonus": 14,
+      "type": "剑 +14",
+      "home": true,
+      "room": "forge",
+      "tier": 2,
+      "bossPrepZone": 0,
+      "cost": {
+        "beastPearl": 2,
+        "woodEssence": 1,
+        "wolfFang": 1,
+        "wood": 1
+      }
+    },
+    {
+      "id": "skySigilRobe",
+      "name": "天阙镇印法袍",
+      "zone": 4,
+      "gear": "armor",
+      "bonus": 24,
+      "type": "衣 +24",
+      "home": true,
+      "room": "forge",
+      "tier": 3,
+      "bossPrepZone": 4,
+      "cost": {
+        "seal4": 1,
+        "starCore": 2,
+        "thunderFeather": 1,
+        "ancient": 1
+      }
     }
   ],
   "items": {
@@ -1389,6 +2266,96 @@
       "name": "天门符",
       "wt": 1,
       "type": "material"
+    },
+    "woodEssence": {
+      "name": "草木灵髓",
+      "wt": 1,
+      "type": "material"
+    },
+    "wolfFang": {
+      "name": "青狼獠牙",
+      "wt": 1,
+      "type": "material"
+    },
+    "rockShell": {
+      "name": "岩甲虫壳",
+      "wt": 1,
+      "type": "material"
+    },
+    "creekScale": {
+      "name": "溪鳞",
+      "wt": 1,
+      "type": "material"
+    },
+    "fishScale": {
+      "name": "灵鱼坚鳞",
+      "wt": 1,
+      "type": "material"
+    },
+    "waterShell": {
+      "name": "水纹蟹甲",
+      "wt": 1,
+      "type": "material"
+    },
+    "flameNeedle": {
+      "name": "火蝎尾针",
+      "wt": 1,
+      "type": "material"
+    },
+    "lavaCrystal": {
+      "name": "熔脊晶骨",
+      "wt": 1,
+      "type": "material"
+    },
+    "yinPearl": {
+      "name": "幽魂魄珠",
+      "wt": 1,
+      "type": "material"
+    },
+    "ghostSilk": {
+      "name": "阴魂蛛丝",
+      "wt": 1,
+      "type": "material"
+    },
+    "starCore": {
+      "name": "星阙灵核",
+      "wt": 1,
+      "type": "material"
+    },
+    "thunderFeather": {
+      "name": "雷禽翎羽",
+      "wt": 1,
+      "type": "material"
+    },
+    "beastPearl": {
+      "name": "妖灵小核",
+      "wt": 1,
+      "type": "material"
+    },
+    "seal0": {
+      "name": "青岚镇境印",
+      "wt": 1,
+      "type": "material"
+    },
+    "seal1": {
+      "name": "碧溪镇境印",
+      "wt": 1,
+      "type": "material"
+    },
+    "seal2": {
+      "name": "赤岭镇境印",
+      "wt": 1,
+      "type": "material"
+    },
+    "seal3": {
+      "name": "幽沼镇境印",
+      "wt": 1,
+      "type": "material"
+    },
+    "seal4": {
+      "name": "天阙镇境印",
+      "wt": 1,
+      "type": "material"
     }
   },
   "help": [
@@ -1560,6 +2527,17 @@
         "200个是逻辑档位上限，不预占空间。当前仍为浏览器localStorage；浏览器配额不足会拒绝写入并提示导出，不承诺200份满进度都装得下。",
         "保存失败时不切走当前未保存进度；损坏档锁定，不允许新建覆盖。主档损坏时仅尝试同族同号备份，不从别的档位恢复。",
         "请勿在多个标签同时操作同一档位。离线存档不是防作弊服务器，外部JSON、手动清理和不同浏览器来源的旧备份无法完全限制。"
+      ]
+    },
+    {
+      "id": "huntforgear",
+      "title": "前五境：猎妖取材、炼器与首领",
+      "paragraphs": [
+        "青岚山麓至天阙遗境采用四段循环：点击场景内普通妖兽主动战斗 → 收集妖灵材料 → 回本境洞府炼器室制作至少一件猎妖战备 → 完成祭坛并击败区域首领。击败首领才会开放下一个区域。",
+        "青岚：草木精怪产草木灵髓，青狼产獠牙，岩甲虫产虫壳；桃木剑与青藤袍可用普通材料制作，作为新人首次猎妖的安全过渡装备。碧溪主要产溪鳞、灵鱼坚鳞、水纹蟹甲。赤岭主要产火蝎尾针、熔脊晶骨。幽沼主要产幽魂魄珠、阴魂蛛丝。天阙主要产星阙灵核、雷禽翎羽。",
+        "当前地图的猎妖剑或护衣均可作为首领战备。原有进阶武器护甲仍保留，并追加对应妖兽材料。低阶猎妖装备只需要一阶炼器室，避免在偏远新图被高级建筑卡住。所有必要战备材料由相应妖兽必定掉落，少量额外妖核为概率奖励。",
+        "场景24格只是资源与妖兽的展示容量，同地块额外的14格资源复用前10格的每日总采集次数，不会凭空让每日收益翻倍；妖兽各格每天只可挑战一次。击杀后战利品进背包；负重不足留在原地，稍后可拾取。",
+        "首领地点会先检查本境祭坛与是否完成战备。如果提示“先狩猎本境妖兽”，回洞府查看炼制列表的“猎妖战备”。不建议装备未完成时越级挑战高危妖兽。注意每次失败会额外扣寿元。"
       ]
     }
   ]
