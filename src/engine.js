@@ -9,10 +9,10 @@ const obj=x=>x&&typeof x==='object'&&!Array.isArray(x);
 const pos=p=>obj(p)&&Number.isInteger(p.x)&&Number.isInteger(p.y)&&p.x>=0&&p.x<8&&p.y>=0&&p.y<8;
 const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
 function fresh(seed=261014){return {
- version:9,seed:integer(seed,1,4294967295),zone:0,unlocked:1,ritual:Array(5).fill(false),cleared:Array(5).fill(false),
+ version:10,seed:integer(seed,1,4294967295),zone:0,unlocked:1,ritual:Array(5).fill(false),cleared:Array(5).fill(false),
  pos:{x:1,y:5},last:{x:1,y:5},minutes:420,seen:{},visited:{},scouted:{},nodeHarvest:{},events:{},sites:{},campRests:{},bossDaily:{},
  hp:100,maxHp:100,hunger:84,water:81,spirit:92,maxSpirit:100,attack:7,level:1,xp:0,
- settlements:Array(5).fill(null),caches:{},pillDaily:{day:1,uses:0},
+ settlements:Array(5).fill(null),caches:{},pillDaily:{day:1,uses:0},life:{left:D.LIFE.initialYears*D.LIFE.yearMinutes,losses:0,elixirs:0},ended:false,
  inv:{wood:2,stone:1,fiber:2,berry:4,water:3,salve:2},stash:{},gears:[],pending:[],equipped:{weapon:null,armor:null},nextGear:1,
  codex:{items:{},enemies:{},gears:{},claims:{}},buffs:{fireward:0,detox:0},
  flags:{repaired:false,boss:false,talisman:false,complete:false},meditation:{day:1,uses:0},combat:null,
@@ -20,8 +20,17 @@ function fresh(seed=261014){return {
  guide:{status:'new',step:0,base:{},rewarded:false},settings:{motion:true},logs:[]
 };}
 function normalize(raw){
- if(!obj(raw)||![1,2,5,7,8,9].includes(raw.version)||!obj(raw.inv)||!pos(raw.pos))throw Error('不是可识别的青岚问道存档');
+ if(!obj(raw)||![1,2,5,7,8,9,10].includes(raw.version)||!obj(raw.inv)||!pos(raw.pos))throw Error('不是可识别的青岚问道存档');
  const o=copy(raw),n=fresh(o.seed);const legacy=o.version<7;
+ if(o.version===10){
+  if(o.ended||!obj(o.life)||!Number.isInteger(o.life.left)||o.life.left<=0||o.life.left>200*D.LIFE.yearMinutes)throw Error('寿元已尽或寿元数据无效，无法恢复');
+  n.life={left:o.life.left,losses:integer(o.life.losses,0,999),elixirs:integer(o.life.elixirs,0,D.LIFE.elixirLimit)};
+ }else{
+  // V9 and earlier migration starts a *new* lifespan era: never retroactively erase years of valid saves.
+  const boosts=Object.entries(D.LIFE.breakthroughYears).reduce((v,[level,yrs])=>v+(integer(o.level,1,18)>=Number(level)?yrs:0),0);
+  const penalties=Math.min(2,integer(o.stats?.defeats,0,10000))*D.LIFE.defeatYears;
+  n.life={left:Math.max(8,D.LIFE.initialYears+boosts-penalties)*D.LIFE.yearMinutes,losses:Math.min(2,integer(o.stats?.defeats,0,10000)),elixirs:0};
+ }
  n.level=integer(o.level,1,18);n.maxHp=100+9*(n.level-1);n.maxSpirit=100+2*(n.level-1);n.attack=7+n.level-1;
  n.minutes=integer(o.minutes,0,52560000);n.hp=integer(o.hp,1,n.maxHp);n.spirit=integer(o.spirit,0,n.maxSpirit);
  n.hunger=integer(o.hunger,0,100);n.water=integer(o.water,0,100);n.xp=integer(o.xp,0,10+n.level*5-1);
@@ -89,7 +98,7 @@ function normalize(raw){
  }
  // V9 migration is isolated to the new save key. Source saves remain untouched.
  const cleanBag=raw=>{const b={};for(const k of Object.keys(D.ITEMS)){const v=integer(raw?.[k]);if(v)b[k]=v;}return b;};
- if(o.version===9){
+ if(o.version>=9){
   if(!Array.isArray(o.settlements)||o.settlements.length!==5)throw Error('洞府数据不完整');
   n.settlements=o.settlements.map((c,z)=>{
    if(c===null)return null;
@@ -118,7 +127,7 @@ class Game{
  get day(){return Math.floor(this.s.minutes/1440)+1;} get hour(){return Math.floor(this.s.minutes%1440/60);}
  get clock(){const m=this.s.minutes%1440;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');}
  get night(){return this.hour>=18||this.hour<6;} get realm(){const l=this.s.level;return l<=9?'炼气'+['','一','二','三','四','五','六','七','八','九'][l]+'层':l<=12?'筑基初期':l<=15?'筑基中期':'筑基后期';}
- get required(){return 10+this.s.level*5;} key(x=this.s.pos.x,y=this.s.pos.y,z=this.s.zone){return `${z}:${x},${y}`;}
+ get lifeYears(){return Math.max(0,this.s.life.left/D.LIFE.yearMinutes);} get required(){return 10+this.s.level*5;} key(x=this.s.pos.x,y=this.s.pos.y,z=this.s.zone){return `${z}:${x},${y}`;}
  land(x=this.s.pos.x,y=this.s.pos.y){return this.zone.map[y]?.[x];}
  get site(){return D.SITES[this.key()]||null;} get name(){return this.atCamp?this.campName():this.site?.name||D.NAMED[this.key()]?.[0]||D.LAND[this.land()]?.name;}
  get weight(){return Object.entries(this.s.inv).reduce((n,[k,q])=>n+(D.ITEMS[k]?.wt||0)*q,0);} get capacity(){return 46+3*(this.s.level-1);}
@@ -143,14 +152,21 @@ class Game{
   const summary=parts.join(' · ')+(dropped.length?'；原地待拾 '+dropped.join(' · '):'');
   if(summary)this.log(source+'：'+summary,'good');return summary;
  }
- xp(amount){if(this.s.level>=18)return;this.s.xp+=amount;while(this.s.level<18&&this.s.xp>=this.required){this.s.xp-=this.required;this.s.level++;this.s.attack++;this.s.maxHp+=9;this.s.maxSpirit+=2;this.s.hp=Math.min(this.s.maxHp,this.s.hp+12);this.s.spirit=Math.min(this.s.maxSpirit,this.s.spirit+9);this.log('突破 · '+this.realm,'good');}if(this.s.level>=18)this.s.xp=0;}
+ xp(amount){if(this.s.level>=18)return;this.s.xp+=amount;while(this.s.level<18&&this.s.xp>=this.required){this.s.xp-=this.required;this.s.level++;this.s.attack++;this.s.maxHp+=9;this.s.maxSpirit+=2;this.s.hp=Math.min(this.s.maxHp,this.s.hp+12);this.s.spirit=Math.min(this.s.maxSpirit,this.s.spirit+9);const years=D.LIFE.breakthroughYears[this.s.level]||0;if(years){this.s.life.left+=years*D.LIFE.yearMinutes;this.log('突破增寿 '+years+'年','good');}this.log('突破 · '+this.realm,'good');}if(this.s.level>=18)this.s.xp=0;}
+ expire(reason){if(this.s.ended)return;this.s.ended=true;this.s.life.left=0;this.s.hp=0;this.s.combat=null;this.log('寿元耗尽 · '+reason,'bad');this.effects.push({msg:'寿元耗尽 · 本轮已终结',tone:'warn',kind:'permadeath'});}
+ age(minutes){if(this.s.ended)return false;this.s.life.left=Math.max(0,this.s.life.left-minutes);if(!this.s.life.left){this.expire('修行岁月已尽');return false;}return true;}
  extra(minutes){return {water:this.s.zone===2&&this.s.buffs.fireward<=this.s.minutes?Math.ceil(minutes/30):0,spirit:(this.s.zone===4||(this.s.zone===3&&this.s.buffs.detox<=this.s.minutes))?Math.ceil(minutes/30):0};}
- tick(minutes,h=0,w=0,sp=0){const old=this.day,e=this.extra(minutes);this.s.minutes+=minutes;this.s.hunger=Math.max(0,this.s.hunger-h);this.s.water=Math.max(0,this.s.water-w-e.water);this.s.spirit=Math.max(0,this.s.spirit-sp-e.spirit);
+ tick(minutes,h=0,w=0,sp=0){const old=this.day,e=this.extra(minutes);this.s.minutes+=minutes;if(!this.age(minutes))return false;this.s.hunger=Math.max(0,this.s.hunger-h);this.s.water=Math.max(0,this.s.water-w-e.water);this.s.spirit=Math.max(0,this.s.spirit-sp-e.spirit);
   if(this.day>old)this.log('新的一天，资源与奇遇已刷新。','good');
   if(!this.s.hunger||!this.s.water){this.s.hp-=6;this.log('饥渴耗损气血6。','bad');}if(!this.s.spirit){this.s.hp-=2;this.log('灵力耗尽，气血-2。','bad');}
   if(this.s.hp<=0){this.collapse();return false;}return true;
  }
- collapse(){for(const [k,q] of Object.entries(this.s.inv))if(D.ITEMS[k]?.type==='material'&&k!=='dust')this.s.inv[k]=q-Math.floor(q/2);this.s.pos=this.entry();this.s.last=copy(this.s.pos);this.s.combat=null;this.s.minutes+=720;this.s.hp=Math.max(50,Math.round(this.s.maxHp*.6));this.s.spirit=Math.round(this.s.maxSpirit*.75);this.s.hunger=48;this.s.water=52;this.s.stats.defeats++;this.reveal();this.log((this.camp?'负伤返回洞府':'负伤返回旧营坪')+'，遗失一半随身普通材料。','bad');this.note(this.camp?'负伤回府 · 设施与仓库保留':'返回旧营坪 · 装备与境界保留','warn');}
+ collapse(){
+  if(this.s.ended)return;
+  this.s.stats.defeats++;this.s.life.losses++;this.s.minutes+=720;
+  this.s.life.left=Math.max(0,this.s.life.left-D.LIFE.defeatYears*D.LIFE.yearMinutes-720);
+  if(!this.s.life.left){this.expire('重伤折寿'+D.LIFE.defeatYears+'年');return;}
+  for(const [k,q] of Object.entries(this.s.inv))if(D.ITEMS[k]?.type==='material'&&k!=='dust')this.s.inv[k]=q-Math.floor(q/2);this.s.pos=this.entry();this.s.last=copy(this.s.pos);this.s.combat=null;this.s.hp=Math.max(50,Math.round(this.s.maxHp*.6));this.s.spirit=Math.round(this.s.maxSpirit*.75);this.s.hunger=48;this.s.water=52;this.reveal();this.log((this.camp?'负伤返回洞府':'负伤返回旧营坪')+'，折寿'+D.LIFE.defeatYears+'年，遗失一半随身普通材料。','bad');this.note(this.camp?'负伤回府 · 设施与仓库保留':'返回旧营坪 · 装备与境界保留','warn');}
  entry(z=this.s.zone){return this.s.settlements[z]?copy(this.s.settlements[z].pos):z?{x:0,y:5}:{x:1,y:5};}
  resource(i){return Number.isInteger(i)&&i>=0&&i<10?D.RESOURCE_LAYOUT[this.land()]?.[i]:null;}
  left(i){const k=this.resource(i);if(!k)return 0;const h=this.s.nodeHarvest[this.key()+'#'+i];return h?.day===this.day?Math.max(0,D.RES[k].max-h.used):D.RES[k].max;}
@@ -189,15 +205,23 @@ class Game{
   if(this.s.combat)return this.fail('斗法中请使用防守恢复灵力');
   if(mode==='field'){this.s.spirit=Math.min(this.s.maxSpirit,this.s.spirit+28);if(!this.tick(50,5,6,0))return {ok:false};return this.note('调息 · 灵力+28','ok');}
   if(!this.workshop)return this.fail(this.camp?'请先回到洞府':'先选址筑庐，野外可调息');
-  if(mode==='supply'){if(!this.enough({stone:1}))return this.fail('补给需灵石1');this.spend({stone:1});this.s.hunger=Math.min(100,this.s.hunger+35);this.s.water=Math.min(100,this.s.water+40);return this.note('饱腹+35 · 饮水+40','ok');}
+  if(mode==='supply'){if(!this.enough({stone:1}))return this.fail('补给需灵石1');if(!this.tick(45,1,1,0))return {ok:false};this.spend({stone:1});this.s.hunger=Math.min(100,this.s.hunger+35);this.s.water=Math.min(100,this.s.water+40);return this.note('补给45分钟 · 饱腹+35 · 饮水+40','ok');}
   if(mode==='night'||mode==='dawn'){
-   if(!this.enough({stone:1}))return this.fail('长休含膳食，需灵石1');this.spend({stone:1});let target=Math.floor(this.s.minutes/1440)*1440+(mode==='night'?1080:420);if(target<=this.s.minutes)target+=1440;this.s.minutes=target;this.s.hp=this.s.maxHp;this.s.spirit=this.s.maxSpirit;this.s.hunger=85;this.s.water=85;this.log('休整至'+this.clock,'good');return this.note('休整至'+this.day+'日 '+this.clock,'ok');
+   if(!this.enough({stone:1}))return this.fail('长休含膳食，需灵石1');let target=Math.floor(this.s.minutes/1440)*1440+(mode==='night'?1080:420);if(target<=this.s.minutes)target+=1440;
+   // Long rest must age the character as well; do not bypass tick through direct time assignment.
+   if(!this.tick(target-this.s.minutes,0,0,0))return {ok:false};this.spend({stone:1});
+   this.s.hp=this.s.maxHp;this.s.spirit=this.s.maxSpirit;this.s.hunger=85;this.s.water=85;this.log('休整至'+this.clock,'good');return this.note('休整至'+this.day+'日 '+this.clock,'ok');
   }
   const key=this.s.zone+':'+this.day,times=this.s.campRests[key]||0;if(!this.tick(180,1,1,0))return {ok:false};this.s.hp=Math.min(this.s.maxHp,this.s.hp+48+12*(this.camp.level-1));this.s.spirit=Math.min(this.s.maxSpirit,this.s.spirit+78+12*(this.camp.level-1));
   if(times<2){this.s.campRests[key]=times+1;this.s.hunger=Math.min(100,this.s.hunger+25);this.s.water=Math.min(100,this.s.water+30);}
   return this.note('休息恢复'+(times<2?' · 简餐'+(times+1)+'/2':''),'ok');
  }
  consume(id){if(this.s.combat)return this.fail('斗法请使用战斗指令');if(!own(D.ITEMS,id)||D.ITEMS[id].type!=='food'||!(this.s.inv[id]>0))return this.fail('没有该消耗品');
+ if(id==='lifespanPill'){
+   if(this.s.life.elixirs>=D.LIFE.elixirLimit)return this.fail('整局延寿丹服用次数已达上限');
+   this.s.inv[id]--;this.s.life.elixirs++;this.s.life.left+=D.LIFE.elixirYears*D.LIFE.yearMinutes;
+   this.log('服用延寿丹 · 寿元+'+D.LIFE.elixirYears+'年','good');return this.note('寿元+'+D.LIFE.elixirYears+'年 · '+this.s.life.elixirs+'/'+D.LIFE.elixirLimit,'ok');
+  }
   if(['focus','elixir'].includes(id)){
    if(this.s.level>=18)return this.fail('已达境界上限，不消耗修为丹');
    if(this.s.pillDaily.day===this.day&&this.s.pillDaily.uses>=2)return this.fail('今日修为丹已服2次');
@@ -279,11 +303,22 @@ class Game{
   return '';
  }
  farmRemaining(){if(!this.camp||!this.roomLevel('farm'))return null;return Math.max(0,1440-(this.s.minutes-this.camp.farmAt));}
+ get farmBatches(){if(!this.camp||!this.roomLevel('farm'))return 0;return Math.min(3,Math.floor(Math.max(0,this.s.minutes-this.camp.farmAt)/1440));}
+ get farmReady(){return this.farmBatches>0;}
  harvestFarm(){
   if(this.s.combat)return this.fail('斗法中不能收获');if(!this.atCamp)return this.fail('请回洞府收获');
   if(!this.roomLevel('farm'))return this.fail('先修建灵田');if(this.farmRemaining()>0)return this.fail('灵田尚需'+Math.ceil(this.farmRemaining()/60)+'游戏小时');
-  const loot=D.FARM_LOOT[this.roomLevel('farm')];this.camp.farmAt=this.s.minutes;this.s.stats.farms++;
-  const msg=this.loot(loot,'灵田收获');return this.note('收获 · '+msg,'ok');
+const batches=this.farmBatches,loot=Object.fromEntries(Object.entries(D.FARM_LOOT[this.roomLevel('farm')]).map(([k,v])=>[k,v*batches]));
+   // Backlog caps at 3 batches, discarding older unsupervised cycles but preserving elapsed partial day.
+   this.camp.farmAt=this.s.minutes-((this.s.minutes-this.camp.farmAt)%1440);this.s.stats.farms+=batches;
+   const parts=[];for(const [k,n] of Object.entries(loot)){
+    let remaining=n;
+    if(this.storageReady){const w=D.ITEMS[k].wt||1;const stored=Math.min(remaining,Math.max(0,Math.floor((this.stashCapacity()-this.stashWeight())/w)));
+     if(stored){this.camp.stash[k]=(this.camp.stash[k]||0)+stored;remaining-=stored;parts.push(D.ITEMS[k].name+'入仓'+stored);this.s.codex.items[k]=(this.s.codex.items[k]||0)+stored;}
+    }
+    if(remaining){const msg=this.loot({[k]:remaining},'灵田收获');if(msg)parts.push(msg);}
+   }
+   this.log('灵田结算 '+batches+'轮','good');return this.note('灵田'+batches+'轮 · '+parts.join(' · '),'ok');
  }
  pickup(id=null,qty=999){
   if(this.s.combat)return this.fail('斗法中不能拾取');let count=0;
@@ -295,15 +330,26 @@ class Game{
   if(!count)return this.fail(Object.values(this.ground).some(v=>v>0)?'负重不足，先腾出行囊':'此处没有待拾物资');
   return this.note('拾取 '+count+'件 · 已入行囊','ok');
  }
- store(id=null){
+ store(id=null,qty=999999){
   if(this.s.combat)return this.fail('斗法中不能存取');if(!this.storageReady)return this.fail(this.atCamp?'先修建仓房':'回本境洞府的仓房存取');
   const ids=id?[id]:Object.keys(this.s.inv).filter(k=>D.ITEMS[k]?.type==='material');let moved=0,left=0;
   for(const k of ids){if(!own(D.ITEMS,k))continue;const q=this.s.inv[k]||0,wt=D.ITEMS[k].wt;
-   const fit=Math.min(q,wt?Math.max(0,Math.floor((this.stashCapacity()-this.stashWeight())/wt)):q);
+   const fit=Math.min(q,integer(qty,1,999999),wt?Math.max(0,Math.floor((this.stashCapacity()-this.stashWeight())/wt)):q);
    if(fit){this.camp.stash[k]=(this.camp.stash[k]||0)+fit;this.s.inv[k]-=fit;moved+=fit;}left+=q-fit;
   }
   if(!moved)return this.fail(left?'仓房已满，升级或取走物资':'没有可存的物资');
   this.s.stats.stores++;return this.note('存入 '+moved+'件'+(left?' · 余下仍在行囊':''),'ok');
+ }
+ provision(){
+  if(this.s.combat||!this.storageReady)return this.fail('请回到已建仓房的洞府整理行装');
+  const targets={berry:4,water:4,salve:2,mana:2},parts=[];
+  for(const [id,target] of Object.entries(targets)){
+   const reserve=this.camp.stash[id]||0,need=Math.max(0,target-(this.s.inv[id]||0)),wt=D.ITEMS[id].wt||1;
+   const qty=Math.min(need,reserve,Math.max(0,Math.floor((this.capacity-this.weight)/wt)));
+   if(qty){this.camp.stash[id]-=qty;this.s.inv[id]=(this.s.inv[id]||0)+qty;parts.push(D.ITEMS[id].name+'×'+qty);}
+  }
+  if(!parts.length)return this.fail('仓内无可补给物资，或随身已经带够');
+  this.s.stats.withdraws++;return this.note('出行整理 · '+parts.join(' · '),'ok');
  }
  withdraw(id,qty=1){
   if(this.s.combat)return this.fail('斗法中不能存取');if(!this.storageReady)return this.fail('请回本境洞府的仓房');
@@ -414,14 +460,14 @@ class Game{
   ];
   while(g.step<tests.length&&tests[g.step]())g.step++;if(g.step>=tests.length){g.status='done';if(!g.rewarded){g.rewarded=true;this.loot({salve:2,pill:1},'入门礼');this.note('入门完成 · 回春散2、辟谷丸1','ok','guide-complete');}}
  }
- act(name,args={}){this.effects=[];let result;
+ act(name,args={}){this.effects=[];if(this.s.ended)return {ok:false,permadeath:true,msg:'寿元已尽，本轮已终结'};let result;
   switch(name){
    case 'settle':result=this.settle(!!args.relocate);break;case 'build':result=this.build(args.id);break;
-   case 'farm':result=this.harvestFarm();break;case 'pickup':result=this.pickup(args.id,Number(args.qty)||999);break;
+   case 'farm':result=this.harvestFarm();break;case 'provision':result=this.provision();break;case 'pickup':result=this.pickup(args.id,Number(args.qty)||999);break;
    case 'gather':result=this.gather(Number(args.index));break;case 'move':result=this.move(Number(args.x),Number(args.y));break;
    case 'travel':result=this.travel(Number(args.zone),!!args.home);break;case 'scout':result=this.scout();break;
    case 'rest':result=this.rest(args.mode);break;case 'consume':result=this.consume(args.id);break;
-   case 'craft':result=this.craft(args.id);break;case 'store':result=this.store(args.id);break;case 'withdraw':result=this.withdraw(args.id,Number(args.qty)||1);break;
+   case 'craft':result=this.craft(args.id);break;case 'store':result=this.store(args.id,Number(args.qty)||999999);break;case 'withdraw':result=this.withdraw(args.id,Number(args.qty)||1);break;
    case 'discard':result=this.discard(args.id);break;case 'equip':result=this.equip(args.id);break;case 'salvage':result=this.salvage(args.id);break;
    case 'refine':result=this.refine(args.id);break;case 'claim-gear':result=this.claimGear(args.id);break;
    case 'meditate':result=this.meditate();break;case 'repair':result=this.repair();break;case 'barter':result=this.barter();break;

@@ -1,51 +1,49 @@
-name: V10 regression
+name: V10 regression + lifespan
 on:
   push:
-    branches:
-      - main
-      - 'chore/**'
-      - 'feat/**'
-      - 'release/**'
+    branches: [main, 'chore/**', 'feat/**', 'release/**']
   pull_request:
-    branches: [main]
+    branches: [main, 'chore/**']
 permissions:
   contents: read
 jobs:
   core:
-    name: Source, save, construction, and deterministic build
+    name: Gameplay, save, lifespan, and build
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
+        with: {node-version: '22'}
       - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Syntax
+        with: {python-version: '3.12'}
+      - name: JS syntax
         run: |
           node --check src/data.js
           node --check src/engine.js
           node --check src/ui.js
-      - name: Smoke and V10 regression
+      - name: Baseline regressions
         run: |
           node tests/smoke.test.js
           node tests/v10_regression.test.js
-      - name: Regenerate standalone HTML
+      - name: Lifespan and economy
+        run: node tests/v10_lifespan.test.js
+      - name: Three-seed full campaign
+        run: node tests/v10_campaign.test.js --all
+      - name: Standalone HTML rebuild
         run: python build.py
-      - name: Ensure bundled HTML is in sync with source
-        run: git diff --exit-code -- '青岚问道_V9_洞府营建.html'
+      - name: Verify V10 standalone content
+        run: git diff --exit-code -- '青岚问道_V10_寿元与洞府.html'
   browser:
-    name: Mobile UI smoke in Chromium
+    name: Chromium UI and permadeath (isolated test storage)
     runs-on: ubuntu-latest
     needs: core
-    timeout-minutes: 15
+    timeout-minutes: 18
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+        with: {python-version: '3.12'}
       - run: python -m pip install playwright==1.57.0
       - run: python -m playwright install --with-deps chromium
       - run: python tests/v10_browser_smoke.py
+      - run: python tests/v10_lifespan_browser.py
