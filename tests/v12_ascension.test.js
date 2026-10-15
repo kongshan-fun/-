@@ -2,6 +2,13 @@
 const A=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const D=require('../src/data.js'),G=require('../src/engine.js'),Slots=require('../src/slots.js');
 const {campaign}=require('./v10_campaign.test.js');
+// Each GitHub CI job gets an independent, clean checkout. Reproduce the legacy
+// five-map fixture from real Game.act actions if it is absent in this job.
+const legacyFixture=path.join(__dirname,'fixtures/v9_natural_complete.json');
+if(!fs.existsSync(legacyFixture)){
+ const first=campaign(261014,true,'sword');
+ A.equal(first.pass,true,'Unable to reconstruct old natural save fixture');
+}
 let tests=0;const check=(name,fn)=>{fn();tests++;console.log('PASS',name);};
 const good=(g,a,b={})=>{const r=g.act(a,b);A.equal(r.ok,true,`${a}: ${r.msg||''}`);return r;};
 const no=(g,a,b={})=>{const before=JSON.stringify(g.state());const r=g.act(a,b);A.equal(r.ok,false,`${a} should fail`);A.equal(JSON.stringify(g.state()),before,'Failed '+a+' must not mutate state');};
