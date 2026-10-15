@@ -5,10 +5,12 @@ from pathlib import Path
 import json,os
 from playwright.sync_api import sync_playwright
 ROOT=Path(__file__).resolve().parents[1];EV=ROOT/'evidence';EV.mkdir(exist_ok=True)
-HTML=(ROOT/'青岚问道_V14_人妖同途.html').read_text(encoding='utf-8')
+HTML=(ROOT/'青岚问道_V14.1_场景24格主动挑战.html').read_text(encoding='utf-8')
 INJECT="""<script>(()=>{let m=SEED;Object.defineProperty(window,'localStorage',{configurable:true,value:{getItem:k=>Object.hasOwn(m,k)?m[k]:null,setItem:(k,v)=>m[k]=String(v),removeItem:k=>delete m[k],key:i=>Object.keys(m)[i]||null,get length(){return Object.keys(m).length}}});window.__memory=()=>JSON.parse(JSON.stringify(m));})()</script>"""
 with sync_playwright() as p:
- kw={'headless':True,'executable_path':'/usr/bin/chromium'}
+ kw={'headless':True}
+ executable=os.environ.get('CHROMIUM_PATH') or ('/usr/bin/chromium' if Path('/usr/bin/chromium').exists() else None)
+ if executable:kw['executable_path']=executable
  if hasattr(os,'geteuid') and os.geteuid()==0:kw['args']=['--no-sandbox']
  browser=p.chromium.launch(**kw)
  for w,h in [(320,568),(360,640),(390,844),(1440,900)]:
