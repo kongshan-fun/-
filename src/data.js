@@ -259,7 +259,7 @@ const GUIDE=[
  {id:'alchemy',title:'丹房与第一炉丹',text:'修建一阶丹房，再炼一颗辟谷丸。回春散仍可在野外研配，丹药需丹房。'},
  {id:'book',title:'查来源与用途',text:'打开图鉴，查看材料、法器和建筑条目。只在需要时阅读，不占主界面。'},
  {id:'train',title:'在洞府安全试剑',text:'点修炼里的试剑。敌方重击先防守，普通回合剑击；练习不损失真实物资。'},
- {id:'travel',title:'安顿好，再远行',text:'打开出行查看五境。接下来收集阵纹，在洞府建山门，再挑战第一境首领。'}
+ {id:'travel',title:'安顿好，再远行',text:'打开出行查看十二境。接下来收集阵纹，在洞府建山门，再挑战第一境首领。'}
 ];
 const HELP=[
  {
@@ -498,7 +498,7 @@ HELP.push({id:'lifespan',title:'寿元与轮回（重要）',paragraphs:[
 ]});
 
 // Two complete, deliberately asymmetric cultivation paths. No copied external game data.
-const CHARACTERS={
+const LEGACY_CHARACTERS={
  sword:{id:'sword',name:'玄锋剑修',short:'剑修',intro:'剑诀爆发 · 攻势专精',detail:'剑诀伤害倍率1.90，耗灵9；生存与寿元沿用原有平衡。',hp:100,spirit:100,attack:7,years:56,spellCost:9,spellMult:1.90},
  herb:{id:'herb',name:'青木丹修',short:'丹修',intro:'识药回春 · 寿元较长',detail:'初始寿元64年；采止血草有35%机会额外获得1份（受负重限制）；回春术耗灵14、回复28。',hp:94,spirit:115,attack:6,years:64,spellCost:11,spellMult:1.45}
 };
@@ -587,7 +587,11 @@ HELP.push({id:'ascension',title:'凡界九境与飞升试炼',paragraphs:[
  '渡劫天门首领击败且完成最后“飞升”突破后，记录成功飞升、保留角色与存档。仙界大地图和飞升后战斗尚未开放，不会伪装成能游玩的空系统。'
 ]});
 
-const D={ASCENSION_RULE,REALMS,ASCENSION_STAGES,CHARACTERS,SLOT_PREFIX:'qinglan-wendao-v11-',MIGRATION_KEY:'qinglan-wendao-v11-legacy-used',ACTIVE_KEY:'qinglan-wendao-v11-current',VERSION:12,SAVE:'qinglan-wendao-v10',DEATH_KEY:'qinglan-wendao-v10-permadeath',LIFE,LEGACY:['qinglan-wendao-v9','qinglan-wendao-v8','qinglan-wendao-v7','qinglan-cultivation-five-v5','qinglan-cultivation-demo-v2','qinglan-cultivation-demo-v1'],ZONES,LAND,ITEMS,RECIPES,ENEMIES,NAMED,EVENTS,RES,RESOURCE_LAYOUT,SITES,QUALITIES,QUALITY_WEIGHTS,AFFIXES,BOOK_REWARDS,GUIDE,HELP,BUILDINGS,CAMP_LANDS,SETTLE_COST,MOVE_CAMP_COST,FARM_LOOT};
+const B=globalThis.QBirth||(typeof require==='function'?require('./birth.js'):null);
+const CHARACTERS=B.RACES;
+const D={BIRTH:B,RACES:B.RACES,LEGACY_CHARACTERS,ASCENSION_RULE,REALMS,ASCENSION_STAGES,CHARACTERS,SLOT_PREFIX:'qinglan-wendao-v14-',MIGRATION_KEY:'qinglan-wendao-v11-legacy-used',ACTIVE_KEY:'qinglan-wendao-v14-current',VERSION:14,SAVE:'qinglan-wendao-v10',DEATH_KEY:'qinglan-wendao-v10-permadeath',LIFE,LEGACY:['qinglan-wendao-v9','qinglan-wendao-v8','qinglan-wendao-v7','qinglan-cultivation-five-v5','qinglan-cultivation-demo-v2','qinglan-cultivation-demo-v1'],ZONES,LAND,ITEMS,RECIPES,ENEMIES,NAMED,EVENTS,RES,RESOURCE_LAYOUT,SITES,QUALITIES,QUALITY_WEIGHTS,AFFIXES,BOOK_REWARDS,GUIDE,HELP,BUILDINGS,CAMP_LANDS,SETTLE_COST,MOVE_CAMP_COST,FARM_LOOT};
+const currentHelp=root.QHelp||(typeof require==='function'?require('./help.js'):null);
+HELP.splice(0,HELP.length,...currentHelp);
 root.QData=D;
 if(typeof module!=='undefined'&&module.exports)module.exports=D;
 })(globalThis);

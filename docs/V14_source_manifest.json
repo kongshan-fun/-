@@ -1,0 +1,29 @@
+{
+  "version": 14,
+  "base": "06959bd714cfd30292ba8d8125d152d251e94fde",
+  "payloadSha256": "d6293e5b010753447179dbe6261176ff40138820af5b04ab1612425e364eb758",
+  "files": {
+    "README.md": "d56dabadccce91116438ad92e11679a172d3884b227c2cca036517348939159b",
+    "AGENTS.md": "851bcd26a02d483058c274ed3467afc93c6ce2a5421ac36a0e83cea524808775",
+    "build.py": "e6a7dfcb15bad7acecf3866488d23de4d9fa88c67758b154e9b00244f8f5c7dd",
+    "build_docs.py": "da2bd44cd1738e0537ebd38c42e067f77a85244ff4f85af1220f895e9d5cd52c",
+    "index.html": "8b9e521d10d83140c626c4bbf355d6a24521334341642e0f6632967e460808f2",
+    "src/birth.js": "019543ba77878a57fbf59ed835cf9f7ad19ee158fc2104045d3e30e1a8a549a2",
+    "src/data.js": "b13ccb0fc73c1473e0a7ab8ad698509cb0d5623c8d2cff628462d34579c49272",
+    "src/engine.js": "652d743d11b2169aa428167cc938650e88bcf724504ac13816e99374a76eff26",
+    "src/entry.css": "436512fb781591a3ea8e786ecabb39eeb1c0eb5d68f3b95d279f9149d9eaab1c",
+    "src/entry.js": "42813e8bc4bbbe96a319fb8e17e7b464fbd085ab207c6949bdd039154503df09",
+    "src/help.js": "a09b1ed88f3c2e05f335aad8aaae6795f2f549dadea131f7606cf59c564c40f7",
+    "src/slots.js": "9a1c250fe16e23b747fb4543d71c482e2b7237e749862ef3c1e4df9032a56bbb",
+    "src/style.css": "6650e8b1c077c1ebbb222135d1f9a79dfcb272875ae1e4ed6aab49927cfb3dbc",
+    "src/ui.js": "5808893d5854b5f72b4474388ab7da2fbc21ee4cb27fc56348126df7a7724c28",
+    "tests/v14_ascension.test.js": "9606a6550c65ca3f2562180532a962a225dd4c237bfc9f8a4b2755e0cda07eeb",
+    "tests/v14_browser.py": "438e833f0da2daac9aa8fdf49748249e19518819c859ab9a9eb44e5f3f84fe8f",
+    "tests/v14_campaign.test.js": "4b4232c182f0bb0bbdbde8771194356e7446565b0b5bff492856c2bdaac113d1",
+    "tests/v14_core.test.js": "a84f72b1663fa38364edcb1799f0a129c4e9286944a381a7612bb3c32f96d4cf",
+    "tests/v14_lifespan.test.js": "3c101470bf7d9d82a81636a3fe171dda33d3fa5c73b5786c3f33a458ed6643f3",
+    "tests/v14_onboarding.py": "cc8e5fc6aba95fa7ff4d822a338601c3234bfbfa799f5e9c485c73775993ffad",
+    "tests/v14_races.test.js": "77f812816794ee36c77cf2c23b5e53f7dc809d472ef0e638847cdca76e71d69b",
+    "docs/V14_验收说明.md": "b396d0f561a06a59d7a94d744e8a30a7553e9031750c6014dd10800ddb60c8eb"
+  }
+}

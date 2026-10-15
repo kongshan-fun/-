@@ -5,13 +5,14 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <meta name="description" content="青岚问道，十二境文字修仙生存游戏。离线单机，完整入门引导。">
-<title>青岚问道 · V13.1 全屏角色与存档</title>
+<title>青岚问道 · V14 人妖同途</title>
 <link rel="stylesheet" href="src/style.css">
+<link rel="stylesheet" href="src/entry.css">
 </head>
 <body>
 <div id="phone" class="phone front-mode">
  <div id="game-shell" class="game-shell">
-  <header class="topbar"><div class="wordmark">青岚问道 <span>V13.1</span></div><div class="top-buttons"><button data-a="characters">角色</button><button data-a="panel" data-name="help">教程</button><button data-a="panel" data-name="settings">设置</button></div></header>
+  <header class="topbar"><div class="wordmark">青岚问道 <span>V14</span></div><div class="top-buttons"><button data-a="characters">档案</button><button data-a="panel" data-name="help">教程</button><button data-a="panel" data-name="settings">设置</button></div></header>
   <section id="status" aria-label="修行状态"></section>
   <button id="quest" class="quest" data-a="panel" data-name="quest" aria-label="查看主线任务"></button>
   <main id="scene" class="scene" aria-label="当前地点"><div id="scene-content"></div></main>
@@ -56,7 +57,10 @@
 </div>
 <input id="import-file" type="file" accept=".json,application/json" hidden>
 <noscript>此游戏需要浏览器启用 JavaScript。没有联网要求。</noscript>
+<script src="src/birth.js"></script>
+<script src="src/help.js"></script>
 <script src="src/data.js"></script><script src="src/engine.js"></script><script src="src/slots.js"></script>
+<script src="src/entry.js"></script>
 <script src="src/ui.js"></script>
 </body>
 </html>

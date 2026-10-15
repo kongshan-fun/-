@@ -1,10 +1,13 @@
-"""Build a dependency-free single HTML file from the maintainable source tree."""
+"""Deterministic, dependency-free V14 standalone and documented game data build."""
 from pathlib import Path
-import json, subprocess
+import re
 ROOT=Path(__file__).resolve().parent
-s=(ROOT/'index.html').read_text(encoding='utf8')
-s=s.replace('<link rel="stylesheet" href="src/style.css">','<style>\n'+(ROOT/'src/style.css').read_text(encoding='utf8')+'\n</style>')
-for file in ['data.js','engine.js','slots.js','ui.js']:
-    s=s.replace('<script src="src/'+file+'"></script>','<script>\n'+(ROOT/'src'/file).read_text(encoding='utf8')+'\n</script>')
-(ROOT/'青岚问道_V13_百档角色.html').write_text(s,encoding='utf8')
-print('Built',len(s.encode('utf8')),'bytes')
+text=(ROOT/'index.html').read_text(encoding='utf-8')
+for kind in ['style','entry']:
+    text=text.replace(f'<link rel="stylesheet" href="src/{kind}.css">','<style>\n'+(ROOT/'src'/f'{kind}.css').read_text(encoding='utf-8')+'\n</style>')
+for name in ['birth','help','data','engine','slots','entry','ui']:
+    text=text.replace(f'<script src="src/{name}.js"></script>','<script>\n'+(ROOT/'src'/f'{name}.js').read_text(encoding='utf-8')+'\n</script>')
+if re.search(r'(?:src|href)="src/',text):raise SystemExit('Unbundled local dependency')
+out=ROOT/'青岚问道_V14_人妖同途.html'
+out.write_text(text,encoding='utf-8')
+print('Built',out.name,len(text.encode('utf-8')),'bytes')
