@@ -6,8 +6,8 @@ const G=require('../src/engine.js'),D=require('../src/data.js'),OUT=path.join(__
 // CI checkouts do not contain generated evidence or optional save fixtures.
 fs.mkdirSync(OUT,{recursive:true});
 fs.mkdirSync(path.join(__dirname,'fixtures'),{recursive:true});
-function campaign(seed,write=false){
- const g=new G(null,seed),trace=[],stages=[];let n=0,depth=0;const buildingGoals={};
+function campaign(seed,write=false,character='sword'){
+ const g=new G(null,seed,character),trace=[],stages=[];let n=0,depth=0;const buildingGoals={};
  function act(a,b={}){if(++n>14000)throw Error('14000 action limit');const r=g.act(a,b);trace.push({n,zone:g.s.zone,pos:{...g.s.pos},day:g.day,a,b,ok:r.ok,msg:r.msg});return r;}
  const total=k=>(g.s.inv[k]||0)+(g.s.settlements[0]?.stash[k]||0);
  function fight(){for(let i=0;g.s.combat&&i<160;i++){
@@ -86,9 +86,10 @@ function campaign(seed,write=false){
   }
   A.equal(g.s.flags.complete,true);home();if(g.farmRemaining()===0)act('farm');
   if(write){fs.mkdirSync(path.join(__dirname,'fixtures'),{recursive:true});fs.writeFileSync(path.join(__dirname,'fixtures/v9_natural_complete.json'),JSON.stringify(g.state(),null,2));fs.writeFileSync(path.join(OUT,'V9自然通关动作.json'),JSON.stringify({seed,trace}));}
-  return {pass:true,seed,actions:n,days:g.day,level:g.s.level,defeats:g.s.stats.defeats,bases:g.s.settlements.filter(Boolean).length,primary:g.s.settlements[0].buildings,stages};
+  return {pass:true,seed,character,actions:n,days:g.day,level:g.s.level,defeats:g.s.stats.defeats,bases:g.s.settlements.filter(Boolean).length,primary:g.s.settlements[0].buildings,stages};
  }catch(e){fs.writeFileSync(path.join(OUT,'campaign_debug.json'),JSON.stringify({seed,error:e.stack,stages,state:g.state(),trace:trace.slice(-120)},null,2));throw e;}
 }
 const seeds=process.argv.includes('--all')?[261014,42,12345]:[261014],results=[];
-for(const seed of seeds){try{const r=campaign(seed,seed===seeds[0]);results.push(r);console.log('CAMPAIGN',seed,r);}catch(e){results.push({pass:false,seed,error:e.stack});console.error(e.stack);break;}}
-fs.writeFileSync(path.join(OUT,'V9从零五境验收.json'),JSON.stringify({description:'仅Game.act推进正常初始角色；规划器知晓地图，不是新玩家时长或全路线平衡保证。',total:seeds.length,passed:results.filter(r=>r.pass).length,results},null,2));if(results.some(r=>!r.pass))process.exitCode=1;
+const roles=process.argv.includes('--both-roles')?['sword','herb']:['sword'];
+for(const character of roles)for(const seed of seeds){try{const r=campaign(seed,character==='sword'&&seed===seeds[0],character);results.push(r);console.log('CAMPAIGN',character,seed,r.pass,r.actions,r.days,r.level,r.defeats);}catch(e){results.push({pass:false,seed,character,error:e.stack});console.error(e.stack);break;}}
+fs.writeFileSync(path.join(OUT,'V11从零五境双角色验收.json'),JSON.stringify({description:'两角色正常初始状态，地图已知的Game.act规划器，并非真人胜率。',total:seeds.length*roles.length,passed:results.filter(r=>r.pass).length,results},null,2));if(results.some(r=>!r.pass))process.exitCode=1;

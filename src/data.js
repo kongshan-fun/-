@@ -497,7 +497,29 @@ HELP.push({id:'lifespan',title:'寿元与轮回（重要）',paragraphs:[
  '寿元降为0后本轮永久结束：当前V10存档、V10自动备份以及同来源旧版本的继承存档会被清除；点击“重新轮回”才能新开。提前备份或外部导入属于离线游戏无法完全阻止的手动回档，不等于游戏内自动复活。'
 ]});
 
-const D={VERSION:10,SAVE:'qinglan-wendao-v10',DEATH_KEY:'qinglan-wendao-v10-permadeath',LIFE,LEGACY:['qinglan-wendao-v9','qinglan-wendao-v8','qinglan-wendao-v7','qinglan-cultivation-five-v5','qinglan-cultivation-demo-v2','qinglan-cultivation-demo-v1'],ZONES,LAND,ITEMS,RECIPES,ENEMIES,NAMED,EVENTS,RES,RESOURCE_LAYOUT,SITES,QUALITIES,QUALITY_WEIGHTS,AFFIXES,BOOK_REWARDS,GUIDE,HELP,BUILDINGS,CAMP_LANDS,SETTLE_COST,MOVE_CAMP_COST,FARM_LOOT};
+// Two complete, deliberately asymmetric cultivation paths. No copied external game data.
+const CHARACTERS={
+ sword:{id:'sword',name:'玄锋剑修',short:'剑修',intro:'剑诀爆发 · 攻势专精',detail:'剑诀伤害倍率1.90，耗灵9；生存与寿元沿用原有平衡。',hp:100,spirit:100,attack:7,years:56,spellCost:9,spellMult:1.90},
+ herb:{id:'herb',name:'青木丹修',short:'丹修',intro:'识药回春 · 寿元较长',detail:'初始寿元64年；采止血草有35%机会额外获得1份（受负重限制）；回春术耗灵14、回复28。',hp:94,spirit:115,attack:6,years:64,spellCost:11,spellMult:1.45}
+};
+HELP.push({id:'characters',title:'双角色与分支存档',paragraphs:[
+ '玄锋剑修偏斗法：剑诀伤害倍率1.90、消耗9点灵力。沿用原版56年寿元、100气血和100灵力开局，适合熟悉进攻节奏。',
+ '青木丹修偏采药和持久：初始寿元64年、气血94、灵力115、攻击6。采止血草有35%机会额外多采1份（负重不足则不额外获得）；剑诀改为灵焰诀，伤害倍率1.45、耗灵11。',
+ '丹修斗法中优先使用回春术：消耗14灵力回复28气血，无需消耗回春散。灵力不足时仍可用回春散，丹修使用回春散的恢复量为40；剑修为32。',
+ '角色界面有两个独立分支：剑修档与丹修档。切换角色自动保存当前进度，不共享洞府、仓库、图鉴、装备和寿元；角色寿尽只删除自己的主存档与备份，不会伤及另一角色。',
+ '同一浏览器来源下的V10及更早版本存档只提供一次显式继承；选择“继承旧档”后会绑定到当前选中的角色。V10遗留数据不会被默默复制给两人。',
+ '导入V11存档必须与当前角色一致，不允许将剑修存档直接导入丹修档。寿尽后只能显式选择“重新轮回”；外部导出的JSON不受网页清除控制。'
+]});
+// Replace obsolete global-delete and automatic-migration wording in the shared help.
+const lifeHelp=HELP.find(h=>h.id==='lifespan');if(lifeHelp)lifeHelp.paragraphs[3]='寿元降为0后本角色永久终结，只清除对应剑修或丹修分支的主存档和自动备份，另一个角色不受影响。重新轮回必须由玩家确认；网页无法删除外部导出的JSON文件。';
+const saveHelp=HELP.find(h=>h.id==='save');if(saveHelp)saveHelp.paragraphs=[
+ '选择玄锋剑修或青木丹修后，每个角色在当前浏览器来源分别拥有一个独立存档。两人不共享洞府、材料、地图进度、图鉴或寿元。可从顶部“角色”随时切换，切换前会保存当前角色。',
+ '原V10同一浏览器来源的存档不会自动绑定角色；第一次进入时可在尚未创建的角色卡上主动选择“继承一次旧档”。继承完成会设置一次性迁移记录，旧存档仍保留，但不能再自动导入另一角色。',
+ '手工JSON导入V11进度时，剑修文件只能进入剑修档、丹修文件只能进入丹修档；导入前会确认。跨设备需分别导出两角色的进度文件。',
+ '某角色寿元归零时，只清理该分支当前存档和自动备份，并写入不可自动恢复的陨落标记。另一角色保留原进度。必须点击“重新轮回”才会重新创建已故角色。',
+ '当前离线单机无法清除电脑外部备份文件；同一来源的本地存储也可能被浏览器隐私设置清理。请定期导出重要进度，测试环境不等于手机长期存储保证。'
+];
+const D={CHARACTERS,SLOT_PREFIX:'qinglan-wendao-v11-',MIGRATION_KEY:'qinglan-wendao-v11-legacy-used',ACTIVE_KEY:'qinglan-wendao-v11-current',VERSION:11,SAVE:'qinglan-wendao-v10',DEATH_KEY:'qinglan-wendao-v10-permadeath',LIFE,LEGACY:['qinglan-wendao-v9','qinglan-wendao-v8','qinglan-wendao-v7','qinglan-cultivation-five-v5','qinglan-cultivation-demo-v2','qinglan-cultivation-demo-v1'],ZONES,LAND,ITEMS,RECIPES,ENEMIES,NAMED,EVENTS,RES,RESOURCE_LAYOUT,SITES,QUALITIES,QUALITY_WEIGHTS,AFFIXES,BOOK_REWARDS,GUIDE,HELP,BUILDINGS,CAMP_LANDS,SETTLE_COST,MOVE_CAMP_COST,FARM_LOOT};
 root.QData=D;
 if(typeof module!=='undefined'&&module.exports)module.exports=D;
 })(globalThis);

@@ -1,9 +1,9 @@
-name: V10 regression + lifespan
+name: V11 character branches + regression
 on:
   push:
     branches: [main, 'chore/**', 'feat/**', 'release/**']
   pull_request:
-    branches: [main, 'chore/**']
+    branches: [main, 'chore/**', 'feat/**']
 permissions:
   contents: read
 jobs:
@@ -21,6 +21,7 @@ jobs:
         run: |
           node --check src/data.js
           node --check src/engine.js
+          node --check src/slots.js
           node --check src/ui.js
       - name: Baseline regressions
         run: |
@@ -28,12 +29,14 @@ jobs:
           node tests/v10_regression.test.js
       - name: Lifespan and economy
         run: node tests/v10_lifespan.test.js
-      - name: Three-seed full campaign
-        run: node tests/v10_campaign.test.js --all
+      - name: V11 role and storage tests
+        run: node tests/v11_characters.test.js
+      - name: Six role-specific five-zone campaigns
+        run: node tests/v10_campaign.test.js --all --both-roles
       - name: Standalone HTML rebuild
         run: python build.py
-      - name: Verify V10 standalone content
-        run: git diff --exit-code -- '青岚问道_V10_寿元与洞府.html'
+      - name: Verify V11 standalone content
+        run: git diff --exit-code -- '青岚问道_V11_双角色独立存档.html'
   browser:
     name: Chromium UI and permadeath (isolated test storage)
     runs-on: ubuntu-latest
@@ -47,3 +50,4 @@ jobs:
       - run: python -m playwright install --with-deps chromium
       - run: python tests/v10_browser_smoke.py
       - run: python tests/v10_lifespan_browser.py
+      - run: python tests/v11_browser.py

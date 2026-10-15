@@ -8,21 +8,25 @@ const integer=(n,a=0,b=1000000)=>Number.isFinite(Number(n))?clamp(Math.floor(Num
 const obj=x=>x&&typeof x==='object'&&!Array.isArray(x);
 const pos=p=>obj(p)&&Number.isInteger(p.x)&&Number.isInteger(p.y)&&p.x>=0&&p.x<8&&p.y>=0&&p.y<8;
 const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
-function fresh(seed=261014){return {
- version:10,seed:integer(seed,1,4294967295),zone:0,unlocked:1,ritual:Array(5).fill(false),cleared:Array(5).fill(false),
+function fresh(seed=261014,character='sword'){const c=D.CHARACTERS[character];if(!c)throw Error('未知修行角色');return {
+ version:11,character,seed:integer(seed,1,4294967295),zone:0,unlocked:1,ritual:Array(5).fill(false),cleared:Array(5).fill(false),
  pos:{x:1,y:5},last:{x:1,y:5},minutes:420,seen:{},visited:{},scouted:{},nodeHarvest:{},events:{},sites:{},campRests:{},bossDaily:{},
- hp:100,maxHp:100,hunger:84,water:81,spirit:92,maxSpirit:100,attack:7,level:1,xp:0,
- settlements:Array(5).fill(null),caches:{},pillDaily:{day:1,uses:0},life:{left:D.LIFE.initialYears*D.LIFE.yearMinutes,losses:0,elixirs:0},ended:false,
+ hp:c.hp,maxHp:c.hp,hunger:84,water:81,spirit:c.spirit-8,maxSpirit:c.spirit,attack:c.attack,level:1,xp:0,
+ settlements:Array(5).fill(null),caches:{},pillDaily:{day:1,uses:0},life:{left:c.years*D.LIFE.yearMinutes,losses:0,elixirs:0},ended:false,
  inv:{wood:2,stone:1,fiber:2,berry:4,water:3,salve:2},stash:{},gears:[],pending:[],equipped:{weapon:null,armor:null},nextGear:1,
  codex:{items:{},enemies:{},gears:{},claims:{}},buffs:{fireward:0,detox:0},
  flags:{repaired:false,boss:false,talisman:false,complete:false},meditation:{day:1,uses:0},combat:null,
  stats:{steps:0,kills:0,defeats:0,gathers:0,scouts:0,wood:0,drinks:0,books:0,travels:0,training:0,forestMoves:0,crafted:0,events:0,bossWins:0,settled:0,built:0,stores:0,withdraws:0,farms:0,pillsMade:0,relocations:0},
  guide:{status:'new',step:0,base:{},rewarded:false},settings:{motion:true},logs:[]
 };}
-function normalize(raw){
- if(!obj(raw)||![1,2,5,7,8,9,10].includes(raw.version)||!obj(raw.inv)||!pos(raw.pos))throw Error('不是可识别的青岚问道存档');
- const o=copy(raw),n=fresh(o.seed);const legacy=o.version<7;
- if(o.version===10){
+function normalize(raw,requestedCharacter='sword'){
+ if(!obj(raw)||![1,2,5,7,8,9,10,11].includes(raw.version)||!obj(raw.inv)||!pos(raw.pos))throw Error('不是可识别的青岚问道存档');
+ if(!D.CHARACTERS[requestedCharacter])throw Error('未知修行角色');
+ const o=copy(raw),character=o.version===11?o.character:requestedCharacter;
+ if(!D.CHARACTERS[character])throw Error('存档角色身份无效');
+ if(o.version===11&&character!==requestedCharacter)throw Error('存档角色与当前分支不符');
+ const n=fresh(o.seed,character),c=D.CHARACTERS[character],legacy=o.version<7;
+ if(o.version>=10){
   if(o.ended||!obj(o.life)||!Number.isInteger(o.life.left)||o.life.left<=0||o.life.left>200*D.LIFE.yearMinutes)throw Error('寿元已尽或寿元数据无效，无法恢复');
   n.life={left:o.life.left,losses:integer(o.life.losses,0,999),elixirs:integer(o.life.elixirs,0,D.LIFE.elixirLimit)};
  }else{
@@ -31,7 +35,7 @@ function normalize(raw){
   const penalties=Math.min(2,integer(o.stats?.defeats,0,10000))*D.LIFE.defeatYears;
   n.life={left:Math.max(8,D.LIFE.initialYears+boosts-penalties)*D.LIFE.yearMinutes,losses:Math.min(2,integer(o.stats?.defeats,0,10000)),elixirs:0};
  }
- n.level=integer(o.level,1,18);n.maxHp=100+9*(n.level-1);n.maxSpirit=100+2*(n.level-1);n.attack=7+n.level-1;
+ n.level=integer(o.level,1,18);n.maxHp=c.hp+9*(n.level-1);n.maxSpirit=c.spirit+2*(n.level-1);n.attack=c.attack+n.level-1;
  n.minutes=integer(o.minutes,0,52560000);n.hp=integer(o.hp,1,n.maxHp);n.spirit=integer(o.spirit,0,n.maxSpirit);
  n.hunger=integer(o.hunger,0,100);n.water=integer(o.water,0,100);n.xp=integer(o.xp,0,10+n.level*5-1);
  n.zone=integer(o.zone,0,4);n.pos=copy(o.pos);n.last=pos(o.last)?copy(o.last):copy(o.pos);
@@ -122,11 +126,13 @@ function normalize(raw){
  return n;
 }
 class Game{
- constructor(raw=null,seed=261014){this.s=raw?normalize(raw):fresh(seed);this.effects=[];this.reveal();if(!raw){for(const [k,n] of Object.entries(this.s.inv))if(n)this.s.codex.items[k]=1;this.log('抵达废弃营坪。先备工具，择地筑庐。','good');}}
+ constructor(raw=null,seed=261014,character='sword'){this.s=raw?normalize(raw,character):fresh(seed,character);this.effects=[];this.reveal();if(!raw){for(const [k,n] of Object.entries(this.s.inv))if(n)this.s.codex.items[k]=1;this.log('抵达废弃营坪。先备工具，择地筑庐。','good');}}
  get data(){return D;} state(){return copy(this.s);} get zone(){return D.ZONES[this.s.zone];}
  get day(){return Math.floor(this.s.minutes/1440)+1;} get hour(){return Math.floor(this.s.minutes%1440/60);}
  get clock(){const m=this.s.minutes%1440;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');}
  get night(){return this.hour>=18||this.hour<6;} get realm(){const l=this.s.level;return l<=9?'炼气'+['','一','二','三','四','五','六','七','八','九'][l]+'层':l<=12?'筑基初期':l<=15?'筑基中期':'筑基后期';}
+ get character(){return D.CHARACTERS[this.s.character];}
+ get spellCost(){return this.character.spellCost;}
  get lifeYears(){return Math.max(0,this.s.life.left/D.LIFE.yearMinutes);} get required(){return 10+this.s.level*5;} key(x=this.s.pos.x,y=this.s.pos.y,z=this.s.zone){return `${z}:${x},${y}`;}
  land(x=this.s.pos.x,y=this.s.pos.y){return this.zone.map[y]?.[x];}
  get site(){return D.SITES[this.key()]||null;} get name(){return this.atCamp?this.campName():this.site?.name||D.NAMED[this.key()]?.[0]||D.LAND[this.land()]?.name;}
@@ -176,7 +182,9 @@ class Game{
   if(!this.tick(r.minutes,2,2,r.spirit||3))return {ok:false,msg:'已负伤归营'};
   // Resource use is charged to the day the action started, even across midnight.
   this.s.nodeHarvest[key]={day:startDay,used:used+1};this.s.stats.gathers++;if(k==='wood')this.s.stats.wood++;
-  const msg=this.loot(r.loot,r.name,false);this.xp(r.xp);return this.note(msg+' · 修为+'+r.xp,'ok');
+  let msg=this.loot(r.loot,r.name,false);
+  if(this.s.character==='herb'&&k==='herb'&&this.weight+D.ITEMS.herb.wt<=this.capacity&&this.random()<.35){this.loot({herb:1},'丹修识药',false);msg+=' · 识药+1';}
+  this.xp(r.xp);return this.note(msg+' · 修为+'+r.xp,'ok');
  }
  move(x,y){if(this.s.combat)return this.fail('斗法中不能移动');if(!pos({x,y})||Math.max(Math.abs(x-this.s.pos.x),Math.abs(y-this.s.pos.y))!==1)return this.fail('只能逐格移动');const land=this.land(x,y);
   if(land==='boss'&&!this.s.ritual[this.s.zone])return this.fail('先完成'+this.zone.verb);if(land==='gate'&&!this.s.cleared[this.s.zone])return this.fail('击败本境首领后开放');
@@ -229,7 +237,7 @@ class Game{
    this.s.inv[id]--;this.s.pillDaily.uses++;const xp=id==='focus'?18:36,sp=id==='focus'?20:30;
    this.xp(xp);this.s.spirit=Math.min(this.s.maxSpirit,this.s.spirit+sp);return this.note('修为+'+xp+' · 今日修为丹'+this.s.pillDaily.uses+'/2','ok');
   }
-  const effects={berry:{hunger:22},water:{water:30},salve:{hp:32},pill:{hunger:42,water:8},fish:{hunger:28,water:6},meal:{hunger:45,water:12},mana:{spirit:40}};
+  const effects={berry:{hunger:22},water:{water:30},salve:{hp:this.s.character==='herb'?40:32},pill:{hunger:42,water:8},fish:{hunger:28,water:6},meal:{hunger:45,water:12},mana:{spirit:40}};
   if(['fireward','detox'].includes(id)){if(this.s.buffs[id]>this.s.minutes)return this.fail('保护效果仍在生效');this.s.inv[id]--;this.s.buffs[id]=this.s.minutes+240;return this.note('护持生效 · 240分钟','ok');}
   const e=effects[id];if(!e)return this.fail('不能使用该物品');const cap=k=>k==='hp'?this.s.maxHp:k==='spirit'?this.s.maxSpirit:100;
   if(Object.keys(e).every(k=>this.s[k]>=cap(k)))return this.fail('状态已满，不消耗物品');this.s.inv[id]--;for(const [k,n] of Object.entries(e))this.s[k]=Math.min(cap(k),this.s[k]+n);if(id==='water')this.s.stats.drinks++;this.log('使用'+D.ITEMS[id].name,'good');return this.note(D.ITEMS[id].effect,'ok');
@@ -417,16 +425,19 @@ const batches=this.farmBatches,loot=Object.fromEntries(Object.entries(D.FARM_LOO
   if(mode==='escape'){
    if(b.training){this.finishTraining(false);return {ok:true};}if(b.type.startsWith('boss'))return this.fail('首领战不能撤离');if(this.random()<.8){this.s.combat=null;this.s.pos=copy(this.s.last);this.reveal();this.tick(15,1,1,4);return this.note('成功撤离');}this.log('撤离失败。','bad');
   }else if(mode==='attack'||mode==='spell'){
-   if(mode==='spell'&&this.s.spirit<9)return this.fail('剑诀需9灵力');if(mode==='spell')this.s.spirit-=9;
-   const base=this.s.attack+this.weapon+b.riposte,crit=this.random()*100<this.affix('crit'),boost=mode==='spell'?1.7*(1+this.affix('spell')/100):1;
+   if(mode==='spell'&&this.s.spirit<this.spellCost)return this.fail('术法需'+this.spellCost+'灵力');if(mode==='spell')this.s.spirit-=this.spellCost;
+   const base=this.s.attack+this.weapon+b.riposte,crit=this.random()*100<this.affix('crit'),boost=mode==='spell'?this.character.spellMult*(1+this.affix('spell')/100):1;
    const dmg=Math.max(1,Math.round(base*boost*(.88+this.random()*.24)*(crit?1.5:1))-Math.max(0,b.armor-this.affix('pierce')))+this.affix('fire');
    const dealt=Math.min(b.hp,dmg);b.hp=Math.max(0,b.hp-dmg);b.riposte=0;const heal=Math.floor(dealt*this.affix('leech')/100);if(heal)this.s.hp=Math.min(this.s.maxHp,this.s.hp+heal);
-   this.log(`${mode==='spell'?'剑诀':'剑击'}${crit?'会心':''} · 伤害${dmg}${heal?' · 吸血+'+heal:''}`,'good');
+   this.log(`${mode==='spell'?(this.s.character==='herb'?'灵焰诀':'剑诀'):'剑击'}${crit?'会心':''} · 伤害${dmg}${heal?' · 吸血+'+heal:''}`,'good');
    if(!b.hp){if(b.training){this.finishTraining(true);return {ok:true};}if(this.tick(15,1,1,2))this.win();return {ok:true};}
   }else if(mode==='guard'){guard=true;b.riposte=4;this.s.spirit=Math.min(this.s.maxSpirit,this.s.spirit+10+this.affix('flow'));this.s.hp=Math.min(this.s.maxHp,this.s.hp+this.affix('renew'));this.log('御气防守，蓄势+4。');
   }else if(mode==='heal'){
-   if(this.s.hp>=this.s.maxHp)return this.fail('气血已满');if(b.training){if(!b.virtualHeals)return this.fail('练习药已用完');b.virtualHeals--;}else{if(!(this.s.inv.salve>0))return this.fail('回春散不足');this.s.inv.salve--;}
-   this.s.hp=Math.min(this.s.maxHp,this.s.hp+32);this.log('回春散 · 气血+32','good');
+   if(this.s.hp>=this.s.maxHp)return this.fail('气血已满');
+   if(this.s.character==='herb'&&this.s.spirit>=14){this.s.spirit-=14;this.s.hp=Math.min(this.s.maxHp,this.s.hp+28);this.log('回春术 · 消耗灵力14，回复气血28','good');}
+   else{if(b.training){if(!b.virtualHeals)return this.fail('练习药已用完');b.virtualHeals--;}else{if(!(this.s.inv.salve>0))return this.fail('回春散不足');this.s.inv.salve--;}
+    const amount=this.s.character==='herb'?40:32;this.s.hp=Math.min(this.s.maxHp,this.s.hp+amount);this.log('回春散 · 气血+'+amount,'good');}
+
   }else if(mode==='mana'){
    if(this.s.spirit>=this.s.maxSpirit)return this.fail('灵力已满');if(b.training){this.s.spirit=Math.min(this.s.maxSpirit,this.s.spirit+40);}else{if(!(this.s.inv.mana>0))return this.fail('回灵丹不足');this.s.inv.mana--;this.s.spirit=Math.min(this.s.maxSpirit,this.s.spirit+40);}
   }

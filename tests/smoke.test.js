@@ -2,10 +2,10 @@
 const assert=require('node:assert/strict');
 const D=require('../src/data.js'),Game=require('../src/engine.js');
 const g=new Game();
-assert.equal(D.VERSION,10);
+assert.equal(D.VERSION,11);
 assert.equal(D.ZONES.length,5);
 assert.equal(D.GUIDE.length,11);
-assert.equal(g.s.version,10);
+assert.equal(g.s.version,11);
 assert.equal(g.s.settlements.length,5);
 assert.equal(g.camp,null);
 assert.equal(g.storageReady,false);
