@@ -12,3 +12,5 @@ Node 22 / JDK 17 / Android SDK；运行 npm install、npx cap add android、npx 
 
 ## 数据说明
 本地存档存于 Android WebView 的 localStorage，APK 卸载可能清除全部数据；暂未完成旧浏览器存档迁移、正式签名及设备实测，重要档位请先导出 JSON。
+
+构建记录：2026-10-17 发起云端 Debug APK 构建，产物须以 Actions 成功状态与实际 Artifact 为准。
