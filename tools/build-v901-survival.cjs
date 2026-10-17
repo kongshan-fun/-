@@ -131,6 +131,7 @@ HELP.push({id:'survival-time',title:'饥渴与休息：按时间结算',paragrap
  '洞府安睡及休息按分钟恢复气血和灵力。补给充足才能完整恢复，任一补给低于或等于10则停止恢复，请先在洞府用餐补水。'
 ]});
 root.QData=D;`);
+ rep("this.s.hunger=48;this.s.water=52;","this.s.hunger=this.s.hunger<=10?this.s.hunger:48;this.s.water=this.s.water<=10?this.s.water:52;");
  if((s.match(/<script\b/gi)||[]).length!==10||(s.match(/<\/html>/gi)||[]).length!==1)throw Error("V90.1 integrity failed");
  return s;
 }
