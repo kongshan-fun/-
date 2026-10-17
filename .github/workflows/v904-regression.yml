@@ -19,3 +19,11 @@ jobs:
         run: node tests/v904-100-slots-playthrough.test.cjs
       - name: P10 ascension regression
         run: node tests/p10-nine-heavens.test.cjs
+      - name: Package completed test saves and evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: V904_100Slots_Accelerated_Proof
+          path: artifacts/v904-100-slots/
+          if-no-files-found: warn
+          retention-days: 30
