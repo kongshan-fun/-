@@ -66,7 +66,7 @@ function buildP11(base){
  nextBattleIntent(b){
 `);
   one("  if(!b.training&&b.type.startsWith('boss')&&b.turn%4===0)return 'skill';\n  return b.turn%3===0?'heavy':b.turn%5===0?'recover':'attack';",
-      "  if(!b.training&&b.charge)return 'heavy';\n  if(!b.training&&b.type.startsWith('boss')&&b.turn%4===0)return 'skill';\n  if(!b.training&&this.battleTrait(b)&&b.turn%4===3)return 'trait';\n  return b.turn%3===0?'heavy':b.turn%5===0?'recover':'attack';");
+      "  if(!b.training&&b.type.startsWith('boss')&&b.turn%4===0)return 'skill';\n  if(!b.training&&b.charge)return 'heavy';\n  if(!b.training&&this.battleTrait(b)&&b.turn%4===3)return 'trait';\n  return b.turn%3===0?'heavy':b.turn%5===0?'recover':'attack';");
   one('    const dmg=Math.max(1,Math.round(base*m.power',
       '    const dmg=this.adjustEnemyDamage(b,Math.max(1,Math.round(base*m.power');
   one("+this.affix('fire');\n    const dealt=","+this.affix('fire'),'melee');\n    const dealt=");
