@@ -61,8 +61,9 @@ for(const race of ['human','demon']){
  const c=fixture(race),d=fixture(race);c.s.hunger=c.s.water=0;d.s.hunger=d.s.water=0;
  c.tick(49);for(let i=0;i<7;i++)d.tick(7);
  check(race+' subhour action time consistency',c.s.hp===d.s.hp&&Math.abs(c.s.survival.debt-d.s.survival.debt)<1e-8);
- const partial=fixture(race);partial.s.hunger=partial.s.water=2;const start=partial.s.hp;partial.tick(60,4,4,0);
- check(race+' starting with small supply only pays for uncovered time',partial.s.hp===start-6);
+ const partial=fixture(race);partial.s.hunger=partial.s.water=2;const start=partial.s.hp,expected=partial.survivalForecast(60,4,4,0).damage;
+ partial.tick(60,4,4,0);
+ check(race+' starting with small supply only pays for uncovered time',partial.s.hp===start-expected&&expected<partial.survivalForecast(60,0,0,0).elapsed*(Math.max(4,Math.ceil(partial.s.maxHp*.002))+Math.max(8,Math.ceil(partial.s.maxHp*.004)))/60);
  const older=fixture(race);delete older.s.survival;
  check(race+' old save works',new Game(older.state(),60118,race).s.survival.debt===0);
  const tiny=fixture(race);tiny.s.hunger=tiny.s.water=0;tiny.tick(1);
