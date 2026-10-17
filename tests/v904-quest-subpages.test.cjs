@@ -26,7 +26,7 @@ function fixture(role,zone){
  let renders=0;
  const render=()=>{renders++;bodyElement.scrollTop=0};
  const stop=()=>{};
- const objective=()=>({title:'本境主线',detail:'完成地标目标',point:{x:4,y:4,mark:'泉'}});
+ const objective=()=>({title:'本境主线',detail:'完成地标目标',point:{x:4,y:4,mark:'泉'},needs:[],note:'',action:null});
  const renderEngine=new Function('game','D','esc','objective','realmPlaybookHTML','relicCourtQuestHTML','$','render','stop',
   "let panel='quest',panelScroll={},questReturnFocus='guide';\n"+body+
   "\nreturn {questDisplay,guidePage,worldPage,enterQuestChild,leaveQuestChild,get:()=>({panel,scroll:documentBody.scrollTop}),setScroll:n=>documentBody.scrollTop=n};"
