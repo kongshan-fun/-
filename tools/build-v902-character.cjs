@@ -76,7 +76,11 @@ function buildV902(input){
  once("panel==='character'?'character-body-v66':''","panel==='character'?'character-body-v92':''");
  once(" if(a==='manual-tab'){",String.raw`
  if(panel==='character'&&a==='character-gear-select'){
-  characterSelectedKey=String(activeRole)+':'+String(activeSlot)+':'+String(b.dataset.id||'');
+  const id=String(b.dataset.id||''),gear=game.gear(id);
+  if(!gear)return;
+  const type=game.recipe(gear.recipe)?.gear;
+  if(characterGearFilter!=='all'&&characterGearFilter!==type){characterGearFilter=type;characterGearResetScroll=true;}
+  characterSelectedKey=String(activeRole)+':'+String(activeSlot)+':'+id;
   characterSalvageConfirmKey='';renderPanel();return;
  }
  if(panel==='character'&&a==='character-filter'){
