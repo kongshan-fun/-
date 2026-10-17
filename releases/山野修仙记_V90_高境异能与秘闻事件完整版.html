@@ -3992,8 +3992,8 @@ const batches=this.farmBatches,loot=Object.fromEntries(Object.entries(D.FARM_LOO
   return damage;
  }
  nextBattleIntent(b){
-  if(!b.training&&b.charge)return 'heavy';
   if(!b.training&&b.type.startsWith('boss')&&b.turn%4===0)return 'skill';
+  if(!b.training&&b.charge)return 'heavy';
   if(!b.training&&this.battleTrait(b)&&b.turn%4===3)return 'trait';
   return b.turn%3===0?'heavy':b.turn%5===0?'recover':'attack';
  }
