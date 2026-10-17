@@ -2897,9 +2897,14 @@ class Game{
   if(place==='city'&&this.s.major<5)return '合体仙城的旧印追索须待炼虚境之后方能面见';
   return '';
  }
- karmaReady(sp,h=1,w=1){
-  if(this.s.spirit<=sp)return '此行至少需要灵力'+(sp+1)+'，请先补足余力';
-  if(this.s.hunger<=h+1||this.s.water<=w+1)return '请先补给饱腹与饮水，避免未经预告的饥渴损伤';
+ karmaActionCost(sp,minutes){
+  const region=this.extra(minutes);
+  return {spirit:sp+region.spirit,water:region.water};
+ }
+ karmaReady(sp,h=1,w=1,minutes=0){
+  const cost=this.karmaActionCost(sp,minutes);
+  if(this.s.spirit<=cost.spirit)return '此行至少需要灵力'+(cost.spirit+1)+'（含当地环境耗灵），请先补足余力';
+  if(this.s.hunger<=h+1||this.s.water<=w+cost.water+1)return '请先补给饱腹与饮水，避免未经预告的饥渴损伤';
   return '';
  }
  karmaOldMemory(){
@@ -2911,7 +2916,7 @@ class Game{
  karmaRead(){
   const why=this.karmaReason('marsh');if(why)return this.fail(why);
   if(this.karmaWitness.stage!==0)return this.fail('残灯已查明，往事可以重读，但不会重复消耗或领奖');
-  const supply=this.karmaReady(4,1,1);if(supply)return this.fail(supply);
+  const supply=this.karmaReady(4,1,1,20);if(supply)return this.fail(supply);
   if(!this.tick(20,1,1,4))return {ok:false};
   this.s.flags.karmaWitness={stage:1,choice:0};
   this.log('玄阴渡魂残灯：旧印司曾封闭破裂仙路，守印人的后裔误将事故归咎于携符者。你已读到残缺的证人供词。','good');
@@ -2923,7 +2928,7 @@ class Game{
   if(![1,2].includes(choice))return this.fail('未知的旧证取舍');
   const cost=choice===1?{herb:1}:{stone:1},sp=choice===1?6:4,time=choice===1?35:30;
   if(!this.enough(cost))return this.fail('本次取舍还缺：'+this.missing(cost));
-  const supply=this.karmaReady(sp,1,1);if(supply)return this.fail(supply);
+  const supply=this.karmaReady(sp,1,1,time);if(supply)return this.fail(supply);
   if(!this.tick(time,1,1,sp))return {ok:false};
   this.spend(cost);
   this.s.flags.karmaWitness={stage:2,choice};
@@ -2958,7 +2963,7 @@ class Game{
   if(this.karmaWitness.stage!==2)return this.fail('你尚未在玄阴渡魂残灯留下真实的证言或魂印。请先亲历该支线；原主线不受限制');
   if(!['reconcile','defy'].includes(mode))return this.fail('未知的追索处理方式');
   const agree=mode==='reconcile',sp=agree?6:10,time=agree?40:45;
-  const supply=this.karmaReady(sp,2,2);if(supply)return this.fail(supply);
+  const supply=this.karmaReady(sp,2,2,time);if(supply)return this.fail(supply);
   const item=agree?this.karmaReconcileCost():null;
   if(item&&!this.enough(item))return this.fail('呈证和解需交止血草：'+this.missing(item));
   if(!this.tick(time,2,2,sp))return {ok:false};
@@ -4227,8 +4232,8 @@ function karmaBody(){
  let content='';
  if(isMarsh){
   if(!read){
-   const why=reason||game.karmaReady(4,1,1);
-   content='<section class="trial-stage">'+memory+'<p>先验看残灯所存供词。观灯耗时20分钟、'+word+'−4、饱腹与饮水各−1；只记录真实线索，不会领取高境装备。</p>'+ (why?'<p class="danger-text">'+esc(why)+'</p>':'')+
+   const why=reason||game.karmaReady(4,1,1,20);
+   content='<section class="trial-stage">'+memory+'<p>先验看残灯所存供词。观灯耗时20分钟、'+word+'−'+game.karmaActionCost(4,20).spirit+'（含当地环境）、饱腹与饮水各−1；只记录真实线索，不会领取高境装备。</p>'+ (why?'<p class="danger-text">'+esc(why)+'</p>':'')+
     '<button class="btn primary trial-start" data-a="karma-read" '+(why?'disabled':'')+'>照看残灯 · 读旧印证词</button></section>';
   }else if(!taken){
    const routes=[
@@ -4236,8 +4241,8 @@ function karmaBody(){
     {choice:2,title:'封存追魂旧印 · 不替亡者立誓',text:'以一份低阶灵石封住残魂，记下可以核对的印痕。保住旧印，却不主动为任何一方作证。',mat:'低阶灵石×1',cost:{stone:1},sp:4,time:30,loot:'灵尘×2'}
    ];
    const choices=routes.map(q=>{
-    const missing=!game.enough(q.cost),why=reason||game.karmaReady(q.sp,1,1);
-    return `<button class="trial-option karma-choice" data-a="karma-witness" data-choice="${q.choice}" ${missing||why?'disabled':''}><span class="trial-option-top"><strong>${q.title}</strong><small>${q.mat}</small></span><span class="trial-option-desc">${q.text}</span><span class="trial-option-risk">耗时${q.time}分钟 · ${word}−${q.sp} · 食水各−1 · 奖励${q.loot}${missing?' · 材料不足':''}${why?' · '+esc(why):''}</span></button>`;
+    const missing=!game.enough(q.cost),why=reason||game.karmaReady(q.sp,1,1,q.time);
+    return `<button class="trial-option karma-choice" data-a="karma-witness" data-choice="${q.choice}" ${missing||why?'disabled':''}><span class="trial-option-top"><strong>${q.title}</strong><small>${q.mat}</small></span><span class="trial-option-desc">${q.text}</span><span class="trial-option-risk">耗时${q.time}分钟 · ${word}−${game.karmaActionCost(q.sp,q.time).spirit}（含环境） · 食水各−1 · 奖励${q.loot}${missing?' · 材料不足':''}${why?' · '+esc(why):''}</span></button>`;
    }).join('');
    content='<section class="trial-stage">'+memory+'<div class="trial-note"><strong>供词已读 · 最后一次取舍</strong><p>残灯留下两个互斥选择；这不是全局善恶值。今天做出的选择会冻结在当前种族与档位之中，不能反复领取。</p></div><div class="trial-options">'+choices+'</div></section>';
   }else{
@@ -4252,7 +4257,7 @@ function karmaBody(){
    content='<div class="trial-note"><strong>追索者尚未见到可信凭据</strong><p>'+relation+'</p><p>你尚未在玄阴渡魂残灯留下证词或魂印，不能声称曾与亡魂达成约定。可前往第四图第4列第7行调查，也可以忽略本事件继续原有修行与破境。</p><p class="micro">此时不扣任何物资，也不强制打开其他地图。</p></div>';
   }else{
    const herb=game.karmaReconcileCost().herb,injury=game.karmaDefyDamage(),fatal=injury>=s.hp;
-   const agreeReason=reason||game.karmaReady(6,2,2),fightReason=reason||game.karmaReady(10,2,2);
+   const agreeReason=reason||game.karmaReady(6,2,2,40),fightReason=reason||game.karmaReady(10,2,2,45);
    const agreeMissing=!game.enough({herb}),agreeDesc=testimony.choice===1?'你将当日保存的完整证言递交旧印司，止住对方的追索。':'你亲手拆下封魂旧印，把事主的最后印痕交还后裔，允其核验。';
    const choices=`<button class="trial-option karma-choice" data-a="karma-final" data-mode="reconcile" ${agreeReason||agreeMissing?'disabled':''}><span class="trial-option-top"><strong>呈证解怨 · 不再互相追索</strong><small>止血草×${herb}</small></span><span class="trial-option-desc">${agreeDesc}此路代价受青岚旧碑与玄阴旧证的实际经历影响。</span><span class="trial-option-risk">耗时40分钟 · ${word}−6 · 食水各−2 · 无直接伤害 · 成功得上古残卷×1${agreeMissing?' · 止血草不足':''}${agreeReason?' · '+esc(agreeReason):''}</span></button>`+
    `<button class="trial-option karma-choice ${fatal?'danger':''}" data-a="karma-final" data-mode="defy" ${fightReason?'disabled':''}><span class="trial-option-top"><strong>持印破阵 · 拒绝旧印司追索</strong><small>${word}−10</small></span><span class="trial-option-desc">以修为破开索债阵，带着自己的旧事脱身。虽可击退来人，却不能将仇怨伪写为和解。</span><span class="trial-option-risk ${fatal?'fatal':''}">耗时45分钟 · 食水各−2 · 预计气血−${injury}${fatal?' · 可能重伤折寿':''} · 成功得灵尘×2${fightReason?' · '+esc(fightReason):''}</span></button>`;
