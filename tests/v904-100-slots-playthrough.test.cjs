@@ -125,4 +125,26 @@ const summary={result:errors.length?'FAIL':'PASS',type:'accelerated end-to-end m
  rituals,bossWins,breakthroughs,trialStages,saveLoads,moves,
  assumptions:['XP granted via engine method','material/food/health provisioned by test fixture','combat attack temporarily boosted to remove balance/grinding','boss, ritual, trials, breakthrough and ascension use actual game actions'],
  naturallyGrinded:false,realBrowserTested:false};
+
+// Evidence is generated only in an independent GitHub Actions run, never saved in user storage.
+if(typeof process!=='undefined'&&process.env.GITHUB_ACTIONS==='true'){
+ const folder=path.join(root,'artifacts','v904-100-slots');
+ fs.mkdirSync(folder,{recursive:true});
+ const readme=[
+  '山野修仙记 V90.4：100档自动化加速通关证据',
+  '50个人族 + 50个妖族，均由真实 Game/CharacterSlots 接口创建、执行、存档与读取。',
+  '本批档案属于测试夹具：修为、道材、食水、疗伤和战斗攻击在测试中被加速或补足。',
+  '这些完成档并不证明普通玩家零加速自然通关；请勿作为正常游戏数值平衡或生产存档。',
+  '所有档案为本次 CI 合成数据，没有用户账户信息。',
+ ].join('\n');
+ fs.writeFileSync(path.join(folder,'README_测试档案说明.txt'),readme,'utf8');
+ fs.writeFileSync(path.join(folder,'100档验收汇总.json'),JSON.stringify({summary,completedArchives:cases},null,2),'utf8');
+ for(const row of cases){
+  const key=slots.key(row.role,row.slot),raw=table.get(key);
+  assert(raw,'missing final character save '+key);
+  const file=row.role+'_'+String(row.slot).padStart(3,'0')+'_飞升完成.json';
+  fs.writeFileSync(path.join(folder,file),raw,'utf8');
+ }
+ console.log('V90.4 evidence files created:',cases.length,'synthetic completed character saves + manifest');
+}
 console.log('V90.4 100-SLOT FULL-MILESTONE TEST',JSON.stringify(summary));
