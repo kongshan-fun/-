@@ -1,0 +1,8 @@
+{
+  "appId": "fun.kongshan.shanye",
+  "appName": "山野修仙记",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": false
+  }
+}
