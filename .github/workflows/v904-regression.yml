@@ -1,0 +1,21 @@
+name: V90.4 Quest and 100-Slot Regression
+on:
+  push:
+    branches:
+      - feat/v90-4-quest-subpages-playthrough
+  workflow_dispatch:
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Quest subpage navigation
+        run: node tests/v904-quest-subpages.test.cjs
+      - name: 100-slot accelerated full-milestone test
+        run: node tests/v904-100-slots-playthrough.test.cjs
+      - name: P10 ascension regression
+        run: node tests/p10-nine-heavens.test.cjs
