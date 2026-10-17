@@ -39,6 +39,7 @@ function patchRelease(source){
  one("if(a==='lore-open'&&panel==='quest')","if(a==='quest-subpage'&&panel==='quest'){enterQuestChild(b.dataset.page);return;}\n if(a==='quest-return'){leaveQuestChild();return;}\n if(a==='lore-open'&&panel==='quest')");
  one("if(a==='panel-back'||a==='close-panel'){if(panel)panelScroll[panel]","if(a==='panel-back'||a==='close-panel'){if(isQuestChild(panel)){leaveQuestChild();return;}if(panel)panelScroll[panel]");
  one("else if(panel){if(['karma'","else if(panel){if(isQuestChild(panel)){leaveQuestChild();return;}if(['karma'");
+ one("function openPanel(name){\n codexRecipeReturn=false;","function openPanel(name){\n if(name==='quest'&&isQuestChild(panel)){leaveQuestChild();return;}\n codexRecipeReturn=false;");
  one("codexMapReturn=false;panelScroll={};","codexMapReturn=false;panelScroll={};questReturnFocus='guide';");
  let at=h.indexOf("</head>");if(at<0)throw Error('head missing');h=h.slice(0,at)+'<style id="v904-quest">\n'+Q4_CSS+'\n</style>\n'+h.slice(at);
  one('V90.3 · 主线引导与地图标识优化版</title>','V90.4 · 主线子页面与百档通关验证版</title>');
