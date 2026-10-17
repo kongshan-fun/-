@@ -154,7 +154,7 @@ String.raw`  const trait=this.battleTrait(b);
   if(!this.tick(p.minutes,2,2,p.spirit))return {ok:false,msg:'异兆调查中负伤；本世此境无法重复领取'};
   this.s.hp-=p.damage;
   this.log(e.name+' · '+(mode==='probe'?'深入勘察':'绕行拾遗')+(p.damage?'，气血-'+p.damage:''),'good');
-  if(this.s.hp<=0){this.collapse();return this.note('勘探反噬负伤，沿用原折寿；此境异兆已经结算','warn');}
+  if(this.s.hp<=0){this.collapse();return this.fail('勘探反噬负伤，沿用原折寿；此境异兆已经结算');}
   this.loot(p.loot,'高境异兆',true);
   return this.note(e.name+' · '+(mode==='probe'?'深入勘察':'绕行拾遗')+'完成','ok');
  }
@@ -190,7 +190,7 @@ String.raw`  if(this.site){this.note('发现'+this.site.name+' · 可探查');re
  }
  else if(modal.kind==='ad-life')body=`);
   one(" if(a==='event-choice'){const r=game.act('event',{choice:Number(b.dataset.choice)});",
-      " if(a==='high-event-choice'&&modal?.kind==='high-event'){const r=game.act('high-event',{mode:b.dataset.mode});if(r.ok){modal=null;renderModal();}flush(r);return;}\n if(a==='event-choice'){const r=game.act('event',{choice:Number(b.dataset.choice)});");
+      " if(a==='high-event-choice'&&modal?.kind==='high-event'){const r=game.act('high-event',{mode:b.dataset.mode});if(r.ok||!game.highEventAt){modal=null;renderModal();}flush(r);return;}\n if(a==='event-choice'){const r=game.act('event',{choice:Number(b.dataset.choice)});");
   one(" if(a==='site'){stop();if(game.site?.id==='immortal-estate')",
       " if(a==='high-event'){stop();if(game.highEventAt)showModal({kind:'high-event'});return;}\n if(a==='site'){stop();if(game.site?.id==='immortal-estate')");
   one("root.QData=D;",String.raw`HELP.push({id:'p11-high-realm',title:'高境异能与异兆调查',paragraphs:[
