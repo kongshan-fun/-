@@ -19,14 +19,14 @@ function objective(){
    out.short=camp?"返回洞府 · 修建山门":"先择地筑庐 · 建立洞府";
   }else{
    const p=poi(i,"shrine");out.title=z.verb+" · "+z.altar;out.point=p;
-   out.detail="前往"+where(p)+"的「"+z.altar+"」完成"+z.verb+"仪式，所需材料必须随身携带，不能隔空使用仓库。";
+   out.detail="前往地图指示的位置完成"+z.verb+"仪式。所需材料必须随身携带，不能隔空使用仓库。";
    out.needs=needs(z.need);out.action=p?(at(p)?action("在此完成"+z.verb,"repair"):action("导航到"+z.altar,"map",{x:p.x,y:p.y})):null;
    out.short=z.verb+" · 地图「"+(p?.mark||"坛")+"」字（第"+(p?.x+1||5)+"列第"+(p?.y+1||5)+"行）";
   }
  }else if(!s.cleared[i]){
   const p=poi(i,"boss"),enemy=D.ENEMIES[z.boss]?.name||"首领";out.point=p;
   out.title="挑战首领 · "+enemy;
-  out.detail="仪式已完成。前往"+where(p)+"的「"+(p?.name||"首领据点")+"」挑战"+enemy+"；准备好气血、食水与装备。";
+  out.detail="仪式已完成。前往地图标记处挑战"+enemy+"，出发前检查气血、食水与装备。";
   out.action=p?(at(p)?action("在此挑战首领","hunt"):action("导航到首领据点","map",{x:p.x,y:p.y})):null;
   out.short="挑战"+enemy+" · 找地图「"+z.bossMark+"」字";
  }else if(i>=5&&s.major===i-4){
@@ -40,7 +40,7 @@ function objective(){
   out.short=core?"本境洞府 · 凝丹雷劫":heart?"本境洞府 · 元婴问心":"本境洞府 · 道行"+s.daoXp+"/"+(stage?.needDao||0)+"待突破";
  }else if(i===11&&s.major>=8){
   const p=poi(i,"gate");out.title="渡劫已成 · 前往飞升天门";out.point=p;
-  out.detail="前往"+where(p)+"的飞升界碑。需150道行、劫雷晶×3、天门符×2；可以直接飞升，也可以选做九霄终劫。";
+  out.detail="在飞升天门的界碑结算。需150道行、劫雷晶×3、天门符×2；可直接飞升，也可选做九霄终劫。";
   out.needs=needs(D.ASCENSION_RULE.cost);out.note="飞升道行 "+s.daoXp+"/"+D.ASCENSION_RULE.dao;
   out.action=p?(at(p)?action("查看飞升与九霄终劫","heaven-open"):action("导航到飞升天门","map",{x:p.x,y:p.y})):null;
   out.short="渡劫已成 · 前往「界」字飞升天门";
