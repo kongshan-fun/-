@@ -3176,6 +3176,106 @@ class Game{
   };
   return (v.complete?'已履行':'已经立下')+'「'+info.name+'」之誓。'+paths[v.path];
  }
+
+ // P9: optional three-tier ruin. No ancient-god boss, no new ascension gate or permanent combat stats.
+ get immortalEstate(){return this.s.flags.immortalEstate||{phase:0,choices:[],complete:false,resolution:null,origins:{stele:0,mirror:false,karma:0,dao:null,rift:false}};}
+ estateReason(){
+  const s=this.s;
+  if(s.combat||s.secretRealm)return '请先结束斗法或退出原有秘境，再入仙人遗府';
+  if(s.ended)return '本世修行已经终结';
+  if(s.zone!==11||s.pos.x!==3||s.pos.y!==3||s.major<7)return '须具备大乘／妖圣修为并亲临渡劫天门第4列第4行的遗府';
+  return '';
+ }
+ estateOrigins(){
+  return {
+   stele:this.s.flags.steleChoice||0,
+   mirror:!!this.s.flags.mirrorTrial?.complete,
+   karma:this.s.flags.karmaReckoning?.ending||0,
+   dao:this.s.flags.daoStele?.complete?this.s.flags.daoStele.path:null,
+   rift:!!this.s.flags.voidRift?.complete
+  };
+ }
+ estateEchoes(){
+  const state=this.immortalEstate;
+  const h=state.phase?state.origins:this.estateOrigins();
+  return [
+   h.stele===1?'旧碑有名：你曾护下青岚无名古修，遗仙残响认得守名者。':h.stele===2?'旧纹有缺：你曾取下失名护符，这片仙府并不因此断言你的善恶。':'旧碑未定：你不曾在青岚选择守碑或取符，不会替你补写誓言。',
+   h.mirror?'云镜辨真：你已在化神云海核对两份线索，识破伪卷。':'云镜未证：你没有辨真记录，仍可亲身探索古府。',
+   h.karma===1?'旧印和解：你与旧印司后裔已释怨，遗府不再放大旧仇。':h.karma===2?'旧印未和：你以强力暂断追索，未将未解之怨写成和解。':'旧印未结：你还未在合体城完成这段往事。',
+   h.dao?'大道已择：你曾在大乘古道完成「'+({preserve:'守铭道',discern:'照妄道',compassion:'归缘道'}[h.dao]||'道誓')+'」的选择。':'大道无誓：即使未完成大乘残碑支线，也不影响此处问心与撤离。',
+   h.rift?'裂界见痕：你已穿过两层空间错位，认得残禁的危险征兆。':'裂界未探：空间裂隙的旧路尚未亲历，残禁风险仍会完整提示。'
+  ];
+ }
+ estateBegin(){
+  const reason=this.estateReason();if(reason)return this.fail(reason);
+  if(this.immortalEstate.phase!==0)return this.fail('遗府已经启封，此次直接继续既有进度，无须重复支付开门代价');
+  const need={minutes:20,hunger:1,water:1,spirit:4,damage:0,cost:null};
+  const why=this.estateReady(need);if(why)return this.fail(why);
+  if(!this.tick(need.minutes,need.hunger,need.water,need.spirit))return {ok:false};
+  this.s.flags.immortalEstate={phase:1,choices:[],complete:false,resolution:null,origins:this.estateOrigins()};
+  this.log('天门外阙起雾，遗仙已逝，残府里只有三重仍可应对的考验。','good');
+  return this.note('遗府外阙已启 · 第一重遗仙问心，可以随时撤离保存进度','ok');
+ }
+ estatePreview(mode){
+  const state=this.immortalEstate,phase=state.phase;
+  if(state.complete||phase<1||phase>3||!D.ESTATE_TRIALS[phase-1].modes.includes(mode))return null;
+  const orig=state.origins,base=this.s.maxHp;
+  const rate=phase===1?
+   {remember:.042,discern:.026,sever:.142}[mode]:
+   phase===2?{survey:.085,anchor:.026,force:.245}[mode]:
+   {return:.048,record:.085}[mode];
+  const spiritual=phase===1?
+   (mode==='remember'?(orig.dao==='preserve'?7:9):mode==='discern'?(orig.mirror||orig.dao==='discern'?10:13):4):
+   phase===2?(mode==='survey'?(orig.rift?10:13):mode==='anchor'?8:4):
+   mode==='return'?(orig.dao==='compassion'?9:11):9;
+  const minutes=phase===1?mode==='sever'?35:40:phase===2?mode==='survey'?45:40:50;
+  const cost=phase===2&&mode==='anchor'?{mahayaJade:1}:phase===3&&mode==='return'?{rune:1}:phase===3&&mode==='record'?{mahayaRune:1}:null;
+  const loot=phase===3?(mode==='return'?{ancient:2,mahayaRune:1}:{ancient:2,mahayaJade:1}):null;
+  const damage=Math.max(1,Math.ceil(base*rate)-Math.floor(this.armor*.035));
+  const extra=this.extra(minutes);
+  return {mode,minutes,hunger:2,water:2,spirit:spiritual,actualSpirit:spiritual+extra.spirit,actualWater:2+extra.water,damage,cost,loot};
+ }
+ estateReady(plan){
+  const additional=this.extra(plan.minutes);
+  const spirit=plan.actualSpirit??plan.spirit+additional.spirit;
+  const water=plan.actualWater??plan.water+additional.water;
+  if(this.s.spirit<=spirit)return '灵力不足：本次需要'+spirit+'点（含环境消耗），仍须保留一点余力';
+  if(this.s.hunger<=plan.hunger+1||this.s.water<=water+1)return '饱腹或饮水不足；先补给，避免行动时产生未经预告的耗损';
+  if(plan.cost&&!this.enough(plan.cost))return '道材不足：'+this.missing(plan.cost);
+  return '';
+ }
+ estateAct(mode){
+  const reason=this.estateReason();if(reason)return this.fail(reason);
+  const state=this.immortalEstate,plan=this.estatePreview(mode);
+  if(!plan)return this.fail(state.complete?'本档遗府三重已过，不得重复取奖':'请先启封遗府并选择当前考验允许的应对方式');
+  const why=this.estateReady(plan);if(why)return this.fail(why);
+  const stage=state.phase;
+  if(!this.tick(plan.minutes,plan.hunger,plan.water,plan.spirit))return {ok:false};
+  if(plan.cost)this.spend(plan.cost);
+  this.s.hp-=plan.damage;
+  const stages=['遗仙问心','残缺仙禁','传承终试'],names={remember:'寻名守念',discern:'照妄辨心',sever:'强断旧念',survey:'观禁寻隙',anchor:'道源玉稳禁',force:'强破仙禁',return:'归封遗书',record:'留存见证'};
+  this.log('仙人遗府 · '+stages[stage-1]+' · '+names[mode]+'，气血-'+plan.damage,'good');
+  if(this.s.hp<=0){
+   this.collapse(); // Earlier completed stages persist. Failed stage remains retryable, no illusory progress.
+   return this.note('遗府试炼失利，沿用原战败折寿；已经过的层次保留，本层可恢复后重试','warn');
+  }
+  state.choices.push(mode);
+  state.phase=stage+1;
+  if(stage===3){
+   state.complete=true;state.resolution=mode;
+   this.loot(plan.loot,'仙人遗府·'+(mode==='return'?'归封旧诏':'留存旧证'));
+   this.log('三重已尽，府门复归沉寂；遗仙早已不在，仙界并未因此开放。','good');
+   return this.note('三重终试已成 · 见闻第九卷更新，少量旧道材已一次结算；飞升仍循原主线','ok','unlock');
+  }
+  return this.note('第'+stage+'重已过 · 可撤回地图补给，下次从第'+(stage+1)+'重继续','ok');
+ }
+ estateConclusion(){
+  const state=this.immortalEstate;
+  if(!state.complete)return '遗府中的古修早已不在。尚未走完三重挑战，所见只是封阙残影。';
+  return state.resolution==='return'?
+   '你将旧仙路的残书归封于碑，留待真正看清灾变的后来者开启；遗府没有给你新的境界，却留下了一次不随意泄露古禁的承诺。':
+   '你把残书见证拓为一份可核对的史页，允许后来者知道仙路曾断、封禁曾损；遗府没有赐予仙器，而是让真相重新有了见证。';
+ }
  breakthrough(){
   if(this.s.combat)return this.fail('斗法中无法破境');
   if(this.s.ascended)return this.fail('飞升已成，仙界待后续版本开启');
@@ -3820,7 +3920,7 @@ const batches=this.farmBatches,loot=Object.fromEntries(Object.entries(D.FARM_LOO
    case 'craft':result=this.craft(args.id);break;case 'store':result=this.store(args.id,Number(args.qty)||999999);break;case 'withdraw':result=this.withdraw(args.id,Number(args.qty)||1);break;case 'store-gear':result=this.storeGear(args.id);break;case 'withdraw-gear':result=this.withdrawGear(args.id);break;
    case 'discard':result=this.discard(args.id);break;case 'equip':result=this.equip(args.id);break;case 'salvage':result=this.salvage(args.id);break;
    case 'refine':result=this.refine(args.id);break;case 'claim-gear':result=this.claimGear(args.id);break;
-   case 'blood-absorb':result=this.bloodAbsorb(args.id);break;case 'manual-join':result=this.manualJoin(args.id);break;case 'manual-study':result=this.manualStudy(args.id);break;case 'manual-equip':result=this.manualEquip(args.id);break;case 'manual-unequip':result=this.manualUnequip(args.id);break;case 'manual-sect':result=this.manualSect();break;case 'realm-art':result=this.realmArt(args.id);break;case 'meditate':result=this.meditate();break;case 'core-trial-start':result=this.coreTrialStart();break;case 'core-trial-act':result=this.coreTrialAct(args.mode);break;case 'heart-trial-start':result=this.heartTrialStart();break;case 'heart-trial-act':result=this.heartTrialAct(args.mode);break;case 'rift-scout':result=this.riftScout();break;case 'rift-act':result=this.riftAct(args.mode);break;case 'mirror-begin':result=this.mirrorBegin();break;case 'mirror-proof':result=this.mirrorInspect(args.kind);break;case 'mirror-choose':result=this.mirrorChoose(args.id);break;case 'karma-read':result=this.karmaRead();break;case 'karma-witness':result=this.karmaWitnessChoose(Number(args.choice));break;case 'karma-final':result=this.karmaConclude(args.mode);break;case 'dao-read':result=this.daoRead();break;case 'dao-choose':result=this.daoChoose(args.path);break;case 'dao-fulfill':result=this.daoFulfill();break;case 'breakthrough':result=this.breakthrough();break;case 'ascend':result=this.ascend();break;case 'repair':result=this.repair();break;case 'barter':result=this.barter();break;
+   case 'blood-absorb':result=this.bloodAbsorb(args.id);break;case 'manual-join':result=this.manualJoin(args.id);break;case 'manual-study':result=this.manualStudy(args.id);break;case 'manual-equip':result=this.manualEquip(args.id);break;case 'manual-unequip':result=this.manualUnequip(args.id);break;case 'manual-sect':result=this.manualSect();break;case 'realm-art':result=this.realmArt(args.id);break;case 'meditate':result=this.meditate();break;case 'core-trial-start':result=this.coreTrialStart();break;case 'core-trial-act':result=this.coreTrialAct(args.mode);break;case 'heart-trial-start':result=this.heartTrialStart();break;case 'heart-trial-act':result=this.heartTrialAct(args.mode);break;case 'rift-scout':result=this.riftScout();break;case 'rift-act':result=this.riftAct(args.mode);break;case 'mirror-begin':result=this.mirrorBegin();break;case 'mirror-proof':result=this.mirrorInspect(args.kind);break;case 'mirror-choose':result=this.mirrorChoose(args.id);break;case 'karma-read':result=this.karmaRead();break;case 'karma-witness':result=this.karmaWitnessChoose(Number(args.choice));break;case 'karma-final':result=this.karmaConclude(args.mode);break;case 'dao-read':result=this.daoRead();break;case 'dao-choose':result=this.daoChoose(args.path);break;case 'dao-fulfill':result=this.daoFulfill();break;case 'estate-begin':result=this.estateBegin();break;case 'estate-act':result=this.estateAct(args.mode);break;case 'breakthrough':result=this.breakthrough();break;case 'ascend':result=this.ascend();break;case 'repair':result=this.repair();break;case 'barter':result=this.barter();break;
    case 'event':result=this.event(Number(args.choice));break;case 'train':result=this.train();break;case 'hunt':result=this.hunt();break;case 'fight':result=this.fight(args.mode,args.id);break;
    case 'claim-book':result=this.claimBook(args.id);break;case 'guide':result=this.guide(args.mode);break;
    case 'book-open':this.s.stats.books++;result={ok:true};break;case 'travel-open':this.s.stats.travels++;result={ok:true};break;
