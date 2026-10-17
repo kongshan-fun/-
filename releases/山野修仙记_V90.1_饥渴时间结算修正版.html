@@ -3542,7 +3542,7 @@ class Game{
   this.s.stats.defeats++;this.s.life.losses++;this.s.minutes+=720;
   this.s.life.left=Math.max(0,this.s.life.left-D.LIFE.defeatYears*D.LIFE.yearMinutes-720);
   if(!this.s.life.left){this.expire('重伤折寿'+D.LIFE.defeatYears+'年');return;}
-  for(const [k,q] of Object.entries(this.s.inv))if(D.ITEMS[k]?.type==='material'&&k!=='dust')this.s.inv[k]=q-Math.floor(q/2);this.s.pos=this.entry();this.s.last=copy(this.s.pos);this.s.combat=null;this.s.secretRealm=null;this.s.hp=Math.max(50,Math.round(this.s.maxHp*.6));this.s.spirit=Math.round(this.s.maxSpirit*.75);this.s.hunger=48;this.s.water=52;this.reveal();this.log((this.camp?'负伤返回洞府':'负伤返回旧营坪')+'，折寿'+D.LIFE.defeatYears+'年，遗失一半随身普通材料。','bad');this.note(this.camp?'负伤回府 · 设施与仓库保留':'返回旧营坪 · 装备与境界保留','warn');}
+  for(const [k,q] of Object.entries(this.s.inv))if(D.ITEMS[k]?.type==='material'&&k!=='dust')this.s.inv[k]=q-Math.floor(q/2);this.s.pos=this.entry();this.s.last=copy(this.s.pos);this.s.combat=null;this.s.secretRealm=null;this.s.hp=Math.max(50,Math.round(this.s.maxHp*.6));this.s.spirit=Math.round(this.s.maxSpirit*.75);this.s.hunger=this.s.hunger<=10?this.s.hunger:48;this.s.water=this.s.water<=10?this.s.water:52;this.reveal();this.log((this.camp?'负伤返回洞府':'负伤返回旧营坪')+'，折寿'+D.LIFE.defeatYears+'年，遗失一半随身普通材料。','bad');this.note(this.camp?'负伤回府 · 设施与仓库保留':'返回旧营坪 · 装备与境界保留','warn');}
  entry(z=this.s.zone){return this.s.settlements[z]?copy(this.s.settlements[z].pos):z?{x:0,y:5}:{x:1,y:5};}
  resource(i){return Number.isInteger(i)&&i>=0&&i<24?this.sceneNodes()[i]?.kind||null:null;}
  highEventSeed(z){
