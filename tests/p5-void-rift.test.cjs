@@ -80,7 +80,7 @@ for(const race of ['human','demon']){
   assert.equal(x.s.hp,before.hp);assert.equal(x.s.minutes,before.minutes);
  });
  check(name+'no consumable on early exit',()=>{
-  const x=fixture(race);x.riftScout(),p=x.voidRift.phase,hp=x.s.hp;
+  const x=fixture(race);x.riftScout();const p=x.voidRift.phase,hp=x.s.hp;
   assert.equal(x.voidRift.phase,p);assert.equal(x.s.hp,hp);
  });
  check(name+'mandatory breakthrough unaffected',()=>{
