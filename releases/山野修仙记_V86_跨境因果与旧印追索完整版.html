@@ -2870,6 +2870,102 @@ class Game{
   }
   return this.note('伪卷已记入错案，气血−'+hit+'，次日可再判断；你仍保有两条证据','warn');
  }
+
+ // P7: two connected optional stories; never infer player memories from mere region unlocks.
+ get karmaWitness(){return this.s.flags.karmaWitness||{stage:0,choice:0};}
+ get karmaReckoning(){return this.s.flags.karmaReckoning||{ending:0,origin:0,source:0};}
+ karmaReason(place){
+  const z=place==='marsh'?3:place==='city'?9:-1;
+  const p=place==='marsh'?{x:3,y:6}:place==='city'?{x:3,y:3}:null;
+  if(!p)return '未知因果遗址';
+  if(this.s.combat||this.s.secretRealm)return '需先结束斗法或退出既有秘境';
+  if(this.s.ended)return '本世已终结';
+  if(this.s.zone!==z||this.s.pos.x!==p.x||this.s.pos.y!==p.y)return '须亲临对应剧情遗址，不能凭空领取异地图事件';
+  if(place==='city'&&this.s.major<5)return '合体仙城的旧印追索须待炼虚境之后方能面见';
+  return '';
+ }
+ karmaReady(sp,h=1,w=1){
+  if(this.s.spirit<=sp)return '此行至少需要灵力'+(sp+1)+'，请先补足余力';
+  if(this.s.hunger<=h+1||this.s.water<=w+1)return '请先补给饱腹与饮水，避免未经预告的饥渴损伤';
+  return '';
+ }
+ karmaOldMemory(){
+  const choice=this.s.flags.steleChoice||0;
+  if(choice===1)return '你确曾在青岚断碑前留下亡者名讳。残灯照到碑文最后一笔，像认出这份守护。';
+  if(choice===2)return '你确曾从青岚失名碑取走护符。残灯与符背古纹相互感应，但这并不证明旧印司就该追杀你。';
+  return '你从未在青岚失名碑作出守碑或取符的抉择。灯下旧事只是一段陌生证词，不能说成你当年的誓言。';
+ }
+ karmaRead(){
+  const why=this.karmaReason('marsh');if(why)return this.fail(why);
+  if(this.karmaWitness.stage!==0)return this.fail('残灯已查明，往事可以重读，但不会重复消耗或领奖');
+  const supply=this.karmaReady(4,1,1);if(supply)return this.fail(supply);
+  if(!this.tick(20,1,1,4))return {ok:false};
+  this.s.flags.karmaWitness={stage:1,choice:0};
+  this.log('玄阴渡魂残灯：旧印司曾封闭破裂仙路，守印人的后裔误将事故归咎于携符者。你已读到残缺的证人供词。','good');
+  return this.note('残灯证词已经照见 · 可择留下原证或收存魂印，不必立刻作答','ok');
+ }
+ karmaWitnessChoose(choice){
+  const why=this.karmaReason('marsh');if(why)return this.fail(why);
+  if(this.karmaWitness.stage!==1)return this.fail(this.karmaWitness.stage===2?'玄阴一誓已定，不能重选并领取':'先点亮残灯，读完旧证再作取舍');
+  if(![1,2].includes(choice))return this.fail('未知的旧证取舍');
+  const cost=choice===1?{herb:1}:{stone:1},sp=choice===1?6:4,time=choice===1?35:30;
+  if(!this.enough(cost))return this.fail('本次取舍还缺：'+this.missing(cost));
+  const supply=this.karmaReady(sp,1,1);if(supply)return this.fail(supply);
+  if(!this.tick(time,1,1,sp))return {ok:false};
+  this.spend(cost);
+  this.s.flags.karmaWitness={stage:2,choice};
+  if(choice===1){
+   this.loot({rune:1},'渡魂残灯·守证者所留阵纹');
+   this.log('你以药草护存旧印司证言，并允将真相留给后世。','good');
+   return this.note('证言已保存 · 古阵残纹×1（如超重则原地待拾），可在未来向旧印司后裔出示','ok','unlock');
+  }
+  this.loot({dust:2},'渡魂残灯·封魂余尘');
+  this.log('你以灵石封下追魂印，不曾代亡者作证；印中仍有可核对的旧纹。','good');
+  return this.note('追魂印已封 · 灵尘×2（如超重则原地待拾），后续可选择交印或拒索','ok','unlock');
+ }
+ karmaReconcileCost(){
+  const stele=this.s.flags.steleChoice||0,witness=this.karmaWitness.choice;
+  return {herb:1+(witness===2?1:0)+(stele===1?0:1)};
+ }
+ karmaDefyDamage(){
+  const stele=this.s.flags.steleChoice||0,witness=this.karmaWitness.choice;
+  const factor=stele===2&&witness===2?.10:witness===2?.13:.18;
+  return Math.max(12,Math.ceil(this.s.maxHp*factor)-Math.floor(this.armor*.035));
+ }
+ karmaEndingStory(){
+  const end=this.karmaReckoning;
+  if(!end.ending)return '';
+  const prior=end.origin===1?'你昔日守下的亡者名讳成为核验的最后一笔。':end.origin===2?'对方最终承认你当年取下护符，曾令旧印流散。':'你当年未与青岚断碑订立誓约，今日只凭玄阴的确凿见证交涉。';
+  if(end.ending===1)return prior+(end.source===1?'你出示保存的完整证言，旧印司后裔放弃寻仇，将古修往事归入城中史册。':'你当场解开封魂印并补交见证，旧印司后裔收手，答应不再为追符而杀。');
+  return prior+(end.source===2?'你持魂印破解追索阵，迫使后裔退让，但彼此的旧账没有真正化解。':'你带着完整证词拒绝和解，破开追索阵脱身；追索虽暂止，旧怨尚在。');
+ }
+ karmaConclude(mode){
+  const why=this.karmaReason('city');if(why)return this.fail(why);
+  if(this.karmaReckoning.ending)return this.fail('这段城中因果已成定局，不能反悔、改选或重复获得旧物');
+  if(this.karmaWitness.stage!==2)return this.fail('你尚未在玄阴渡魂残灯留下真实的证言或魂印。请先亲历该支线；原主线不受限制');
+  if(!['reconcile','defy'].includes(mode))return this.fail('未知的追索处理方式');
+  const agree=mode==='reconcile',sp=agree?6:10,time=agree?40:45;
+  const supply=this.karmaReady(sp,2,2);if(supply)return this.fail(supply);
+  const item=agree?this.karmaReconcileCost():null;
+  if(item&&!this.enough(item))return this.fail('呈证和解需交止血草：'+this.missing(item));
+  if(!this.tick(time,2,2,sp))return {ok:false};
+  if(agree)this.spend(item);
+  else{
+   const harm=this.karmaDefyDamage();
+   this.s.hp-=harm;
+   this.log('旧印追索阵反扑，你决意拒索；气血-'+harm,'bad');
+   if(this.s.hp<=0){
+    this.collapse();
+    return this.note('此回拒索失利 · 沿用原重伤折寿，旧案尚未结清，可恢复后再择','warn');
+   }
+  }
+  const ending=agree?1:2,source=this.karmaWitness.choice,origin=this.s.flags.steleChoice||0;
+  this.s.flags.karmaReckoning={ending,source,origin};
+  if(agree)this.loot({ancient:1},'旧印问债台·归档真证');
+  else this.loot({dust:2},'旧印问债台·追索阵残尘');
+  this.log('合体仙城 · '+(agree?'呈证止怨':'持印拒索')+'。'+this.karmaEndingStory(),'good');
+  return this.note(agree?'追索已止，因果和解 · 上古残卷×1':'破阵脱身，旧怨未了 · 灵尘×2','ok','unlock');
+ }
  breakthrough(){
   if(this.s.combat)return this.fail('斗法中无法破境');
   if(this.s.ascended)return this.fail('飞升已成，仙界待后续版本开启');
@@ -3514,7 +3610,7 @@ const batches=this.farmBatches,loot=Object.fromEntries(Object.entries(D.FARM_LOO
    case 'craft':result=this.craft(args.id);break;case 'store':result=this.store(args.id,Number(args.qty)||999999);break;case 'withdraw':result=this.withdraw(args.id,Number(args.qty)||1);break;case 'store-gear':result=this.storeGear(args.id);break;case 'withdraw-gear':result=this.withdrawGear(args.id);break;
    case 'discard':result=this.discard(args.id);break;case 'equip':result=this.equip(args.id);break;case 'salvage':result=this.salvage(args.id);break;
    case 'refine':result=this.refine(args.id);break;case 'claim-gear':result=this.claimGear(args.id);break;
-   case 'blood-absorb':result=this.bloodAbsorb(args.id);break;case 'manual-join':result=this.manualJoin(args.id);break;case 'manual-study':result=this.manualStudy(args.id);break;case 'manual-equip':result=this.manualEquip(args.id);break;case 'manual-unequip':result=this.manualUnequip(args.id);break;case 'manual-sect':result=this.manualSect();break;case 'realm-art':result=this.realmArt(args.id);break;case 'meditate':result=this.meditate();break;case 'core-trial-start':result=this.coreTrialStart();break;case 'core-trial-act':result=this.coreTrialAct(args.mode);break;case 'heart-trial-start':result=this.heartTrialStart();break;case 'heart-trial-act':result=this.heartTrialAct(args.mode);break;case 'rift-scout':result=this.riftScout();break;case 'rift-act':result=this.riftAct(args.mode);break;case 'mirror-begin':result=this.mirrorBegin();break;case 'mirror-proof':result=this.mirrorInspect(args.kind);break;case 'mirror-choose':result=this.mirrorChoose(args.id);break;case 'breakthrough':result=this.breakthrough();break;case 'ascend':result=this.ascend();break;case 'repair':result=this.repair();break;case 'barter':result=this.barter();break;
+   case 'blood-absorb':result=this.bloodAbsorb(args.id);break;case 'manual-join':result=this.manualJoin(args.id);break;case 'manual-study':result=this.manualStudy(args.id);break;case 'manual-equip':result=this.manualEquip(args.id);break;case 'manual-unequip':result=this.manualUnequip(args.id);break;case 'manual-sect':result=this.manualSect();break;case 'realm-art':result=this.realmArt(args.id);break;case 'meditate':result=this.meditate();break;case 'core-trial-start':result=this.coreTrialStart();break;case 'core-trial-act':result=this.coreTrialAct(args.mode);break;case 'heart-trial-start':result=this.heartTrialStart();break;case 'heart-trial-act':result=this.heartTrialAct(args.mode);break;case 'rift-scout':result=this.riftScout();break;case 'rift-act':result=this.riftAct(args.mode);break;case 'mirror-begin':result=this.mirrorBegin();break;case 'mirror-proof':result=this.mirrorInspect(args.kind);break;case 'mirror-choose':result=this.mirrorChoose(args.id);break;case 'karma-read':result=this.karmaRead();break;case 'karma-witness':result=this.karmaWitnessChoose(Number(args.choice));break;case 'karma-final':result=this.karmaConclude(args.mode);break;case 'breakthrough':result=this.breakthrough();break;case 'ascend':result=this.ascend();break;case 'repair':result=this.repair();break;case 'barter':result=this.barter();break;
    case 'event':result=this.event(Number(args.choice));break;case 'train':result=this.train();break;case 'hunt':result=this.hunt();break;case 'fight':result=this.fight(args.mode,args.id);break;
    case 'claim-book':result=this.claimBook(args.id);break;case 'guide':result=this.guide(args.mode);break;
    case 'book-open':this.s.stats.books++;result={ok:true};break;case 'travel-open':this.s.stats.travels++;result={ok:true};break;
