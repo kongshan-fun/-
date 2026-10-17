@@ -3020,6 +3020,100 @@ class Game{
   this.log('合体仙城 · '+(agree?'呈证止怨':'持印拒索')+'。'+this.karmaEndingStory(),'good');
   return this.note(agree?'追索已止，因果和解 · 上古残卷×1':'破阵脱身，旧怨未了 · 灵尘×2','ok','unlock');
  }
+
+ // P8: one irrevocable Dao vow, with replay-safe staged costs and no permanent combat multiplier.
+ get daoStele(){return this.s.flags.daoStele||{phase:0,path:null,complete:false,roots:{stele:0,mirror:false,karma:0}};}
+ daoReason(){
+  const s=this.s;
+  if(s.combat||s.secretRealm)return '斗法或秘境中不可观大道残碑';
+  if(s.ended)return '本世修行已终结';
+  if(s.zone!==10||s.pos.x!==3||s.pos.y!==3||s.major<6)return '请先修至合体／妖尊之境，亲临大乘古道第4列第4行的残碑';
+  return '';
+ }
+ daoCurrentRoots(){
+  return {stele:this.s.flags.steleChoice||0,mirror:!!this.s.flags.mirrorTrial?.complete,karma:this.s.flags.karmaReckoning?.ending||0};
+ }
+ daoRoots(){return this.daoStele.phase>=2?this.daoStele.roots:this.daoCurrentRoots();}
+ daoEchoes(){
+  const v=this.daoRoots();
+  return [
+   v.stele===1?'青岚旧碑：当年你护存失名古修的名讳，古碑认得那段记忆。':v.stele===2?'青岚旧碑：当年你取走失名护符，碑面留有被揭下的旧纹。':'青岚旧碑：你没有在失名碑作过抉择，此处不将未做之事写作誓言。',
+   v.mirror?'云海幻镜：你曾核实两条线索并识破伪传承。':'云海幻镜：你尚未取得真正的辨伪记录，不会因此丧失问道资格。',
+   v.karma===1?'合体旧债：你已凭真实证据止息后裔追索。':v.karma===2?'合体旧债：你曾持印破阵脱身，双方旧怨仍未尽释。':'合体旧债：你没有结清旧印司之事，碑不会替你虚构和解。'
+  ];
+ }
+ daoActionCost(sp,minutes){const e=this.extra(minutes);return {spirit:sp+e.spirit,water:e.water};}
+ daoReady(sp,minutes,h,w){
+  const e=this.daoActionCost(sp,minutes);
+  if(this.s.spirit<=e.spirit)return '灵力不足：本次需'+e.spirit+'点（含环境耗灵）并留有一点余力';
+  if(this.s.hunger<=h+1||this.s.water<=w+e.water+1)return '请先补充食物与饮水，以免行动出现额外饥渴损伤';
+  return '';
+ }
+ daoPreview(path){
+  if(!D.DAO_PATHS.some(q=>q.id===path))return null;
+  const roots=this.daoStele.phase>=2?this.daoStele.roots:this.daoCurrentRoots();
+  const preview=path==='preserve'?
+   {name:'守铭道',cost:{ancient:1},spirit:roots.stele===1?7:9,minutes:45,hunger:2,water:2,damage:0,loot:{mahayaRune:1}}:
+   path==='discern'?
+   {name:'照妄道',cost:{mahayaJade:1},spirit:7,minutes:45,hunger:2,water:2,damage:Math.max(8,Math.ceil(this.s.maxHp*(roots.mirror?.07:.12))-Math.floor(this.armor*.04)),loot:{mahayaRune:1,ancient:1}}:
+   {name:'归缘道',cost:{herb:roots.karma===1?1:2},spirit:11,minutes:50,hunger:2,water:2,damage:0,loot:{mahayaJade:1}};
+  return {...preview,spirit:this.daoActionCost(preview.spirit,preview.minutes).spirit};
+ }
+ daoRead(){
+  const why=this.daoReason();if(why)return this.fail(why);
+  if(this.daoStele.phase!==0)return this.fail('残碑已经读过，本轮不重复消耗或领取');
+  const can=this.daoReady(4,20,1,1);if(can)return this.fail(can);
+  if(!this.tick(20,1,1,4))return {ok:false};
+  this.s.flags.daoStele={phase:1,path:null,complete:false,roots:{stele:0,mirror:false,karma:0}};
+  this.log('大乘残碑 · 三途同源，却不能同时为誓。旧事以你真正经历为据。','good');
+  return this.note('古碑已读 · 可从守铭、照妄、归缘中选择一条道途','ok');
+ }
+ daoChoose(path){
+  const why=this.daoReason();if(why)return this.fail(why);
+  if(!D.DAO_PATHS.some(q=>q.id===path))return this.fail('此处没有该种道誓');
+  if(this.daoStele.phase!==1)return this.fail(this.daoStele.phase<1?'先观碑，读懂三条路的取舍':'道誓已立，不能改投他途');
+  const can=this.daoReady(3,20,1,1);if(can)return this.fail(can);
+  if(!this.tick(20,1,1,3))return {ok:false};
+  const roots=this.daoCurrentRoots();
+  this.s.flags.daoStele={phase:2,path,complete:false,roots};
+  const info=D.DAO_PATHS.find(q=>q.id===path);
+  this.log('大道残碑 · 立下「'+info.name+'」之誓。此时的旧碑、云镜与因果记录已定，不随后来补做支线而改写。','good');
+  return this.note('已择'+info.name+' · 可撤离准备材料后再来履行，三途不可重选','ok','unlock');
+ }
+ daoFulfill(){
+  const why=this.daoReason();if(why)return this.fail(why);
+  const vow=this.daoStele;
+  if(vow.complete||vow.phase===3)return this.fail('此生道誓已完成，不能重复领取');
+  if(vow.phase!==2||!vow.path)return this.fail('须先读碑并确定一条不可更改的道途');
+  const p=this.daoPreview(vow.path);
+  const whyCost=this.daoReady(p.spirit-this.extra(p.minutes).spirit,p.minutes,p.hunger,p.water);
+  if(whyCost)return this.fail(whyCost);
+  if(!this.enough(p.cost))return this.fail('履誓所需道材不足：'+this.missing(p.cost));
+  if(!this.tick(p.minutes,p.hunger,p.water,p.spirit-this.extra(p.minutes).spirit))return {ok:false};
+  this.spend(p.cost);
+  if(p.damage){
+   this.s.hp-=p.damage;
+   this.log(p.name+' · 神识穿过碑中虚像，气血-'+p.damage,'bad');
+   if(this.s.hp<=0){
+    this.collapse();
+    return this.note('照妄失利 · 道誓仍在、投入材料已经消耗；沿用原重伤折寿，休养后可再试','warn');
+   }
+  }
+  vow.phase=3;vow.complete=true;
+  this.loot(p.loot,'大乘古道·'+p.name+'履誓');
+  this.log('大道残碑 · '+p.name+'已成。古碑仅留一份对应境界的道材，未擅增战力与破境等级。','good');
+  return this.note('大道已定 · '+p.name+'履誓成功；本档奖励仅一次，超重依原规则留在当地','ok','unlock');
+ }
+ daoEndingText(){
+  const v=this.daoStele,info=D.DAO_PATHS.find(q=>q.id===v.path);
+  if(!info)return '';
+  const paths={
+   preserve:'古碑记得许多未被人记住的名字，你选择留下能够核验的旧证，而不是抹除那些本来真实的过往。',
+   discern:'你看见伪印藏在残碑裂缝里，宁愿承受神识反噬，也要分清谁在灾变之后重写了史实。',
+   compassion:'你没有否认旧怨，也不以一方的过错替所有后来者定罪，让证人与后裔保有重新相见的可能。'
+  };
+  return (v.complete?'已履行':'已经立下')+'「'+info.name+'」之誓。'+paths[v.path];
+ }
  breakthrough(){
   if(this.s.combat)return this.fail('斗法中无法破境');
   if(this.s.ascended)return this.fail('飞升已成，仙界待后续版本开启');
@@ -3664,7 +3758,7 @@ const batches=this.farmBatches,loot=Object.fromEntries(Object.entries(D.FARM_LOO
    case 'craft':result=this.craft(args.id);break;case 'store':result=this.store(args.id,Number(args.qty)||999999);break;case 'withdraw':result=this.withdraw(args.id,Number(args.qty)||1);break;case 'store-gear':result=this.storeGear(args.id);break;case 'withdraw-gear':result=this.withdrawGear(args.id);break;
    case 'discard':result=this.discard(args.id);break;case 'equip':result=this.equip(args.id);break;case 'salvage':result=this.salvage(args.id);break;
    case 'refine':result=this.refine(args.id);break;case 'claim-gear':result=this.claimGear(args.id);break;
-   case 'blood-absorb':result=this.bloodAbsorb(args.id);break;case 'manual-join':result=this.manualJoin(args.id);break;case 'manual-study':result=this.manualStudy(args.id);break;case 'manual-equip':result=this.manualEquip(args.id);break;case 'manual-unequip':result=this.manualUnequip(args.id);break;case 'manual-sect':result=this.manualSect();break;case 'realm-art':result=this.realmArt(args.id);break;case 'meditate':result=this.meditate();break;case 'core-trial-start':result=this.coreTrialStart();break;case 'core-trial-act':result=this.coreTrialAct(args.mode);break;case 'heart-trial-start':result=this.heartTrialStart();break;case 'heart-trial-act':result=this.heartTrialAct(args.mode);break;case 'rift-scout':result=this.riftScout();break;case 'rift-act':result=this.riftAct(args.mode);break;case 'mirror-begin':result=this.mirrorBegin();break;case 'mirror-proof':result=this.mirrorInspect(args.kind);break;case 'mirror-choose':result=this.mirrorChoose(args.id);break;case 'karma-read':result=this.karmaRead();break;case 'karma-witness':result=this.karmaWitnessChoose(Number(args.choice));break;case 'karma-final':result=this.karmaConclude(args.mode);break;case 'breakthrough':result=this.breakthrough();break;case 'ascend':result=this.ascend();break;case 'repair':result=this.repair();break;case 'barter':result=this.barter();break;
+   case 'blood-absorb':result=this.bloodAbsorb(args.id);break;case 'manual-join':result=this.manualJoin(args.id);break;case 'manual-study':result=this.manualStudy(args.id);break;case 'manual-equip':result=this.manualEquip(args.id);break;case 'manual-unequip':result=this.manualUnequip(args.id);break;case 'manual-sect':result=this.manualSect();break;case 'realm-art':result=this.realmArt(args.id);break;case 'meditate':result=this.meditate();break;case 'core-trial-start':result=this.coreTrialStart();break;case 'core-trial-act':result=this.coreTrialAct(args.mode);break;case 'heart-trial-start':result=this.heartTrialStart();break;case 'heart-trial-act':result=this.heartTrialAct(args.mode);break;case 'rift-scout':result=this.riftScout();break;case 'rift-act':result=this.riftAct(args.mode);break;case 'mirror-begin':result=this.mirrorBegin();break;case 'mirror-proof':result=this.mirrorInspect(args.kind);break;case 'mirror-choose':result=this.mirrorChoose(args.id);break;case 'karma-read':result=this.karmaRead();break;case 'karma-witness':result=this.karmaWitnessChoose(Number(args.choice));break;case 'karma-final':result=this.karmaConclude(args.mode);break;case 'dao-read':result=this.daoRead();break;case 'dao-choose':result=this.daoChoose(args.path);break;case 'dao-fulfill':result=this.daoFulfill();break;case 'breakthrough':result=this.breakthrough();break;case 'ascend':result=this.ascend();break;case 'repair':result=this.repair();break;case 'barter':result=this.barter();break;
    case 'event':result=this.event(Number(args.choice));break;case 'train':result=this.train();break;case 'hunt':result=this.hunt();break;case 'fight':result=this.fight(args.mode,args.id);break;
    case 'claim-book':result=this.claimBook(args.id);break;case 'guide':result=this.guide(args.mode);break;
    case 'book-open':this.s.stats.books++;result={ok:true};break;case 'travel-open':this.s.stats.travels++;result={ok:true};break;
