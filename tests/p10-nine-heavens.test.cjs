@@ -1,7 +1,7 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const html=fs.readFileSync(path.join(__dirname,'../releases/山野修仙记_V89_九霄终劫与凡界终章完整版.html'),'utf8');
-const scripts=[...html.matchAll(/<script\\b[^>]*>([\\s\\S]*?)<\\/script>/gi)].map(m=>m[1]);
+const scripts=[...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 assert.equal(scripts.length,10);
 scripts.forEach((s,i)=>new vm.Script(s,{filename:'v89-'+i+'.js'}));
 const ctx=vm.createContext({console});ctx.globalThis=ctx;
