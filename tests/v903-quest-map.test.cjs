@@ -8,7 +8,7 @@ const scripts=[...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map(x=
 scripts.forEach((s,i)=>new vm.Script(s,{filename:'inline-'+i}));
 const ctx=vm.createContext({console});ctx.globalThis=ctx;
 for(let i=0;i<=4;i++)vm.runInContext(scripts[i],ctx,{timeout:8000});
-const D=ctx.QData,G=ctx.QGame,ui=scripts[7];
+const D=ctx.QData,G=ctx.QGame,ui=scripts[7];ctx.D=D;
 ctx.esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 ctx.relicCourtQuestHTML=()=>'<p>见闻</p>';ctx.realmPlaybookHTML=()=>'<p>攻略</p>';ctx.route=[];
 vm.runInContext(ui.slice(ui.indexOf('const questFolds=new Set();'),ui.indexOf('function simulatedLifeAdReady(){')),ctx);
