@@ -1,0 +1,51 @@
+name: V10 regression
+on:
+  push:
+    branches:
+      - main
+      - 'chore/**'
+      - 'feat/**'
+      - 'release/**'
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  core:
+    name: Source, save, construction, and deterministic build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Syntax
+        run: |
+          node --check src/data.js
+          node --check src/engine.js
+          node --check src/ui.js
+      - name: Smoke and V10 regression
+        run: |
+          node tests/smoke.test.js
+          node tests/v10_regression.test.js
+      - name: Regenerate standalone HTML
+        run: python build.py
+      - name: Ensure bundled HTML is in sync with source
+        run: git diff --exit-code -- '青岚问道_V9_洞府营建.html'
+  browser:
+    name: Mobile UI smoke in Chromium
+    runs-on: ubuntu-latest
+    needs: core
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install playwright==1.57.0
+      - run: python -m playwright install --with-deps chromium
+      - run: python tests/v10_browser_smoke.py

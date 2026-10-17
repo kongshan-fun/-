@@ -33,3 +33,8 @@
 ## 开发建议
 
 保持 `src/engine.js` 与 DOM 解耦，修改玩法时同时修改 `src/data.js`、`src/ui.js` 及教程；提交前运行构建和基础检查。涉及存档格式需保留旧档迁移路径。
+
+
+## V10 测试分支
+
+见 docs/V10_TEST_REPORT.md。Node 回归：node tests/v10_regression.test.js；浏览器回归：python tests/v10_browser_smoke.py（需 Playwright + Chromium）；单文件构建：python build.py。
