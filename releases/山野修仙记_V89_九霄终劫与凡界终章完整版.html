@@ -3335,6 +3335,112 @@ class Game{
   this.s.unlocked=Math.max(this.s.unlocked,Math.min(D.ZONES.length,this.s.zone+2));
   return this.note('突破'+this.realm+' · 开放'+D.ZONES[this.s.zone+1].name,'ok','unlock');
  }
+
+ // P10: optional final thunder ordeal beside the ORIGINAL ascension interface.
+ // Deliberately never called by ascend(): existing gate, dao, cost, time and lifespan rules remain unchanged.
+ get heavenTrial(){return this.s.flags.heavenTrial||{phase:0,choices:[],complete:false,scars:0,witness:{stele:0,court:false,mirror:false,rift:false,karma:0,dao:null,estate:null}};}
+ heavenReason(){
+  const s=this.s;
+  if(s.combat||s.secretRealm)return '斗法或秘境中不能在飞升界碑前应九霄终劫';
+  if(s.ended)return '本世修行已终结';
+  if(s.ascended)return '飞升已成，九霄记闻可以回顾，不可重复应劫';
+  if(s.zone!==11||this.land()!=='gate'||s.major!==8||!s.cleared.every(Boolean))return '须抵达渡劫天门的飞升界碑、达到渡劫境并平定十二境';
+  return '';
+ }
+ heavenWitness(){
+  const flags=this.s.flags;
+  return {
+   stele:flags.steleChoice||0,court:(flags.relicCourt||0)>0,
+   mirror:!!flags.mirrorTrial?.complete,rift:!!flags.voidRift?.complete,
+   karma:flags.karmaReckoning?.ending||0,
+   dao:flags.daoStele?.complete?flags.daoStele.path:null,
+   estate:flags.immortalEstate?.complete?flags.immortalEstate.resolution:null
+  };
+ }
+ heavenOmenText(){
+  const h=this.heavenTrial.phase>0?this.heavenTrial.witness:this.heavenWitness();
+  const stele=h.stele===1?'你曾守住青岚断碑的失名古修，雷声里那一笔亡者姓名仍清晰。':h.stele===2?'昔日取走的失名护符在雷火里映出缺纹，旧事不能由此改写。':'青岚失名古碑未留下你的选择；这道天雷不替你虚构当日的誓约。';
+  const karma=h.karma===1?'旧印司的仇怨已由你呈证化解，雷云不再将它写成仇杀。':h.karma===2?'你曾破阵摆脱旧印司，双方旧怨仍然未解。':'你尚未在旧印司的追索中留下终局记录。';
+  const way=h.dao?'大乘残碑记得你已行的「'+({preserve:'守铭道',discern:'照妄道',compassion:'归缘道'}[h.dao]||'大道')+'」。':'大乘残碑未留已完成的道誓，本次天雷仍可独自面对。';
+  const estate=h.estate==='return'?'你曾将遗仙残书归封于古府，终试留给你一份谨慎。':h.estate==='record'?'你曾在仙府留下见证，使被遮掩的旧史有迹可循。':'仙人遗府终试尚未在本世完成，天门不会假称你继承仙法。';
+  return [stele,karma,way,estate][Math.min(3,Math.max(0,this.heavenTrial.phase?this.heavenTrial.phase-1:0))];
+ }
+ heavenReady(plan){
+  const extra=this.extra(plan.minutes);
+  const sp=plan.spirit+extra.spirit,w=plan.water+extra.water;
+  if(this.s.spirit<=sp)return '灵力不足：需要'+sp+'点并保留至少1点余力';
+  if(this.s.hunger<=plan.hunger+1||this.s.water<=w+1)return '饱腹或饮水不足，请先补给以免产生未预告的额外掉血';
+  return '';
+ }
+ heavenPreview(mode){
+  const phase=this.heavenTrial.phase;
+  if(phase<1||phase>3||this.heavenTrial.complete||!['ward','channel','endure'].includes(mode))return null;
+  const factor=[.085,.13,.19][phase-1],rate={ward:.34,channel:.7,endure:1.34}[mode];
+  const minutes=[35,45,55][phase-1];
+  const spirit=({ward:[10,14,19],channel:[6,8,10],endure:[2,2,3]}[mode])[phase-1];
+  const blood=this.s.character==='demon'&&mode==='ward'?Math.min(12,(this.s.blood?.stage||0)*2):0;
+  const guard=this.s.character==='human'&&mode==='ward'&&this.s.manuals?.equipped?.guard?8:0;
+  const damage=Math.max(1,Math.ceil(this.s.maxHp*factor*rate)-Math.floor(this.armor*.032)-blood-guard);
+  return {mode,minutes,spirit,actualSpirit:spirit+this.extra(minutes).spirit,
+   hunger:2,water:2,damage,fatal:damage>=this.s.hp};
+ }
+ heavenStart(){
+  const reason=this.heavenReason();if(reason)return this.fail(reason);
+  if(this.heavenTrial.phase!==0)return this.fail('九霄终劫已启，继续当前天雷即可');
+  const plan={minutes:15,spirit:4,hunger:1,water:1};
+  const why=this.heavenReady(plan);if(why)return this.fail(why);
+  if(!this.tick(plan.minutes,plan.hunger,plan.water,plan.spirit))return {ok:false};
+  this.s.flags.heavenTrial={phase:1,choices:[],complete:false,scars:0,witness:this.heavenWitness()};
+  this.log('九霄终劫已启：三重雷云照临，本次为可选的应劫经历，不改原飞升之法。','good');
+  return this.note('问命天雷降下 · 可以回府准备，进度保留','ok');
+ }
+ heavenAct(mode){
+  const reason=this.heavenReason();if(reason)return this.fail(reason);
+  const trial=this.heavenTrial,plan=this.heavenPreview(mode);
+  if(!plan)return this.fail(trial.complete?'九霄三重已渡，不再重复应劫':'先启劫，并选择当前允许的护元、纳雷或承劫方式');
+  const why=this.heavenReady(plan);if(why)return this.fail(why);
+  const stage=trial.phase;
+  if(!this.tick(plan.minutes,plan.hunger,plan.water,plan.spirit))return {ok:false};
+  this.s.hp-=plan.damage;
+  const label={ward:'护元承雷',channel:'纳雷淬身',endure:'以躯硬抗'}[mode];
+  this.log('九霄终劫 · 第'+stage+'重 · '+label+'，实际气血-'+plan.damage,'good');
+  if(this.s.hp<=0){
+   this.collapse();
+   return this.note('天劫失利：沿用原重伤折寿，本重可再试，之前成功的雷关仍保存','warn');
+  }
+  trial.choices.push(mode);
+  if(mode!=='ward')trial.scars=Math.min(3,trial.scars+1); // narrative only, not a combat bonus.
+  trial.phase++;
+  if(stage===3){
+   trial.complete=true;
+   this.log('九霄雷云散尽：三重终劫已过，飞升仍须按旧法交付道行与劫材。','good');
+   return this.note('九霄三重已渡 · 可在同一界碑按原有条件飞升','ok','unlock');
+  }
+  return this.note('第'+stage+'重天雷已过 · 下一重风险更高，可先撤离修整','ok');
+ }
+ heavenStory(){
+  const flags=this.s.flags,parts=[];
+  const choice=flags.steleChoice||0;
+  if(choice===1)parts.push('青岚无名碑下，你留下了古修的名讳。那笔未被遗忘的姓名，如今终于随着雷云远去。');
+  else if(choice===2)parts.push('青岚断碑的旧符曾被你取走。你没有掩饰那次决定，也没有让后来的故事替你涂改它。');
+  if((flags.relicCourt||0)>0)parts.push('天阙前庭的丹痕曾向你揭开旧仙路的一角，那座封闭古府不是无代价的捷径。');
+  if(flags.mirrorTrial?.complete)parts.push('云海映心镜里，你亲自辨出了后人伪刻的传承，明白假经能借旧印蒙蔽来者。');
+  if(flags.voidRift?.complete)parts.push('炼虚裂隙的两重错位已被你勘明，破碎空间并未为所有行者留下相同的路。');
+  const karma=flags.karmaReckoning?.ending||0;
+  if(karma===1)parts.push('旧印司后裔曾与你呈证释怨；仇敌之间仍可以选择让错误到此为止。');
+  else if(karma===2)parts.push('旧印司的追索被你暂时阻断。胜过阵禁不等于消弭旧怨，这段裂痕仍留在人间。');
+  const dao=flags.daoStele;
+  if(dao?.complete){const name={preserve:'守铭道',discern:'照妄道',compassion:'归缘道'}[dao.path];if(name)parts.push('在大乘古道，你曾立下并履行「'+name+'」；大道不单是数值，也在你怎样回答过去。');}
+  const estate=flags.immortalEstate;
+  if(estate?.complete)parts.push(estate.resolution==='return'?'你选择将仙人遗府的残卷归封，不以破禁的知识换取一时强盛。':'你曾为仙人遗府的残文留存真证，让后来者知道仙路何以断裂。');
+  if(!parts.length)parts.push('旧仙路的遗迹并未被你一一探明，凡界尚有许多名字等待后来者发现。');
+  return parts;
+ }
+ heavenSummary(){
+  return this.heavenTrial.complete?'你选择亲历九霄三重终劫，雷息已定；随后仍按原法度启开飞升天门。':
+    this.heavenTrial.phase>0?'你曾进入九霄终劫，却选择沿用原有飞升法度直接启门；未完成的雷关不会被写成已渡。':
+    '你沿用凡界既有飞升法度开启天门，没有另行挑战可选的九霄三重试炼。';
+ }
  ascend(){
   if(this.s.ascended)return this.fail('已成功飞升，仙界篇章待更新');
   if(this.s.zone!==D.ZONES.length-1||this.land()!=='gate')return this.fail('请前往渡劫天门的飞升界碑');
@@ -3956,7 +4062,7 @@ const batches=this.farmBatches,loot=Object.fromEntries(Object.entries(D.FARM_LOO
    case 'craft':result=this.craft(args.id);break;case 'store':result=this.store(args.id,Number(args.qty)||999999);break;case 'withdraw':result=this.withdraw(args.id,Number(args.qty)||1);break;case 'store-gear':result=this.storeGear(args.id);break;case 'withdraw-gear':result=this.withdrawGear(args.id);break;
    case 'discard':result=this.discard(args.id);break;case 'equip':result=this.equip(args.id);break;case 'salvage':result=this.salvage(args.id);break;
    case 'refine':result=this.refine(args.id);break;case 'claim-gear':result=this.claimGear(args.id);break;
-   case 'blood-absorb':result=this.bloodAbsorb(args.id);break;case 'manual-join':result=this.manualJoin(args.id);break;case 'manual-study':result=this.manualStudy(args.id);break;case 'manual-equip':result=this.manualEquip(args.id);break;case 'manual-unequip':result=this.manualUnequip(args.id);break;case 'manual-sect':result=this.manualSect();break;case 'realm-art':result=this.realmArt(args.id);break;case 'meditate':result=this.meditate();break;case 'core-trial-start':result=this.coreTrialStart();break;case 'core-trial-act':result=this.coreTrialAct(args.mode);break;case 'heart-trial-start':result=this.heartTrialStart();break;case 'heart-trial-act':result=this.heartTrialAct(args.mode);break;case 'rift-scout':result=this.riftScout();break;case 'rift-act':result=this.riftAct(args.mode);break;case 'mirror-begin':result=this.mirrorBegin();break;case 'mirror-proof':result=this.mirrorInspect(args.kind);break;case 'mirror-choose':result=this.mirrorChoose(args.id);break;case 'karma-read':result=this.karmaRead();break;case 'karma-witness':result=this.karmaWitnessChoose(Number(args.choice));break;case 'karma-final':result=this.karmaConclude(args.mode);break;case 'dao-read':result=this.daoRead();break;case 'dao-choose':result=this.daoChoose(args.path);break;case 'dao-fulfill':result=this.daoFulfill();break;case 'estate-begin':result=this.estateBegin();break;case 'estate-act':result=this.estateAct(args.mode);break;case 'breakthrough':result=this.breakthrough();break;case 'ascend':result=this.ascend();break;case 'repair':result=this.repair();break;case 'barter':result=this.barter();break;
+   case 'blood-absorb':result=this.bloodAbsorb(args.id);break;case 'manual-join':result=this.manualJoin(args.id);break;case 'manual-study':result=this.manualStudy(args.id);break;case 'manual-equip':result=this.manualEquip(args.id);break;case 'manual-unequip':result=this.manualUnequip(args.id);break;case 'manual-sect':result=this.manualSect();break;case 'realm-art':result=this.realmArt(args.id);break;case 'meditate':result=this.meditate();break;case 'core-trial-start':result=this.coreTrialStart();break;case 'core-trial-act':result=this.coreTrialAct(args.mode);break;case 'heart-trial-start':result=this.heartTrialStart();break;case 'heart-trial-act':result=this.heartTrialAct(args.mode);break;case 'rift-scout':result=this.riftScout();break;case 'rift-act':result=this.riftAct(args.mode);break;case 'mirror-begin':result=this.mirrorBegin();break;case 'mirror-proof':result=this.mirrorInspect(args.kind);break;case 'mirror-choose':result=this.mirrorChoose(args.id);break;case 'karma-read':result=this.karmaRead();break;case 'karma-witness':result=this.karmaWitnessChoose(Number(args.choice));break;case 'karma-final':result=this.karmaConclude(args.mode);break;case 'dao-read':result=this.daoRead();break;case 'dao-choose':result=this.daoChoose(args.path);break;case 'dao-fulfill':result=this.daoFulfill();break;case 'estate-begin':result=this.estateBegin();break;case 'estate-act':result=this.estateAct(args.mode);break;case 'heaven-start':result=this.heavenStart();break;case 'heaven-act':result=this.heavenAct(args.mode);break;case 'breakthrough':result=this.breakthrough();break;case 'ascend':result=this.ascend();break;case 'repair':result=this.repair();break;case 'barter':result=this.barter();break;
    case 'event':result=this.event(Number(args.choice));break;case 'train':result=this.train();break;case 'hunt':result=this.hunt();break;case 'fight':result=this.fight(args.mode,args.id);break;
    case 'claim-book':result=this.claimBook(args.id);break;case 'guide':result=this.guide(args.mode);break;
    case 'book-open':this.s.stats.books++;result={ok:true};break;case 'travel-open':this.s.stats.travels++;result={ok:true};break;
