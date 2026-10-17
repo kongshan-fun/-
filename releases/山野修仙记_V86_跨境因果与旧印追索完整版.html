@@ -3943,7 +3943,7 @@ function locationActions(){const l=game.land(),s=game.s,hasGround=Object.values(
  if(l==='shrine')return `<button data-a="rest" data-mode="field">调息</button><button class="important" data-a="repair">${s.ritual[s.zone]?'已完成':game.zone.verb}</button>`;
  if(l==='boss')return `<button data-a="rest" data-mode="field">调息</button><button class="important" data-a="hunt">${s.cleared[s.zone]?'再战':'挑战'}</button>`;
  if(l==='gate')return `<button data-a="rest" data-mode="field">调息</button><button data-a="zone" data-zone="${s.zone===4?0:s.zone+1}" class="important">${s.zone===4?'归途':'下一境'}</button>`;
- if(game.site)return '<button data-a="site" class="important">'+(game.site.id==='void-rift'?'探查裂隙':game.site.id==='cloud-mirror'?'辨识镜台':'探查')+'</button>'+(pickup||'<button data-a="rest" data-mode="field">调息</button>');
+ if(game.site)return '<button data-a="site" class="important">'+(game.site.id==='void-rift'?'探查裂隙':game.site.id==='cloud-mirror'?'辨识镜台':game.site.id==='karma-marsh'?'查看残灯':game.site.id==='karma-city'?'会见追索者':'探查')+'</button>'+(pickup||'<button data-a="rest" data-mode="field">调息</button>');
  if(l==='bazaar')return '<button data-a="barter">交易</button>'+(pickup||'<button data-a="rest" data-mode="field">调息</button>');
  if(!game.canSettle())return '<button data-a="panel" data-name="camp">'+(game.camp?'选址':'筑庐')+'</button>'+(pickup||'<button data-a="scout">勘察</button>');
  return '<button data-a="scout">勘察</button>'+(pickup||'<button data-a="rest" data-mode="field">调息</button>');
@@ -4199,6 +4199,55 @@ function heartTrialBody(){
 }
 
 
+
+function karmaBody(){
+ const s=game.s,isMarsh=game.site?.id==='karma-marsh';
+ const testimony=game.karmaWitness,final=game.karmaReckoning;
+ const done=final.ending>0,read=testimony.stage>=1,taken=testimony.stage===2;
+ const word=game.character.energy,reason=game.karmaReason(isMarsh?'marsh':'city');
+ const intro=isMarsh
+  ?'<small>玄阴幽沼 · 第4列第7行 · 因果前章</small><h3>渡魂残灯 · 谁曾守印</h3><p>幽沼尽头，一盏旧灯压着几页被水浸透的证词。它讲述古修如何封住旧仙路，却未写尽后裔所承受的流亡之苦。这里的一次决定，会在日后遇到追索者时产生不同回应。</p>'
+  :'<small>合体仙城 · 第4列第4行 · 因果回收</small><h3>旧印问债台 · 旧怨未尽</h3><p>旧印司后裔在断裂的城墙下等待携带真证的人。他说城中传闻当年守印人背叛修士，才引来天阙灾变；你是否有证据、曾否碰过失名符，都决定他如何看待你。</p>';
+ const header='<div class="trial-intro">'+intro+'</div>';
+ const stats='<div class="trial-stats"><span>旧碑 '+(s.flags.steleChoice===1?'守名':s.flags.steleChoice===2?'取符':'未选择')+'</span><span>玄阴 '+(taken?(testimony.choice===1?'留证':'封印'):read?'已读证词':'未探')+'</span><span>城中 '+(done?(final.ending===1?'和解':'旧怨未了'):'未结')+'</span></div>';
+ const memory='<div class="trial-note karma-memory"><strong>与旧事对应</strong><p>'+esc(game.karmaOldMemory())+'</p></div>';
+ let content='';
+ if(isMarsh){
+  if(!read){
+   const why=reason||game.karmaReady(4,1,1);
+   content='<section class="trial-stage">'+memory+'<p>先验看残灯所存供词。观灯耗时20分钟、'+word+'−4、饱腹与饮水各−1；只记录真实线索，不会领取高境装备。</p>'+ (why?'<p class="danger-text">'+esc(why)+'</p>':'')+
+    '<button class="btn primary trial-start" data-a="karma-read" '+(why?'disabled':'')+'>照看残灯 · 读旧印证词</button></section>';
+  }else if(!taken){
+   const routes=[
+    {choice:1,title:'保留亡者证言 · 留待后裔核对',text:'以一份止血草固灯芯，把亡者关于当年封路的证词传到后世。你承诺保存证据，并非保证所有人都会信服。',mat:'止血草×1',cost:{herb:1},sp:6,time:35,loot:'古阵残纹×1'},
+    {choice:2,title:'封存追魂旧印 · 不替亡者立誓',text:'以一份低阶灵石封住残魂，记下可以核对的印痕。保住旧印，却不主动为任何一方作证。',mat:'低阶灵石×1',cost:{stone:1},sp:4,time:30,loot:'灵尘×2'}
+   ];
+   const choices=routes.map(q=>{
+    const missing=!game.enough(q.cost),why=reason||game.karmaReady(q.sp,1,1);
+    return `<button class="trial-option karma-choice" data-a="karma-witness" data-choice="${q.choice}" ${missing||why?'disabled':''}><span class="trial-option-top"><strong>${q.title}</strong><small>${q.mat}</small></span><span class="trial-option-desc">${q.text}</span><span class="trial-option-risk">耗时${q.time}分钟 · ${word}−${q.sp} · 食水各−1 · 奖励${q.loot}${missing?' · 材料不足':''}${why?' · '+esc(why):''}</span></button>`;
+   }).join('');
+   content='<section class="trial-stage">'+memory+'<div class="trial-note"><strong>供词已读 · 最后一次取舍</strong><p>残灯留下两个互斥选择；这不是全局善恶值。今天做出的选择会冻结在当前种族与档位之中，不能反复领取。</p></div><div class="trial-options">'+choices+'</div></section>';
+  }else{
+   const route=testimony.choice===1?'你决定保留守印人的证言，曾交付止血草固定灯芯。':'你选择封存追魂旧印，留下可核对的旧纹，却未代亡魂立誓。';
+   content='<div class="trial-success"><strong>玄阴旧事已记</strong><p>'+route+'</p><p>将来若遇上寻找守印遗物的后裔，你可以持当日的证据回答。此地不再扣费或重复领奖。</p></div>'+memory;
+  }
+ }else{
+  const relation=s.flags.steleChoice===1?'后裔翻看你留下的旧名，想知道当年为何有人愿守一个亡者的清白。':s.flags.steleChoice===2?'你当年收取的符纹，与追索者的家印相合；对方的疑虑更深。':'后裔并不认识你；没有证据时，他不会将你当成昔日立誓者。';
+  if(done){
+   content='<div class="trial-success"><strong>'+(final.ending===1?'旧案归档 · 化怨为和':'旧印暂息 · 仍存仇怨')+'</strong><p>'+esc(game.karmaEndingStory())+'</p><p>此结局只在本档发生一次。已经选择的道路不会反悔或再次领取奖励。</p></div>';
+  }else if(!taken){
+   content='<div class="trial-note"><strong>追索者尚未见到可信凭据</strong><p>'+relation+'</p><p>你尚未在玄阴渡魂残灯留下证词或魂印，不能声称曾与亡魂达成约定。可前往第四图第4列第7行调查，也可以忽略本事件继续原有修行与破境。</p><p class="micro">此时不扣任何物资，也不强制打开其他地图。</p></div>';
+  }else{
+   const herb=game.karmaReconcileCost().herb,injury=game.karmaDefyDamage(),fatal=injury>=s.hp;
+   const agreeReason=reason||game.karmaReady(6,2,2),fightReason=reason||game.karmaReady(10,2,2);
+   const agreeMissing=!game.enough({herb}),agreeDesc=testimony.choice===1?'你将当日保存的完整证言递交旧印司，止住对方的追索。':'你亲手拆下封魂旧印，把事主的最后印痕交还后裔，允其核验。';
+   const choices=`<button class="trial-option karma-choice" data-a="karma-final" data-mode="reconcile" ${agreeReason||agreeMissing?'disabled':''}><span class="trial-option-top"><strong>呈证解怨 · 不再互相追索</strong><small>止血草×${herb}</small></span><span class="trial-option-desc">${agreeDesc}此路代价受青岚旧碑与玄阴旧证的实际经历影响。</span><span class="trial-option-risk">耗时40分钟 · ${word}−6 · 食水各−2 · 无直接伤害 · 成功得上古残卷×1${agreeMissing?' · 止血草不足':''}${agreeReason?' · '+esc(agreeReason):''}</span></button>`+
+   `<button class="trial-option karma-choice ${fatal?'danger':''}" data-a="karma-final" data-mode="defy" ${fightReason?'disabled':''}><span class="trial-option-top"><strong>持印破阵 · 拒绝旧印司追索</strong><small>${word}−10</small></span><span class="trial-option-desc">以修为破开索债阵，带着自己的旧事脱身。虽可击退来人，却不能将仇怨伪写为和解。</span><span class="trial-option-risk ${fatal?'fatal':''}">耗时45分钟 · 食水各−2 · 预计气血−${injury}${fatal?' · 可能重伤折寿':''} · 成功得灵尘×2${fightReason?' · '+esc(fightReason):''}</span></button>`;
+   content='<section class="trial-stage">'+memory+'<div class="trial-note"><strong>追索者已见真凭</strong><p>'+relation+'</p><p>玄阴因果：'+(testimony.choice===1?'曾保存亡者证词':'曾封存追魂旧印')+'。你可和解，或拒绝追索。两种结局互斥且不能重选，失败不会强制替你完成。</p></div><div class="trial-options">'+choices+'</div></section>';
+  }
+ }
+ return '<div class="trial-page karma-page">'+header+stats+content+'<p class="trial-footer">早期没有发生过的选择不会写成回忆；旧碑、玄阴证词与合体结局分别记录。离开没有额外代价，故事不影响十二境原有首领和突破条件。</p><button class="btn karma-return" data-a="karma-return">← 返回当前地图 · 保存进度</button></div>';
+}
 function mirrorBody(){
  const s=game.s,st=game.mirrorTrial,reason=game.mirrorReason(),clues=st.clues||[];
  const seenSeal=clues.includes('seal'),seenEcho=clues.includes('echo');
@@ -4454,10 +4503,10 @@ function renderPanel(){const root=$('panel-root');if(!panel){root.innerHTML='';r
  const characterGearOffset=panel==='character'?(characterGearResetScroll?0:document.querySelector('.character-gear-list')?.scrollTop??0):null;
  characterGearResetScroll=false;
  const focus=document.activeElement,focusId=focus?.id,start=focus?.selectionStart,end=focus?.selectionEnd;
- const names={birth:'命格',camp:'洞府',warehouse:'仓库',craft:'炼制',pack:'背包',cultivate:'洞府 · 修炼',character:'人物装备',manuals:'功法',tribulation:'凝丹雷劫',hearttrial:'元婴问心',rift:'空间裂隙',mirror:'映心镜台',book:'图鉴',lore:'上古见闻',help:'教程',settings:'设置',quest:'主线',log:'行记'};
+ const names={birth:'命格',camp:'洞府',warehouse:'仓库',craft:'炼制',pack:'背包',cultivate:'洞府 · 修炼',character:'人物装备',manuals:'功法',tribulation:'凝丹雷劫',hearttrial:'元婴问心',rift:'空间裂隙',mirror:'映心镜台',karma:'旧印因果',book:'图鉴',lore:'上古见闻',help:'教程',settings:'设置',quest:'主线',log:'行记'};
  const tools=panel==='book'&&!bookDetailKey?`<input id="book-search" type="search" aria-label="搜索图鉴" placeholder="搜索已发现名称或地区" value="${esc(search)}"><select id="panel-filter" aria-label="图鉴类型">${[['all','全部'],['life','灵物'],['mineral','矿材'],['tool','工具'],['food','丹药食物'],['enemy','妖兽'],['gear','装备法器'],['home','建筑'],['secret','秘境'],['zone','境域'],['realm','修炼']].map(([k,v])=>`<option value="${k}" ${filter===k?'selected':''}>${v}</option>`).join('')}</select>`:panel==='craft'?`<span class="muted" style="flex:1;align-self:center">${game.workshop?'器'+game.roomLevel('forge')+'阶 · 丹'+game.roomLevel('alchemy')+'阶':'野外 · 仅随身配方'}</span><select id="panel-filter" aria-label="配方类型">${[['all','全部'],['tool','工具'],['gear','法器'],['food','丹药食物']].map(([k,v])=>`<option value="${k}" ${filter===k?'selected':''}>${v}</option>`).join('')}</select>`:'';
- const content=panel==='birth'?E.sheet(game):panel==='camp'?campBody():panel==='warehouse'?warehouseBody():panel==='craft'?craftBody():panel==='pack'?packBody():panel==='cultivate'?cultivateBody():panel==='character'?characterBody():panel==='manuals'?manualBody():panel==='tribulation'?tribulationBody():panel==='hearttrial'?heartTrialBody():panel==='rift'?riftBody():panel==='mirror'?mirrorBody():panel==='book'?bookBody():panel==='lore'?loreBody():panel==='help'?helpBody():panel==='settings'?settingsBody():panel==='quest'?questBody():game.s.logs.map(l=>`<div class="history ${esc(l.tone)}"><time>${esc(l.time)}</time>${esc(l.msg)}</div>`).join('');
- root.innerHTML=`<div class="panel-overlay" aria-hidden="false"><div class="panel" aria-label="${names[panel]}"><div class="panel-head ${['tribulation','hearttrial','rift','mirror'].includes(panel)?'trial-head':''}"><div class="panel-heading-group">${(panel==='warehouse'||panel==='cultivate')?'<button class="panel-back" data-a="panel-back" aria-label="返回洞府">← 返回洞府</button>':['manuals','tribulation','hearttrial'].includes(panel)?'<button class="panel-back" data-a="panel-back" aria-label="返回修炼">← 返回修炼</button>':panel==='lore'?'<button class="panel-back" data-a="panel-back" aria-label="返回主线">← 返回主线</button>':''}<strong>${panel==='book'&&bookDetailKey?'图鉴 · 详情':names[panel]}</strong>${panel==='book'?'<span>'+game.bookCount+'/'+bookRows().length+'</span>':''}</div><button class="panel-close" data-a="close-panel" aria-label="${(panel==='warehouse'||panel==='cultivate')?'返回洞府':['manuals','tribulation','hearttrial'].includes(panel)?'返回修炼':panel==='lore'?'返回主线':panel==='book'&&bookDetailKey?'返回图鉴列表':['rift','mirror'].includes(panel)?'返回地图':'关闭'+names[panel]}">${['warehouse','cultivate','manuals','tribulation','hearttrial','lore','rift','mirror'].includes(panel)||panel==='book'&&bookDetailKey?'←':'×'}</button></div>${tools?'<div class="panel-toolbar">'+tools+'</div>':''}<div id="panel-body" class="panel-body ${panel==='character'?'character-body-v66':''}">${panel==='craft'&&codexRecipeReturn?'<button class="btn" data-a="codex-return" style="width:100%;margin-bottom:10px">← 返回图鉴</button>':''}${content}</div></div></div>`;
+ const content=panel==='birth'?E.sheet(game):panel==='camp'?campBody():panel==='warehouse'?warehouseBody():panel==='craft'?craftBody():panel==='pack'?packBody():panel==='cultivate'?cultivateBody():panel==='character'?characterBody():panel==='manuals'?manualBody():panel==='tribulation'?tribulationBody():panel==='hearttrial'?heartTrialBody():panel==='rift'?riftBody():panel==='mirror'?mirrorBody():panel==='karma'?karmaBody():panel==='book'?bookBody():panel==='lore'?loreBody():panel==='help'?helpBody():panel==='settings'?settingsBody():panel==='quest'?questBody():game.s.logs.map(l=>`<div class="history ${esc(l.tone)}"><time>${esc(l.time)}</time>${esc(l.msg)}</div>`).join('');
+ root.innerHTML=`<div class="panel-overlay" aria-hidden="false"><div class="panel" aria-label="${names[panel]}"><div class="panel-head ${['tribulation','hearttrial','rift','mirror','karma'].includes(panel)?'trial-head':''}"><div class="panel-heading-group">${(panel==='warehouse'||panel==='cultivate')?'<button class="panel-back" data-a="panel-back" aria-label="返回洞府">← 返回洞府</button>':['manuals','tribulation','hearttrial'].includes(panel)?'<button class="panel-back" data-a="panel-back" aria-label="返回修炼">← 返回修炼</button>':panel==='lore'?'<button class="panel-back" data-a="panel-back" aria-label="返回主线">← 返回主线</button>':''}<strong>${panel==='book'&&bookDetailKey?'图鉴 · 详情':names[panel]}</strong>${panel==='book'?'<span>'+game.bookCount+'/'+bookRows().length+'</span>':''}</div><button class="panel-close" data-a="close-panel" aria-label="${(panel==='warehouse'||panel==='cultivate')?'返回洞府':['manuals','tribulation','hearttrial'].includes(panel)?'返回修炼':panel==='lore'?'返回主线':panel==='book'&&bookDetailKey?'返回图鉴列表':['rift','mirror','karma'].includes(panel)?'返回地图':'关闭'+names[panel]}">${['warehouse','cultivate','manuals','tribulation','hearttrial','lore','rift','mirror','karma'].includes(panel)||panel==='book'&&bookDetailKey?'←':'×'}</button></div>${tools?'<div class="panel-toolbar">'+tools+'</div>':''}<div id="panel-body" class="panel-body ${panel==='character'?'character-body-v66':''}">${panel==='craft'&&codexRecipeReturn?'<button class="btn" data-a="codex-return" style="width:100%;margin-bottom:10px">← 返回图鉴</button>':''}${content}</div></div></div>`;
  $('panel-body').scrollTop=old;
  if(warehouseOffsets)document.querySelectorAll('.warehouse-side-list').forEach((e,i)=>{e.scrollTop=warehouseOffsets[i]||0;});
  if(characterGearOffset!==null&&document.querySelector('.character-gear-list'))document.querySelector('.character-gear-list').scrollTop=characterGearOffset;
@@ -4816,6 +4865,10 @@ if(a==='birth-confirm-final'&&frontPage?.kind==='birth-confirm'){selectCharacter
   else notify('此配方不在当前筛选中，可切换炼制分类查看','warn');
   return;
  }
+ if(a==='karma-read'&&panel==='karma'){run('karma-read');return;}
+ if(a==='karma-witness'&&panel==='karma'){run('karma-witness',{choice:Number(b.dataset.choice)});return;}
+ if(a==='karma-final'&&panel==='karma'){run('karma-final',{mode:b.dataset.mode});return;}
+ if(a==='karma-return'&&panel==='karma'){panel=null;persist();render();return;}
  if(a==='mirror-begin'&&panel==='mirror'){run('mirror-begin');return;}
  if(a==='mirror-proof'&&panel==='mirror'){run('mirror-proof',{kind:b.dataset.kind});return;}
  if(a==='mirror-choose'&&panel==='mirror'){run('mirror-choose',{id:b.dataset.id});return;}
@@ -4841,7 +4894,7 @@ if(a==='birth-confirm-final'&&frontPage?.kind==='birth-confirm'){selectCharacter
  if(a==='home'){stop();travelOpen=false;if(!game.camp){openPanel('camp');return;}if(game.atCamp){panel=null;render();notify('已在自己的洞府');return;}travelTo(game.camp.pos.x,game.camp.pos.y);return;}
  if(a==='stop'){stop();render();return;}
  if(a==='map'){travelTo(Number(b.dataset.x),Number(b.dataset.y));return;}
- if(a==='site'){stop();if(game.site?.id==='cloud-mirror'){const why=game.mirrorReason();if(why)notify(why,'warn');else{panel='mirror';render();if($('panel-body'))$('panel-body').scrollTop=0;}return;}if(game.site?.id==='void-rift'){const why=game.riftReason();if(why)notify(why,'warn');else{panel='rift';render();if($('panel-body'))$('panel-body').scrollTop=0;}return;}const why=game.siteReady();if(why)notify(why,'warn');else showModal({kind:'site'});return;}
+ if(a==='site'){stop();if(['karma-marsh','karma-city'].includes(game.site?.id)){const why=game.karmaReason(game.site.id==='karma-marsh'?'marsh':'city');if(why)notify(why,'warn');else{panel='karma';render();if($('panel-body'))$('panel-body').scrollTop=0;}return;}if(game.site?.id==='cloud-mirror'){const why=game.mirrorReason();if(why)notify(why,'warn');else{panel='mirror';render();if($('panel-body'))$('panel-body').scrollTop=0;}return;}if(game.site?.id==='void-rift'){const why=game.riftReason();if(why)notify(why,'warn');else{panel='rift';render();if($('panel-body'))$('panel-body').scrollTop=0;}return;}const why=game.siteReady();if(why)notify(why,'warn');else showModal({kind:'site'});return;}
  if(a==='import'){$('import-file').click();return;}
  if(a==='restore'){try{const raw=localStorage.getItem(slots.backupKey(activeRole,activeSlot));if(!raw)throw Error('没有可用备份');importCandidate=new QGame(JSON.parse(raw),261014,activeRole);showModal({kind:'import',label:'恢复上次自动备份'});}catch(e){notify(e.message,'warn');}return;}
  if(a==='reset'){showModal({kind:'reset'});return;}
