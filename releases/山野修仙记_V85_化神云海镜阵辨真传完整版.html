@@ -3821,7 +3821,7 @@ function locationActions(){const l=game.land(),s=game.s,hasGround=Object.values(
  if(l==='shrine')return `<button data-a="rest" data-mode="field">调息</button><button class="important" data-a="repair">${s.ritual[s.zone]?'已完成':game.zone.verb}</button>`;
  if(l==='boss')return `<button data-a="rest" data-mode="field">调息</button><button class="important" data-a="hunt">${s.cleared[s.zone]?'再战':'挑战'}</button>`;
  if(l==='gate')return `<button data-a="rest" data-mode="field">调息</button><button data-a="zone" data-zone="${s.zone===4?0:s.zone+1}" class="important">${s.zone===4?'归途':'下一境'}</button>`;
- if(game.site)return '<button data-a="site" class="important">'+(game.site.id==='void-rift'?'探查裂隙':'探查')+'</button>'+(pickup||'<button data-a="rest" data-mode="field">调息</button>');
+ if(game.site)return '<button data-a="site" class="important">'+(game.site.id==='void-rift'?'探查裂隙':game.site.id==='cloud-mirror'?'辨识镜台':'探查')+'</button>'+(pickup||'<button data-a="rest" data-mode="field">调息</button>');
  if(l==='bazaar')return '<button data-a="barter">交易</button>'+(pickup||'<button data-a="rest" data-mode="field">调息</button>');
  if(!game.canSettle())return '<button data-a="panel" data-name="camp">'+(game.camp?'选址':'筑庐')+'</button>'+(pickup||'<button data-a="scout">勘察</button>');
  return '<button data-a="scout">勘察</button>'+(pickup||'<button data-a="rest" data-mode="field">调息</button>');
@@ -4076,6 +4076,47 @@ function heartTrialBody(){
  return `<div class="trial-page">${header}${stats}${steps}${middle}<p class="trial-footer">问心不叠加永久攻击、没有心魔数值，也不反复产出物品；断碑的既有选择只改变真实经历的叙事细节。</p></div>`;
 }
 
+
+function mirrorBody(){
+ const s=game.s,st=game.mirrorTrial,reason=game.mirrorReason(),clues=st.clues||[];
+ const seenSeal=clues.includes('seal'),seenEcho=clues.includes('echo');
+ const locked=!st.complete&&game.day<st.lockedUntil;
+ const ready=st.started&&seenSeal&&seenEcho&&!st.complete&&!reason&&!locked&&!game.mirrorCostReady(10,2,2);
+ const story=s.flags.steleChoice===1?'当初你为无名古修守护名讳，那段碑文竟与镜台封印有几分相似。':s.flags.steleChoice===2?'私藏的失名护符在镜前微动，但它无法代你认定真伪。':'你尚未结下青岚断碑的因果，也能凭自己的证据辨真。';
+ const header=`<div class="trial-intro"><small>化神云海 · 第4列第4行 · 可选奇遇</small><h3>映心镜台 · 三卷辨真</h3><p>云海深处，三份上古残卷同时映在镜面，字句皆似正道。古修真正留下的，不是立地跨境的法门，而是如何辨认史书上的伪印。</p></div>`;
+ const stats=`<div class="trial-stats"><span>气血 ${s.hp}/${s.maxHp}</span><span>${game.character.energy} ${s.spirit}/${s.maxSpirit}</span><span>证据 ${clues.length}/2</span><span>寿元 ${game.lifeYears.toFixed(1)}年</span></div>`;
+ const phases=[['观镜',st.started],['验印',seenSeal],['核音',seenEcho],['辨真',st.complete]];
+ const steps=`<div class="trial-steps mirror-steps">${phases.map(([n,ok],i)=>`<div class="trial-step ${ok?'done':i===0&&!st.started?'current':''}"><span>${i+1}</span><b>${n}</b></div>`).join('')}</div>`;
+ let stage='';
+ if(!st.started){
+  const why=reason||game.mirrorCostReady(4,1,1);
+  stage=`<section class="trial-stage"><div class="trial-note"><strong>先观镜，再取证</strong><p>${esc(story)}</p><p>观镜需要15分钟、${game.character.energy}−4、饱腹和饮水各−1。此步不直接扣血。</p>${why?'<p class="danger-text">'+esc(why)+'</p>':''}</div><button class="btn primary trial-start" data-a="mirror-begin" ${why?'disabled':''}>观镜 · 显现三卷古文</button></section>`;
+ }else{
+  const proofs=[
+   {id:'seal',name:'核验封阵印痕',desc:'检查镜背刻痕是否出自同一年代',done:seenSeal},
+   {id:'echo',name:'核验镜底残音',desc:'对照丹雷与元婴问心的修行次序',done:seenEcho}
+  ];
+  const evidence=proofs.map(q=>{
+   const detail=q.done?game.mirrorProof(q.id):'尚未勘验。需25分钟、'+game.character.energy+'−7、饱腹和饮水各−1；不直接扣血。';
+   const why=reason||game.mirrorCostReady(7,1,1);
+   return `<article class="mirror-evidence ${q.done?'mirror-evidence-done':''}"><div class="mirror-evidence-head"><strong>${q.name}</strong><small>${q.done?'已查明':'待调查'}</small></div><p>${esc(detail)}</p>${q.done?'':`<button class="btn" data-a="mirror-proof" data-kind="${q.id}" ${why?'disabled':''}>查验此证 · ${q.desc}</button>`}${!q.done&&why?'<p class="micro danger-text">'+esc(why)+'</p>':''}</article>`;
+  }).join('');
+  stage=`<section class="trial-stage"><p class="mirror-section-label">镜台证据 · 可分次探查</p><div class="mirror-evidence-grid">${evidence}</div><p class="micro">每条证据只需查验一次，中途离开不抹除记录。两条线索全部查明才可定卷。</p></section>`;
+ }
+ let selection='';
+ if(st.started){
+  const candidates=D.MIRROR_SCROLLS.map((q,i)=>{
+   const bad=st.rejected.includes(q.id),good=st.complete&&st.choice===q.id;
+   const tag=good?'已证真':bad?'已证伪':'真伪待辨';
+   return `<button class="mirror-candidate ${bad?'mirror-candidate-false':''} ${good?'mirror-candidate-true':''}" data-a="mirror-choose" data-id="${q.id}" ${ready&&!bad?'':'disabled'}><span class="mirror-index">卷${i+1}</span><span class="mirror-content"><strong>${q.name}</strong><small>${q.saying}</small><em>${q.seal}</em></span><span class="mirror-status">${tag}</span></button>`;
+  }).join('');
+  const title=st.complete?'真传已辨':locked?'镜火封禁中':clues.length<2?'证据仍不完整':'请根据证据判断';
+  const why=locked?'本次错判后封至第'+st.lockedUntil+'日。离开休整，隔日再来。':clues.length<2?'还需 '+(2-clues.length)+' 项证据，不允许盲猜。':ready?'两条证据已经齐备，选择任意一卷将立即结算。':reason||game.mirrorCostReady(10,2,2)||'已完成本档辨识。';
+  selection=`<section class="trial-stage mirror-judgement"><p class="mirror-section-label">三卷同现 · 哪一卷是真迹？</p><div class="mirror-candidates">${candidates}</div><div class="trial-note"><strong>${title}</strong><p>${esc(why)}</p><p>作出判断均耗35分钟、${game.character.energy}−10、饱腹和饮水各−2。<b>若选错，预计气血−${game.mirrorHarm()}，可能重伤折寿；正确则不额外扣血。</b></p></div></section>`;
+ }
+ const finished=st.complete?(()=>{const chosen=D.MIRROR_SCROLLS.find(x=>x.id===st.choice);return `<div class="trial-success"><strong>辨真成功 · ${chosen?.name||'古修真卷'}</strong><p>古修当年用镜阵隔绝破碎仙路，伪经则是灾变后有人借旧印冒名。镜后仍缺一位留名者的记录，留待后续因果回收。</p><p>获得化神果×1、上古残卷×1。仅可领取一次；负重不足时原地待拾，不增加永久战力。</p></div>`;})():'';
+ return `<div class="trial-page mirror-page">${header}${stats}${steps}${stage}${selection}${finished}<p class="trial-footer">镜台不是原化神首领或破境的替代品。已核线索按种族和档位保存；错误判断仍可保留证据并在次日重试。</p><button class="btn mirror-exit" data-a="mirror-exit">← 撤离镜台 · 返回当前地图</button></div>`;
+}
 function riftBody(){
  const s=game.s,st=game.voidRift,phase=st.phase,done=st.complete;
  const hint=game.riftReason();
@@ -4288,10 +4329,10 @@ function renderPanel(){const root=$('panel-root');if(!panel){root.innerHTML='';r
  const characterGearOffset=panel==='character'?(characterGearResetScroll?0:document.querySelector('.character-gear-list')?.scrollTop??0):null;
  characterGearResetScroll=false;
  const focus=document.activeElement,focusId=focus?.id,start=focus?.selectionStart,end=focus?.selectionEnd;
- const names={birth:'命格',camp:'洞府',warehouse:'仓库',craft:'炼制',pack:'背包',cultivate:'洞府 · 修炼',character:'人物装备',manuals:'功法',tribulation:'凝丹雷劫',hearttrial:'元婴问心',rift:'空间裂隙',book:'图鉴',lore:'上古见闻',help:'教程',settings:'设置',quest:'主线',log:'行记'};
+ const names={birth:'命格',camp:'洞府',warehouse:'仓库',craft:'炼制',pack:'背包',cultivate:'洞府 · 修炼',character:'人物装备',manuals:'功法',tribulation:'凝丹雷劫',hearttrial:'元婴问心',rift:'空间裂隙',mirror:'映心镜台',book:'图鉴',lore:'上古见闻',help:'教程',settings:'设置',quest:'主线',log:'行记'};
  const tools=panel==='book'&&!bookDetailKey?`<input id="book-search" type="search" aria-label="搜索图鉴" placeholder="搜索已发现名称或地区" value="${esc(search)}"><select id="panel-filter" aria-label="图鉴类型">${[['all','全部'],['life','灵物'],['mineral','矿材'],['tool','工具'],['food','丹药食物'],['enemy','妖兽'],['gear','装备法器'],['home','建筑'],['secret','秘境'],['zone','境域'],['realm','修炼']].map(([k,v])=>`<option value="${k}" ${filter===k?'selected':''}>${v}</option>`).join('')}</select>`:panel==='craft'?`<span class="muted" style="flex:1;align-self:center">${game.workshop?'器'+game.roomLevel('forge')+'阶 · 丹'+game.roomLevel('alchemy')+'阶':'野外 · 仅随身配方'}</span><select id="panel-filter" aria-label="配方类型">${[['all','全部'],['tool','工具'],['gear','法器'],['food','丹药食物']].map(([k,v])=>`<option value="${k}" ${filter===k?'selected':''}>${v}</option>`).join('')}</select>`:'';
- const content=panel==='birth'?E.sheet(game):panel==='camp'?campBody():panel==='warehouse'?warehouseBody():panel==='craft'?craftBody():panel==='pack'?packBody():panel==='cultivate'?cultivateBody():panel==='character'?characterBody():panel==='manuals'?manualBody():panel==='tribulation'?tribulationBody():panel==='hearttrial'?heartTrialBody():panel==='rift'?riftBody():panel==='book'?bookBody():panel==='lore'?loreBody():panel==='help'?helpBody():panel==='settings'?settingsBody():panel==='quest'?questBody():game.s.logs.map(l=>`<div class="history ${esc(l.tone)}"><time>${esc(l.time)}</time>${esc(l.msg)}</div>`).join('');
- root.innerHTML=`<div class="panel-overlay" aria-hidden="false"><div class="panel" aria-label="${names[panel]}"><div class="panel-head ${['tribulation','hearttrial','rift'].includes(panel)?'trial-head':''}"><div class="panel-heading-group">${(panel==='warehouse'||panel==='cultivate')?'<button class="panel-back" data-a="panel-back" aria-label="返回洞府">← 返回洞府</button>':['manuals','tribulation','hearttrial'].includes(panel)?'<button class="panel-back" data-a="panel-back" aria-label="返回修炼">← 返回修炼</button>':panel==='lore'?'<button class="panel-back" data-a="panel-back" aria-label="返回主线">← 返回主线</button>':''}<strong>${panel==='book'&&bookDetailKey?'图鉴 · 详情':names[panel]}</strong>${panel==='book'?'<span>'+game.bookCount+'/'+bookRows().length+'</span>':''}</div><button class="panel-close" data-a="close-panel" aria-label="${(panel==='warehouse'||panel==='cultivate')?'返回洞府':['manuals','tribulation','hearttrial'].includes(panel)?'返回修炼':panel==='lore'?'返回主线':panel==='book'&&bookDetailKey?'返回图鉴列表':panel==='rift'?'返回地图':'关闭'+names[panel]}">${['warehouse','cultivate','manuals','tribulation','hearttrial','lore','rift'].includes(panel)||panel==='book'&&bookDetailKey?'←':'×'}</button></div>${tools?'<div class="panel-toolbar">'+tools+'</div>':''}<div id="panel-body" class="panel-body ${panel==='character'?'character-body-v66':''}">${panel==='craft'&&codexRecipeReturn?'<button class="btn" data-a="codex-return" style="width:100%;margin-bottom:10px">← 返回图鉴</button>':''}${content}</div></div></div>`;
+ const content=panel==='birth'?E.sheet(game):panel==='camp'?campBody():panel==='warehouse'?warehouseBody():panel==='craft'?craftBody():panel==='pack'?packBody():panel==='cultivate'?cultivateBody():panel==='character'?characterBody():panel==='manuals'?manualBody():panel==='tribulation'?tribulationBody():panel==='hearttrial'?heartTrialBody():panel==='rift'?riftBody():panel==='mirror'?mirrorBody():panel==='book'?bookBody():panel==='lore'?loreBody():panel==='help'?helpBody():panel==='settings'?settingsBody():panel==='quest'?questBody():game.s.logs.map(l=>`<div class="history ${esc(l.tone)}"><time>${esc(l.time)}</time>${esc(l.msg)}</div>`).join('');
+ root.innerHTML=`<div class="panel-overlay" aria-hidden="false"><div class="panel" aria-label="${names[panel]}"><div class="panel-head ${['tribulation','hearttrial','rift','mirror'].includes(panel)?'trial-head':''}"><div class="panel-heading-group">${(panel==='warehouse'||panel==='cultivate')?'<button class="panel-back" data-a="panel-back" aria-label="返回洞府">← 返回洞府</button>':['manuals','tribulation','hearttrial'].includes(panel)?'<button class="panel-back" data-a="panel-back" aria-label="返回修炼">← 返回修炼</button>':panel==='lore'?'<button class="panel-back" data-a="panel-back" aria-label="返回主线">← 返回主线</button>':''}<strong>${panel==='book'&&bookDetailKey?'图鉴 · 详情':names[panel]}</strong>${panel==='book'?'<span>'+game.bookCount+'/'+bookRows().length+'</span>':''}</div><button class="panel-close" data-a="close-panel" aria-label="${(panel==='warehouse'||panel==='cultivate')?'返回洞府':['manuals','tribulation','hearttrial'].includes(panel)?'返回修炼':panel==='lore'?'返回主线':panel==='book'&&bookDetailKey?'返回图鉴列表':['rift','mirror'].includes(panel)?'返回地图':'关闭'+names[panel]}">${['warehouse','cultivate','manuals','tribulation','hearttrial','lore','rift','mirror'].includes(panel)||panel==='book'&&bookDetailKey?'←':'×'}</button></div>${tools?'<div class="panel-toolbar">'+tools+'</div>':''}<div id="panel-body" class="panel-body ${panel==='character'?'character-body-v66':''}">${panel==='craft'&&codexRecipeReturn?'<button class="btn" data-a="codex-return" style="width:100%;margin-bottom:10px">← 返回图鉴</button>':''}${content}</div></div></div>`;
  $('panel-body').scrollTop=old;
  if(warehouseOffsets)document.querySelectorAll('.warehouse-side-list').forEach((e,i)=>{e.scrollTop=warehouseOffsets[i]||0;});
  if(characterGearOffset!==null&&document.querySelector('.character-gear-list'))document.querySelector('.character-gear-list').scrollTop=characterGearOffset;
@@ -4650,6 +4691,10 @@ if(a==='birth-confirm-final'&&frontPage?.kind==='birth-confirm'){selectCharacter
   else notify('此配方不在当前筛选中，可切换炼制分类查看','warn');
   return;
  }
+ if(a==='mirror-begin'&&panel==='mirror'){run('mirror-begin');return;}
+ if(a==='mirror-proof'&&panel==='mirror'){run('mirror-proof',{kind:b.dataset.kind});return;}
+ if(a==='mirror-choose'&&panel==='mirror'){run('mirror-choose',{id:b.dataset.id});return;}
+ if(a==='mirror-exit'&&panel==='mirror'){panel=null;persist();render();return;}
  if(a==='rift-scout'&&panel==='rift'){run('rift-scout');return;}
  if(a==='rift-act'&&panel==='rift'){run('rift-act',{mode:b.dataset.mode});return;}
  if(a==='rift-exit'&&panel==='rift'){panel=null;persist();render();return;}
@@ -4671,7 +4716,7 @@ if(a==='birth-confirm-final'&&frontPage?.kind==='birth-confirm'){selectCharacter
  if(a==='home'){stop();travelOpen=false;if(!game.camp){openPanel('camp');return;}if(game.atCamp){panel=null;render();notify('已在自己的洞府');return;}travelTo(game.camp.pos.x,game.camp.pos.y);return;}
  if(a==='stop'){stop();render();return;}
  if(a==='map'){travelTo(Number(b.dataset.x),Number(b.dataset.y));return;}
- if(a==='site'){stop();if(game.site?.id==='void-rift'){const why=game.riftReason();if(why)notify(why,'warn');else{panel='rift';render();if($('panel-body'))$('panel-body').scrollTop=0;}return;}const why=game.siteReady();if(why)notify(why,'warn');else showModal({kind:'site'});return;}
+ if(a==='site'){stop();if(game.site?.id==='cloud-mirror'){const why=game.mirrorReason();if(why)notify(why,'warn');else{panel='mirror';render();if($('panel-body'))$('panel-body').scrollTop=0;}return;}if(game.site?.id==='void-rift'){const why=game.riftReason();if(why)notify(why,'warn');else{panel='rift';render();if($('panel-body'))$('panel-body').scrollTop=0;}return;}const why=game.siteReady();if(why)notify(why,'warn');else showModal({kind:'site'});return;}
  if(a==='import'){$('import-file').click();return;}
  if(a==='restore'){try{const raw=localStorage.getItem(slots.backupKey(activeRole,activeSlot));if(!raw)throw Error('没有可用备份');importCandidate=new QGame(JSON.parse(raw),261014,activeRole);showModal({kind:'import',label:'恢复上次自动备份'});}catch(e){notify(e.message,'warn');}return;}
  if(a==='reset'){showModal({kind:'reset'});return;}
