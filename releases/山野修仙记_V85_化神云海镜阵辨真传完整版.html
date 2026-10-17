@@ -540,6 +540,31 @@ body.theme-mono .world-journal-entry,body.theme-mono .world-journal-chapter,body
 body.theme-mono .world-journal-chapter-head{background:#f5f5f5;border-color:#ddd}
 body.theme-mono .stele-choice-note strong,body.theme-mono .stele-choice-note p{color:#333!important}
 @media(max-width:355px){.world-journal-chapter-head{align-items:flex-start;flex-direction:column}.world-journal-entry{gap:6px}}
+
+/* P6: mirror clue cards and calm responsive layout; reused three original themes. */
+.mirror-page{max-width:100%;padding-bottom:14px}
+.mirror-steps{grid-template-columns:repeat(4,minmax(0,1fr))}
+.mirror-section-label{font-weight:650;font-size:12px;letter-spacing:.03em;margin:0 0 8px}
+.mirror-evidence-grid,.mirror-candidates{display:grid;gap:8px}
+.mirror-evidence{border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:10px 11px}
+.mirror-evidence-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.mirror-evidence-head small{white-space:nowrap;color:var(--muted)}
+.mirror-evidence p{margin:7px 0 0;line-height:1.7}
+.mirror-evidence .btn{margin-top:9px;min-height:35px;width:100%;white-space:normal;text-align:left}
+.mirror-evidence-done{border-color:var(--gold)}
+.mirror-candidate{display:grid;grid-template-columns:37px minmax(0,1fr) 58px;align-items:center;gap:8px;min-height:82px;padding:11px;border:1px solid var(--line);border-radius:9px;background:var(--raised);text-align:left;width:100%;color:var(--ink)}
+.mirror-candidate:not(:disabled):focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
+.mirror-index{align-self:start;color:var(--muted);font-size:11px}
+.mirror-content{min-width:0;display:flex;flex-direction:column;gap:3px}
+.mirror-content strong{font-family:"Noto Serif CJK SC","Songti SC","SimSun",serif;font-size:14px}
+.mirror-content small,.mirror-content em{font-size:11px;color:var(--muted);font-style:normal;line-height:1.45}
+.mirror-status{justify-self:end;font-size:11px;white-space:nowrap;color:var(--muted)}
+.mirror-candidate:disabled{opacity:1}
+.mirror-candidate-false{opacity:.56!important;text-decoration:none}
+.mirror-candidate-true{border-color:var(--gold)}
+.mirror-judgement .trial-note{margin-top:10px}
+.mirror-exit{width:100%;min-height:38px}
+@media(max-width:340px){.mirror-candidate{grid-template-columns:31px minmax(0,1fr) 47px;padding:8px;gap:5px}.mirror-content strong{font-size:13px}.mirror-content small,.mirror-content em{font-size:10px}}
 </style>
 <style>
 /* V14 entry flow: true opaque screens; one compact 20-slot page fits a phone. */
