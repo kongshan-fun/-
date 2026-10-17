@@ -5635,6 +5635,7 @@ function renderPanel(){const root=$('panel-root');if(!panel){root.innerHTML='';r
  if(focusId==='book-search'&&$('book-search')){$('book-search').focus({preventScroll:true});try{$('book-search').setSelectionRange(start,end);}catch{}}
 }
 function openPanel(name){
+ if(name==='quest'&&isQuestChild(panel)){leaveQuestChild();return;}
  codexRecipeReturn=false;
  if(game.s.combat&&!['help','settings','log','book'].includes(name)){notify('先结束斗法','warn');return;}
  stop();mapOpen=false;travelOpen=false;if(panel===name){panelScroll[panel]=$('panel-body')?.scrollTop||0;panel=null;}else{if(panel)panelScroll[panel]=$('panel-body')?.scrollTop||0;panel=name;filter='all';search='';if(name==='manuals'){manualView='owned';manualKind='all';}if(name==='book'){bookDetailKey=null;}}
