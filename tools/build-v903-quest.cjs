@@ -77,6 +77,7 @@ function compile(base){
  patch("<title>山野修仙记 V90.2 · 人物装备界面优化版</title>","<title>山野修仙记 V90.3 · 主线引导与地图标识优化版</title>");
  patch("'2:7,2':['熔炎洞府']","'2:7,2':['赤焰魔猿巢']");
  patch("'4:7,2':['破界天门']","'4:7,2':['破界殿·堕仙残念']");
+ patch("'4:7,5':['归途界碑']","'4:7,5':['天阙传境界碑']");
  patch("前往净泉灵坛净泉，再平定蛟首。","前往第5列第5行「泉」字净泉灵坛完成净泉仪式，再击败青潭蛟影。");
  patch("镇魂古碑平乱后击败幽沼首领。","前往第5列第5行「碑」字镇魂古碑完成镇魂，再击败渡魂鬼将。");
  patch("设置可切换暖白松绿与极简黑白主题","设置可切换暖白松绿、极简黑白与流光仙境三种主题");
@@ -95,6 +96,7 @@ function mapTile(x,y,small=false){
  return '<button class="tile '+(visible?'seen':'fog')+' '+(s.visited[key]?'visited':'')+' '+(visible&&(home||site||goal||evOn||['campsite','shrine','boss','gate'].includes(l))?'landmark':'')+' '+(goal?'q3-target':'')+' '+(route.some(p=>p.x===x&&p.y===y)?'route':'')+' '+(current?'current':'')+' '+(visible&&locked?'locked':'')+'" data-a="'+(small?'mini-step':'map')+'" data-x="'+x+'" data-y="'+y+'" '+(current?'disabled aria-current="location"':'')+' title="'+esc(name+(goal?' · 主线目标':'')+(locked&&visible?' · 未解锁':''))+'" aria-label="'+esc(name)+'，'+(x+1)+'列'+(y+1)+'行'+(goal?'，主线目标':'')+(current?'，当前位置':locked&&visible?'，未解锁':'')+'">'+(current?'我':visible?mark:'?')+'</button>';
 }
 `);
+ patch(" if(l==='gate')return `<button data-a=\"rest\" data-mode=\"field\">调息</button><button data-a=\"zone\" data-zone=\"${s.zone===4?0:s.zone+1}\" class=\"important\">${s.zone===4?'归途':'下一境'}</button>`;"," if(l==='gate'){\n  if(s.zone===4)return '<button data-a=\"zone\" data-zone=\"0\">回青岚</button><button data-a=\"zone\" data-zone=\"5\" class=\"important\">前往丹霞</button>';\n  if(s.zone>=5&&s.major===s.zone-4)return '<button data-a=\"rest\" data-mode=\"field\">调息</button><button data-a=\"panel\" data-name=\"quest\" class=\"important\">先回府破境</button>';\n  return '<button data-a=\"rest\" data-mode=\"field\">调息</button><button data-a=\"zone\" data-zone=\"'+(s.zone+1)+'\" class=\"important\">下一境</button>';\n }");
  patch("panel==='character'?'character-body-v92':''","panel==='character'?'character-body-v92':panel==='quest'?'q3-body':''");
  patch("if(t.dataset?.help){if(t.open)helpOpen.add(t.dataset.help);else helpOpen.delete(t.dataset.help);}",
        "if(t.dataset?.help){if(t.open)helpOpen.add(t.dataset.help);else helpOpen.delete(t.dataset.help);}if(t.dataset?.quest){if(t.open)questFolds.add(t.dataset.quest);else questFolds.delete(t.dataset.quest);}");
