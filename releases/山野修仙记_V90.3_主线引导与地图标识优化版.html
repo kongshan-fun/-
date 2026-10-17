@@ -1826,7 +1826,7 @@ root.QCombatRating={birth,live,percentile,gearDelta};
   '1:0,5':['碧溪营地'],'1:4,4':['净泉灵坛'],'1:7,2':['潜蛟寒潭'],'1:7,5':['前往赤岭'],
   '2:0,5':['赤岭营地'],'2:4,4':['赤焰古炉'],'2:7,2':['赤焰魔猿巢'],'2:7,5':['前往幽沼'],
   '3:0,5':['幽沼营地'],'3:4,4':['镇魂古碑'],'3:7,2':['冥水古殿'],'3:7,5':['前往天阙'],
-  '4:0,5':['天阙营地'],'4:4,4':['天阙祭台'],'4:7,2':['破界殿·堕仙残念'],'4:7,5':['归途界碑']
+  '4:0,5':['天阙营地'],'4:4,4':['天阙祭台'],'4:7,2':['破界殿·堕仙残念'],'4:7,5':['天阙传境界碑']
  };
  const EVENTS={
   '0:2,2':{text:'断碑中寻得止血草×2。',loot:{herb:2}},
@@ -4780,7 +4780,11 @@ function locationActions(){const l=game.land(),s=game.s,hasGround=Object.values(
  }
  if(l==='shrine')return `<button data-a="rest" data-mode="field">调息</button><button class="important" data-a="repair">${s.ritual[s.zone]?'已完成':game.zone.verb}</button>`;
  if(l==='boss')return `<button data-a="rest" data-mode="field">调息</button><button class="important" data-a="hunt">${s.cleared[s.zone]?'再战':'挑战'}</button>`;
- if(l==='gate')return `<button data-a="rest" data-mode="field">调息</button><button data-a="zone" data-zone="${s.zone===4?0:s.zone+1}" class="important">${s.zone===4?'归途':'下一境'}</button>`;
+ if(l==='gate'){
+  if(s.zone===4)return '<button data-a="zone" data-zone="0">回青岚</button><button data-a="zone" data-zone="5" class="important">前往丹霞</button>';
+  if(s.zone>=5&&s.major===s.zone-4)return '<button data-a="rest" data-mode="field">调息</button><button data-a="panel" data-name="quest" class="important">先回府破境</button>';
+  return '<button data-a="rest" data-mode="field">调息</button><button data-a="zone" data-zone="'+(s.zone+1)+'" class="important">下一境</button>';
+ }
  if(game.highEventAt)return '<button data-a="high-event" class="important">探查异兆</button>'+(pickup||'<button data-a="rest" data-mode="field">调息</button>');
  if(game.site)return '<button data-a="site" class="important">'+(game.site.id==='void-rift'?'探查裂隙':game.site.id==='cloud-mirror'?'辨识镜台':game.site.id==='karma-marsh'?'查看残灯':game.site.id==='karma-city'?'会见追索者':game.site.id==='dao-three-paths'?'参悟残碑':game.site.id==='immortal-estate'?'探索仙府':'探查')+'</button>'+(pickup||'<button data-a="rest" data-mode="field">调息</button>');
  if(l==='bazaar')return '<button data-a="barter">交易</button>'+(pickup||'<button data-a="rest" data-mode="field">调息</button>');
