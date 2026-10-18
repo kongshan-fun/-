@@ -25,6 +25,11 @@ if __name__=="__main__":
  base=(ROOT/"releases"/"山野修仙记_V90.6_十二阶储物袋与特殊储物袋版.html").read_text(encoding="utf-8")
  v7=apply(base,"patches/v907-from-main.json.gz.b64")
  v8=apply(base,"patches/v908-from-main.json.gz.b64")
+ # Keep the hash-checked V90.8 gameplay patch immutable; apply release-title metadata after verification.
+ old_title="<title>山野修仙记 V90.8 · 飞升结算与资质排行榜</title>"
+ new_title="<title>山野修仙记 V90.8 · 五阶洞府与高阶炼制</title>"
+ if v8.count(old_title)!=1: raise SystemExit("V90.8 title marker not found exactly once")
+ v8=v8.replace(old_title,new_title,1)
  rel=ROOT/"releases";rel.mkdir(exist_ok=True)
  (rel/"山野修仙记_V90.7_飞升结算与本机资质榜.html").write_text(v7,encoding="utf-8")
  (rel/"山野修仙记_V90.8_五阶洞府与高阶炼制版.html").write_text(v8,encoding="utf-8")
