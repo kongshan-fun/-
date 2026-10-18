@@ -41,6 +41,8 @@ jobs:
         run: python3 tools/extract_v908_tests.py
       - name: Run full regressions
         run: node tests/run_v908_regression.cjs
+      - name: Check 0-36 equipment and inspector layout contract
+        run: node tests/v908-character-gear-layout.test.cjs
       - name: Ensure release artifacts remain reproducible
         run: |
           git diff --exit-code -- index.html             "releases/山野修仙记_V90.7_飞升结算与本机资质榜.html"             "releases/山野修仙记_V90.8_五阶洞府与高阶炼制版.html"
