@@ -1,0 +1,49 @@
+name: V90.6 H5 Candidate Build and Regression
+on:
+  push:
+    branches:
+      - release/v90.6-storage-main-integration
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  verify-and-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build V90.5 and V90.6 with exact hashes
+        run: python3 tools/build-v906-release.py
+      - name: Verify regression suites
+        run: |
+          node tests/v905-balance-regression.test.cjs
+          node tests/v906-storage-regression.test.cjs
+          node tests/v906-quest-regression.test.cjs
+          node tests/v906-100-slots-regression.test.cjs
+          node tests/p10-nine-heavens.test.cjs
+          node tests/v905-monte-carlo.cjs > /tmp/v905-monte-carlo.txt
+          tail -n 3 /tmp/v905-monte-carlo.txt
+      - name: Commit verified H5 releases and main entry
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html releases/山野修仙记_V90.5_战斗平衡与顶部状态栏优化版.html releases/山野修仙记_V90.6_十二阶储物袋与特殊储物袋版.html
+          if ! git diff --cached --quiet; then
+            git commit -m "release: integrate V90.6 complete H5 into main entry"
+            git push origin HEAD:release/v90.6-storage-main-integration
+          fi
+      - name: Publish verified H5 candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: V906_H5_Release_Candidate
+          path: |
+            index.html
+            releases/山野修仙记_V90.6_十二阶储物袋与特殊储物袋版.html
+            releases/山野修仙记_V90.5_战斗平衡与顶部状态栏优化版.html
+            docs/V906_储物袋实现与验收.md
+          retention-days: 30
