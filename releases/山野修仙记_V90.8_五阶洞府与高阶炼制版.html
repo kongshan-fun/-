@@ -1019,7 +1019,7 @@ body.theme-mono .trial-option-risk,body.theme-mono .trial-option-risk.fatal{colo
 /* V90.2 — Character equipment: two slots + grid + ONE gear scrollbar.
    Original color themes and game data remain authoritative. */
 #panel-root .panel-body.character-body-v92{display:flex;flex-direction:column;min-height:0;min-width:0;overflow:hidden!important;padding:0!important;scrollbar-gutter:auto}
-#panel-root .character-v92{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;min-width:0;height:100%;color:inherit;background:var(--panel-bg,var(--surface,#fff))}
+#panel-root .character-v92{display:grid;grid-template-rows:auto auto auto minmax(0,1fr) auto;flex:1 1 auto;min-height:0;min-width:0;height:100%;overflow:hidden;color:inherit;background:var(--panel-bg,var(--surface,#fff))}
 #panel-root .character-v92 button{font:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 #panel-root .character-v92 button:focus-visible{outline:2px solid var(--gold,#567b63);outline-offset:-2px}
 #panel-root .character-v92-overview{flex:none;padding:10px 12px 8px;border-bottom:1px solid var(--line,#ddd)}
@@ -1058,7 +1058,7 @@ body.theme-mono .trial-option-risk,body.theme-mono .trial-option-risk.fatal{colo
 #panel-root .character-v92-segments button.active{font-weight:700;color:var(--ink,#24362b);background:var(--ui-soft,var(--raised,#f5f5f5))}
 #panel-root .character-v92-sort{flex:none;min-height:34px;min-width:66px;padding:0 6px;text-align:center;background:transparent;color:inherit;border:1px solid var(--line,#ddd);border-radius:6px;font-size:11px}
 #panel-root .character-v92-count{margin-left:auto;flex:none;white-space:nowrap;font-size:10px;color:var(--muted,#777);font-variant-numeric:tabular-nums}
-#panel-root .character-gear-list.character-v92-grid{flex:1 1 0;min-height:0;min-width:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:minmax(108px,auto);align-content:start;gap:8px;padding:10px 11px 12px;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-gutter:auto;border:0}
+#panel-root .character-gear-list.character-v92-grid{height:100%;min-height:0;min-width:0;align-self:stretch;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:minmax(108px,max-content);align-content:start;gap:8px;padding:10px 11px 12px;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-gutter:auto;border:0}
 #panel-root .character-v92-item{display:flex;flex-direction:column;gap:4px;min-width:0;min-height:108px;text-align:left;padding:9px 10px;background:var(--panel-card,var(--surface,#fff));color:inherit;border:1px solid var(--line,#ddd);border-radius:8px}
 #panel-root .character-v92-item.is-selected{border-color:var(--gold,#567b63)!important;box-shadow:inset 0 0 0 1px var(--gold,#567b63)}
 #panel-root .character-v92-item-top{display:flex;align-items:center;gap:6px;min-width:0}
@@ -1071,19 +1071,19 @@ body.theme-mono .trial-option-risk,body.theme-mono .trial-option-risk.fatal{colo
 #panel-root .character-v92-item-delta.gain{color:var(--gold,#567b63)}
 #panel-root .character-v92-item-delta.loss{color:var(--danger,#9c5651)}
 #panel-root .character-v92-empty{grid-column:1/-1;margin:4px 0!important;padding:15px 8px;line-height:1.7;text-align:center;border:1px dashed var(--line,#ddd);border-radius:7px;font-size:12px;color:var(--muted,#777)}
-#panel-root .character-v92-inspector{flex:none;min-width:0;padding:9px 11px calc(9px + env(safe-area-inset-bottom));border-top:1px solid var(--line,#ddd);background:var(--panel-bg,var(--surface,#fff));box-shadow:0 -3px 10px #00000006}
-#panel-root .character-v92-inspect-main{display:flex;align-items:center;justify-content:space-between;gap:6px;min-width:0;margin-bottom:8px}
+#panel-root .character-v92-inspector{flex:none;height:calc(116px + env(safe-area-inset-bottom));max-height:calc(116px + env(safe-area-inset-bottom));min-height:0;min-width:0;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;padding:9px 11px calc(9px + env(safe-area-inset-bottom));border-top:1px solid var(--line,#ddd);background:var(--panel-bg,var(--surface,#fff));box-shadow:0 -3px 10px #00000006}
+#panel-root .character-v92-inspect-main{flex:1 1 auto;min-height:0;overflow:hidden;display:flex;align-items:flex-start;justify-content:space-between;gap:6px;min-width:0;margin-bottom:6px}
 #panel-root .character-v92-inspect-main>div{min-width:0;flex:1}
 #panel-root .character-v92-inspect-main strong{display:block;font-size:14px;line-height:1.45;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#panel-root .character-v92-inspect-main small{display:block;margin-top:2px;font-size:11px;color:var(--muted,#777);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#panel-root .character-v92-inspect-main small{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;margin-top:2px;font-size:11px;color:var(--muted,#777);overflow:hidden;overflow-wrap:anywhere;white-space:normal}
 #panel-root .character-v92-inspect-diff{flex:none;max-width:36%;font-size:10px;color:var(--muted,#777);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-variant-numeric:tabular-nums}
-#panel-root .character-v92-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+#panel-root .character-v92-controls{flex:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
 #panel-root .character-v92-controls:has(.is-danger){grid-template-columns:1fr 1.5fr}
 #panel-root .character-v92-controls button{min-height:36px;min-width:0;font-size:13px;border:1px solid var(--line,#ddd);border-radius:6px;color:inherit;background:var(--panel-card,var(--surface,#fff))}
 #panel-root .character-v92-controls button:first-child:not(:disabled){border-color:var(--gold,#567b63);font-weight:700}
 #panel-root .character-v92-controls button:disabled{opacity:.45;cursor:default}
 #panel-root .character-v92-controls button.is-danger{color:var(--danger,#a9574d);border-color:var(--danger,#a9574d)}
-#panel-root .character-v92-inspector.is-empty{display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:12px}
+#panel-root .character-v92-inspector.is-empty{display:flex;flex-direction:row;justify-content:space-between;align-items:center;gap:6px;font-size:12px}
 #panel-root .character-v92-inspector.is-empty button{padding:8px 10px;border:1px solid var(--line,#ddd);background:transparent;border-radius:6px;color:inherit}
 body.theme-immortal #panel-root .character-v92{color:#eaf8ff}
 body.theme-immortal #panel-root .character-v92-item,body.theme-immortal #panel-root .character-v92-slot,body.theme-immortal #panel-root .character-v92-inspector{color:#eaf8ff;background:#192d4e;border-color:#4e6791}
@@ -1114,7 +1114,7 @@ body.theme-mono #panel-root .character-v92-slot.is-active,body.theme-mono #panel
  #panel-root .character-v92-toolbar{padding-top:5px;padding-bottom:5px}
  #panel-root .character-v92-grid{grid-auto-rows:minmax(96px,auto);padding-top:6px!important}
  #panel-root .character-v92-item{min-height:96px;gap:3px}
- #panel-root .character-v92-inspector{padding-top:6px;padding-bottom:7px}
+ #panel-root .character-v92-inspector{height:calc(106px + env(safe-area-inset-bottom));max-height:calc(106px + env(safe-area-inset-bottom));padding-top:6px;padding-bottom:calc(7px + env(safe-area-inset-bottom))}
  #panel-root .character-v92-inspect-main{margin-bottom:5px}
 }
 @media(max-height:590px){
@@ -5254,7 +5254,7 @@ function characterBody(){
    +'<span class="character-v92-inspect-diff">'+(isEquipped(selected)?'当前穿戴':(powerDiff(selected)>=0?'替换战力 +':'替换战力 ')+powerDiff(selected).toLocaleString('zh-CN'))+'</span></div>'
    +(confirmation?'<div class="character-v92-controls"><button type="button" data-a="character-salvage-cancel">取消分解</button><button type="button" class="is-danger" data-a="character-salvage-confirm" data-id="'+esc(selected.id)+'">确认分解此装备</button></div>'
    :'<div class="character-v92-controls"><button type="button" data-a="equip" data-id="'+esc(selected.id)+'" '+(isEquipped(selected)?'disabled':'')+'>'+(isEquipped(selected)?'已穿戴':'穿戴')+'</button>'
-   +'<button type="button" data-a="refine" data-id="'+esc(selected.id)+'" '+(selected.refine>=3?'disabled':'')+'>'+(selected.refine>=3?'精炼满阶':'精炼 · 灵尘'+(selected.refine+1)*4)+'</button>'
+   +'<button type="button" data-a="refine" data-id="'+esc(selected.id)+'" '+(selected.refine>=5?'disabled':'')+'>'+(selected.refine>=5?'精炼满阶':'精炼 · 灵尘'+(selected.refine+1)*4)+'</button>'
    +'<button type="button" class="is-muted" data-a="character-salvage-prompt" data-id="'+esc(selected.id)+'" '+(isEquipped(selected)?'disabled':'')+'>分解</button></div>')
    +'</section>'
    :'<div class="character-v92-inspector is-empty"><span>这里还没有可操作的装备。</span><button type="button" data-a="panel" data-name="craft">前往炼制</button></div>';
