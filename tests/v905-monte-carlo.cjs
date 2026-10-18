@@ -1,6 +1,6 @@
 'use strict';
 const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
-const src=process.argv[2]||path.join(__dirname,'releases/山野修仙记_V90.5_战斗平衡与顶部状态栏优化版.html');
+const src=process.argv[2]||path.join(__dirname,'..','releases/山野修仙记_V90.5_战斗平衡与顶部状态栏优化版.html');
 const html=fs.readFileSync(src,'utf8');
 const scripts=[...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 const ctx=vm.createContext({console});ctx.globalThis=ctx;
