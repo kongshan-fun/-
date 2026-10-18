@@ -1,0 +1,45 @@
+name: V90.8 H5 Build and Regression
+on:
+  push:
+    branches:
+      - release/v90.8-five-tier-buildings
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Rebuild exact V90.7 and V90.8 files
+        run: python3 tools/build_v908_from_main.py
+      - name: Extract regression suites
+        run: python3 tools/extract_v908_tests.py
+      - name: Run full regression
+        run: node tests/run_v908_regression.cjs
+      - name: Commit H5 release and main entry
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html releases/山野修仙记_V90.7_飞升结算与本机资质榜.html releases/山野修仙记_V90.8_五阶洞府与高阶炼制版.html
+          if ! git diff --cached --quiet; then
+            git commit -m "release: build V90.8 five-tier buildings and crafting"
+            git push origin HEAD:release/v90.8-five-tier-buildings
+          fi
+      - name: Upload H5 candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: V908_H5_Candidate
+          path: |
+            index.html
+            releases/山野修仙记_V90.7_飞升结算与本机资质榜.html
+            releases/山野修仙记_V90.8_五阶洞府与高阶炼制版.html
+            docs/V908_高阶洞府与装备炼制进阶设计及验收报告.md
+          retention-days: 30
