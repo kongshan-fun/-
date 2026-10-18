@@ -22,7 +22,7 @@ def apply(source,patch):
  return text
 def gitblob(s): return hashlib.sha1(b"blob "+str(len(s.encode())).encode()+b"\\0"+s.encode()).hexdigest()
 if __name__=="__main__":
- base=(ROOT/"index.html").read_text(encoding="utf-8")
+ base=(ROOT/"releases"/"山野修仙记_V90.6_十二阶储物袋与特殊储物袋版.html").read_text(encoding="utf-8")
  v7=apply(base,"patches/v907-from-main.json.gz.b64")
  v8=apply(base,"patches/v908-from-main.json.gz.b64")
  rel=ROOT/"releases";rel.mkdir(exist_ok=True)
