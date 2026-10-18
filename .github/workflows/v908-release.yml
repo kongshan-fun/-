@@ -28,7 +28,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html releases/山野修仙记_V90.7_飞升结算与本机资质榜.html releases/山野修仙记_V90.8_五阶洞府与高阶炼制版.html
+          git add index.html releases/山野修仙记_V90.7_飞升结算与本机资质榜.html releases/山野修仙记_V90.8_五阶洞府与高阶炼制版.html tests/v907-ascension-lifecycle.test.cjs tests/v907-storage-regression.test.cjs tests/v907-quest-regression.test.cjs tests/v907-100-slots-regression.test.cjs tests/v907-interrupted-settlement.test.cjs tests/v908-building-progression.test.cjs tests/run_v908_regression.cjs
           if ! git diff --cached --quiet; then
             git commit -m "release: build V90.8 five-tier buildings and crafting"
             git push origin HEAD:release/v90.8-five-tier-buildings
