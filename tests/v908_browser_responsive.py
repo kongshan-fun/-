@@ -68,7 +68,7 @@ def gear_case(page, width, height, count):
     cards.last.click(timeout=12000)
     selected=page.locator(".character-v92-item.is-selected")
     ensure(selected.count()==1,"selected gear missing after click")
-    control=page.locator(".character-v92-controls button").first
+    control=page.locator(".character-v92-controls button:not([disabled])").first
     control.click(timeout=10000)
     after=bounds(page,".character-v92-inspector")
     ensure(abs(after["top"]-inspector["top"])<=2,"inspector moved after gear click")
