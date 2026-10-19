@@ -1266,6 +1266,41 @@ body.theme-mono .storage-bag-card{background:#fff;border-color:#ddd;color:#222}
 .v907-result{border:1px solid var(--line,#dce4db);background:var(--raised,#fff);border-radius:9px;padding:12px;margin:12px 0;display:flex;flex-direction:column;gap:6px;color:var(--ink,#29382c)}
 .v907-result b,.v907-result strong{font-size:19px;font-variant-numeric:tabular-nums}.v907-result small{font-size:11px;color:var(--muted,#777);line-height:1.7}.v907-result p{margin:0!important}.v907-rank{display:flex;flex-direction:column;gap:12px}.v907-rank-head h2{margin:4px 0!important;font-size:22px!important}.v907-rank-head p{font-size:11px!important;line-height:1.7!important}.v907-rank-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.v907-rank-tabs button{min-height:34px;border:1px solid var(--line,#ddd);background:var(--surface,#fff);border-radius:6px;color:var(--ink,#222)}.v907-rank-tabs button.active{border-color:var(--gold,#52735d);background:var(--panel-subtle,#edf2ed);font-weight:700}.v907-rank-rows{display:flex;flex-direction:column;gap:6px}.v907-rank-row{display:flex;gap:10px;align-items:center;min-width:0;padding:10px 8px;border:1px solid var(--line,#ddd);background:var(--surface,#fff);border-radius:7px}.v907-rank-place{font-weight:700;font-size:15px;color:var(--gold,#52735d);min-width:23px}.v907-rank-person{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}.v907-rank-person strong{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.v907-rank-person small{font-size:10px;color:var(--muted,#777)}.v907-rank-time{min-width:75px;text-align:right;display:flex;flex-direction:column;gap:4px}.v907-rank-time b{font-size:12px;white-space:nowrap}.v907-rank-time small{font-size:10px;color:var(--muted,#777)}.v907-rank-notice{font-size:10px!important;line-height:1.7!important;border-top:1px solid var(--line,#ddd);padding-top:12px}.v907-empty{padding:25px 6px;text-align:center;border:1px dashed var(--line,#ddd);border-radius:8px}.v907-empty strong{font-size:14px}.v907-empty p{font-size:11px!important}.v907-rank .inline-buttons{margin-top:4px}.v907-rank .inline-buttons button{flex:1}
 </style>
+<style id="v908-responsive-containment-audit">
+/* V90.8: growing building descriptions must not disappear at the third text line. */
+#panel-root .building-card .building-effect{min-height:0;max-height:none;overflow:visible}
+
+/* Five rows of archive cells remain usable on short devices: scroll the grid, not the page. */
+.entry-save-content{min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}
+.entry-save-grid{height:100%;min-height:340px;grid-template-rows:repeat(5,minmax(60px,1fr))}
+.entry-save-grid .entry-save-cell{min-height:60px}
+
+/* Detail frame retains a fixed boundary, while longer affix text scrolls inside it. */
+#panel-root .character-v92-inspect-main>div{display:flex;flex-direction:column;min-height:0;max-height:100%}
+#panel-root .character-v92-inspect-main small{display:block;-webkit-line-clamp:unset;line-clamp:unset;flex:1 1 auto;min-height:0;white-space:normal;overflow-wrap:anywhere;overflow-y:auto;overscroll-behavior:contain}
+
+@media(max-height:620px){
+  /* Compact the nonessential rows so a short screen still has a usable gear grid. */
+  #panel-root .character-v92-overview{padding:4px 8px}
+  #panel-root .character-v92-stats{display:none}
+  #panel-root .character-v92-equipped{padding:3px 8px 4px}
+  #panel-root .character-v92-sectionline{display:none}
+  #panel-root .character-v92-slot{min-height:40px;padding:3px 7px}
+  #panel-root .character-v92-slot-label,#panel-root .character-v92-slot>small{display:none}
+  #panel-root .character-v92-slot-row{margin:0}
+  #panel-root .character-v92-slot-row i{width:18px;height:18px}
+  #panel-root .character-v92-toolbar{padding:3px 7px}
+  #panel-root .character-v92-inspector{height:90px;max-height:90px;padding:4px 7px}
+  #panel-root .character-v92-controls button{min-height:30px}
+}
+@media(max-height:510px){
+  /* When the viewport cannot contain every fixed section, fall back to outer scrolling. */
+  #panel-root .panel-body.character-body-v92{overflow-y:auto!important;overflow-x:hidden!important}
+  #panel-root .character-v92{display:flex;flex-direction:column;height:auto;min-height:100%;overflow:visible}
+  #panel-root .character-gear-list.character-v92-grid{flex:0 0 138px;height:138px;min-height:138px}
+  #panel-root .character-v92-inspector{flex:none;height:90px;max-height:90px}
+}
+</style>
 </head>
 <body>
 <div id="phone" class="phone front-mode">
