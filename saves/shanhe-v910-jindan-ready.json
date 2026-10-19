@@ -1,0 +1,344 @@
+{
+  "version": 14,
+  "character": "human",
+  "race": "human",
+  "birth": {
+    "v": 1,
+    "race": "human",
+    "seed": 20261019,
+    "name": "无名散修",
+    "origin": "rolled",
+    "grade": "triple",
+    "elements": [
+      "earth",
+      "metal",
+      "fire"
+    ],
+    "affinity": "earth",
+    "insight": 85,
+    "vigor": 76,
+    "fortune": 85,
+    "adds": {
+      "hp": 0,
+      "spirit": 0,
+      "attack": 0,
+      "years": 0,
+      "spent": 0
+    }
+  },
+  "xpCarry": 0,
+  "seed": 20261019,
+  "zone": 5,
+  "unlocked": 6,
+  "ritual": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  ],
+  "cleared": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  ],
+  "ascensionRecord": null,
+  "secretRealm": null,
+  "secretVisited": {},
+  "pos": {
+    "x": 1,
+    "y": 5
+  },
+  "last": {
+    "x": 1,
+    "y": 5
+  },
+  "minutes": 420,
+  "seen": {
+    "5:0,4": true,
+    "5:1,4": true,
+    "5:2,4": true,
+    "5:0,5": true,
+    "5:1,5": true,
+    "5:2,5": true,
+    "5:0,6": true,
+    "5:1,6": true,
+    "5:2,6": true
+  },
+  "visited": {
+    "5:1,5": true
+  },
+  "scouted": {},
+  "nodeHarvest": {},
+  "encounters": {},
+  "events": {},
+  "highEvents": {},
+  "survival": {
+    "debt": 0
+  },
+  "sites": {},
+  "campRests": {},
+  "bossDaily": {},
+  "hp": 279,
+  "maxHp": 279,
+  "hunger": 100,
+  "water": 100,
+  "spirit": 144,
+  "maxSpirit": 144,
+  "attack": 24,
+  "level": 18,
+  "xp": 0,
+  "settlements": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    {
+      "pos": {
+        "x": 1,
+        "y": 5
+      },
+      "level": 3,
+      "buildings": {
+        "warehouse": 3,
+        "forge": 3,
+        "alchemy": 3,
+        "quiet": 3,
+        "farm": 2
+      },
+      "stash": {},
+      "storedGears": [],
+      "foundedAt": 420,
+      "farmAt": 420
+    },
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "major": 1,
+  "daoXp": 60,
+  "ascended": false,
+  "caches": {},
+  "pillDaily": {
+    "day": 1,
+    "uses": 0
+  },
+  "life": {
+    "left": 345600,
+    "losses": 0,
+    "elixirs": 0,
+    "adYearsClaimed": false
+  },
+  "ended": false,
+  "inv": {
+    "berry": 6,
+    "water": 6,
+    "salve": 2,
+    "coreOre": 2,
+    "coreHerb": 1
+  },
+  "stash": {},
+  "storageBags": {},
+  "gears": [],
+  "pending": [],
+  "equipped": {
+    "weapon": null,
+    "armor": null
+  },
+  "nextGear": 1,
+  "codex": {
+    "items": {
+      "berry": 1,
+      "water": 1,
+      "salve": 1,
+      "coreOre": 1,
+      "coreHerb": 1
+    },
+    "enemies": {},
+    "gears": {},
+    "claims": {}
+  },
+  "buffs": {
+    "fireward": 0,
+    "detox": 0
+  },
+  "flags": {
+    "repaired": true,
+    "boss": true,
+    "talisman": false,
+    "complete": false,
+    "relicCourt": 0,
+    "steleChoice": 0,
+    "coreTribulation": {
+      "phase": 0,
+      "marks": 0,
+      "started": false,
+      "complete": false
+    },
+    "heartTrial": {
+      "phase": 0,
+      "started": false,
+      "complete": false,
+      "choices": []
+    },
+    "voidRift": {
+      "phase": 0,
+      "complete": false,
+      "steps": []
+    },
+    "mirrorTrial": {
+      "started": false,
+      "clues": [],
+      "rejected": [],
+      "complete": false,
+      "choice": null,
+      "lockedUntil": 0
+    },
+    "karmaWitness": {
+      "stage": 0,
+      "choice": 0
+    },
+    "karmaReckoning": {
+      "ending": 0,
+      "origin": 0,
+      "source": 0
+    },
+    "daoStele": {
+      "phase": 0,
+      "path": null,
+      "complete": false,
+      "roots": {
+        "stele": 0,
+        "mirror": false,
+        "karma": 0
+      }
+    },
+    "immortalEstate": {
+      "phase": 0,
+      "choices": [],
+      "complete": false,
+      "resolution": null,
+      "origins": {
+        "stele": 0,
+        "mirror": false,
+        "karma": 0,
+        "dao": null,
+        "rift": false
+      }
+    },
+    "heavenTrial": {
+      "phase": 0,
+      "choices": [],
+      "complete": false,
+      "scars": 0,
+      "witness": {
+        "stele": 0,
+        "court": false,
+        "mirror": false,
+        "rift": false,
+        "karma": 0,
+        "dao": null,
+        "estate": null
+      }
+    },
+    "realmArts": null
+  },
+  "meditation": {
+    "day": 1,
+    "uses": 0
+  },
+  "combat": null,
+  "stats": {
+    "steps": 0,
+    "kills": 0,
+    "defeats": 0,
+    "gathers": 0,
+    "scouts": 0,
+    "wood": 0,
+    "drinks": 0,
+    "books": 0,
+    "travels": 0,
+    "training": 0,
+    "forestMoves": 0,
+    "crafted": 0,
+    "events": 0,
+    "bossWins": 0,
+    "settled": 0,
+    "built": 0,
+    "stores": 0,
+    "withdraws": 0,
+    "farms": 0,
+    "pillsMade": 0,
+    "relocations": 0
+  },
+  "guide": {
+    "status": "done",
+    "step": 0,
+    "base": {
+      "steps": 0,
+      "kills": 0,
+      "defeats": 0,
+      "gathers": 0,
+      "scouts": 0,
+      "wood": 0,
+      "drinks": 0,
+      "books": 0,
+      "travels": 0,
+      "training": 0,
+      "forestMoves": 0,
+      "crafted": 0,
+      "events": 0,
+      "bossWins": 0,
+      "settled": 0,
+      "built": 0,
+      "stores": 0,
+      "withdraws": 0,
+      "farms": 0,
+      "pillsMade": 0,
+      "relocations": 0
+    },
+    "rewarded": true
+  },
+  "manuals": {
+    "owned": {},
+    "known": {},
+    "equipped": {
+      "attack": null,
+      "guard": null,
+      "utility": null
+    },
+    "study": {},
+    "sect": null,
+    "contribution": 0
+  },
+  "blood": {
+    "essence": 0,
+    "absorbed": 0,
+    "stage": 0,
+    "huntRecords": {}
+  },
+  "settings": {
+    "motion": true
+  },
+  "logs": []
+}
