@@ -6,7 +6,7 @@ from playwright.sync_api import sync_playwright
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 OUT = ROOT / "artifacts" / "v908-ui-browser"
-VIEWPORTS = [(320, 568), (360, 640), (390, 844)]
+VIEWPORTS = [(320, 568), (360, 640), (390, 844), (412, 915), (1080, 1920), (1440, 900)]
 GEAR_COUNTS = [2, 3, 10, 36]
 
 AUDIT_HOOK = r"""
@@ -134,9 +134,12 @@ def main():
         try:
             with sync_playwright() as p:
                 browser=p.chromium.launch(channel="chrome",headless=True,args=["--no-sandbox","--disable-dev-shm-usage"])
-                context=browser.new_context(device_scale_factor=1)
+                # 修复：BrowserContext.new_page() 不接受 viewport 参数。
+                # 正确做法是给每个视口单独建 BrowserContext，再 new_page() 不带参数。
                 for width,height in VIEWPORTS:
-                    page=context.new_page(viewport={"width":width,"height":height})
+                    context=browser.new_context(device_scale_factor=1,
+                                                viewport={"width":width,"height":height})
+                    page=context.new_page()
                     errors=[]
                     page.on("pageerror", lambda error: errors.append(str(error)))
                     try:
@@ -150,7 +153,9 @@ def main():
                         results["errors"].append({"viewport":f"{width}x{height}","error":str(exc),
                                                   "traceback":traceback.format_exc()[-1800:]})
                         page.screenshot(path=str(OUT/f"failure-{width}x{height}.png"))
-                    finally:page.close()
+                    finally:
+                        page.close()
+                        context.close()
                 browser.close()
         finally:
             server.shutdown()

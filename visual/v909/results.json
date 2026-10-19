@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-10-19T09:32:20.228Z",
+  "generatedAt": "2026-10-19T09:47:09.096Z",
   "totals": {
-    "total": 36,
+    "total": 51,
     "fail": 0
   },
   "results": [
@@ -140,6 +140,96 @@
     {
       "section": "2. 三种手机宽度下的排版",
       "name": "390x844 文档无横向滚动",
+      "pass": true,
+      "detail": "溢出=0"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "412x915 无横向溢出",
+      "pass": true,
+      "detail": "panel-body=0 set=0 mod=0"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "412x915 按钮不撑破容器",
+      "pass": true,
+      "detail": "内溢出=0"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "412x915 按钮高度达标",
+      "pass": true,
+      "detail": "最小高=40.0px"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "412x915 六分区完整",
+      "pass": true,
+      "detail": "mod=6 btn=10"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "412x915 文档无横向滚动",
+      "pass": true,
+      "detail": "溢出=0"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "1080x1920 无横向溢出",
+      "pass": true,
+      "detail": "panel-body=0 set=0 mod=0"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "1080x1920 按钮不撑破容器",
+      "pass": true,
+      "detail": "内溢出=0"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "1080x1920 按钮高度达标",
+      "pass": true,
+      "detail": "最小高=40.0px"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "1080x1920 六分区完整",
+      "pass": true,
+      "detail": "mod=6 btn=10"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "1080x1920 文档无横向滚动",
+      "pass": true,
+      "detail": "溢出=0"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "1440x900-desktop 无横向溢出",
+      "pass": true,
+      "detail": "panel-body=0 set=0 mod=0"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "1440x900-desktop 按钮不撑破容器",
+      "pass": true,
+      "detail": "内溢出=0"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "1440x900-desktop 按钮高度达标",
+      "pass": true,
+      "detail": "最小高=40.0px"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "1440x900-desktop 六分区完整",
+      "pass": true,
+      "detail": "mod=6 btn=10"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "1440x900-desktop 文档无横向滚动",
       "pass": true,
       "detail": "溢出=0"
     },
