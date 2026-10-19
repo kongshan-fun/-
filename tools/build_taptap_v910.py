@@ -15,6 +15,7 @@
 """
 import hashlib
 import json
+import re
 import zipfile
 from pathlib import Path
 
@@ -173,8 +174,12 @@ def main():
         return t.replace('"PENDING"', '"SHANYE-V910-TT-' + h[:8] + '"', 1), b
 
     text, out = finalize(text)
-    text, out = finalize(text)      # 二次定稿：把构建码本身算进哈希后稳定
     out_sha = sha(out)
+    # 测试码必须取自包体里真正嵌入的值（不能用替换后的哈希反推）
+    _m = re.search(r'__SHANYE_BUILD_CODE="([^"]+)"', text)
+    if not _m:
+        die('构建码未写入')
+    build_code = _m.group(1)
 
     # ---- 产物断言 ----
     f = out.decode("utf-8")
@@ -196,7 +201,6 @@ def main():
     # ---- 写出 ----
     OUTDIR.mkdir(parents=True, exist_ok=True)
     (OUTDIR / "index.html").write_bytes(out)
-    build_code = "SHANYE-V910-TT-" + out_sha[:8]
 
     selftest = (ROOT / "tools" / "templates" / "taptap-selftest.html").read_text(encoding="utf-8")
     (OUTDIR / "selftest.html").write_text(
