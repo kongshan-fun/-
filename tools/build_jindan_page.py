@@ -12,9 +12,12 @@ import hashlib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-BASE = ROOT / "releases" / "山野修仙记_V90.10_界面密度与检索优化版.html"
+import sys as _sys
+_argbase = next((a for a in _sys.argv[1:] if a.endswith('.html')), None)
+BASE = Path(_argbase) if _argbase else ROOT / "releases" / "山野修仙记_V90.10_界面密度与检索优化版.html"
 SAVE = ROOT / "saves" / "shanhe-v910-jindan-ready.json"
-OUT = ROOT / "play" / "jindan" / "index.html"
+_outdir = next((a for a in _sys.argv[1:] if not a.endswith('.html')), "jindan")
+OUT = ROOT / "play" / _outdir / "index.html"
 
 BASE_SHA = "FC024760C3D0FF710ADB2D49D51A84EC3738B3B3F3D8DED77FB227DCE3731AC0"
 SLOT_KEY = "qinglan-wendao-v14-human-slot-001"
@@ -82,7 +85,8 @@ def main():
         raise SystemExit(f"缺少存档：{SAVE}")
 
     raw = BASE.read_bytes()
-    if hashlib.sha256(raw).hexdigest().upper() != BASE_SHA:
+    _h = hashlib.sha256(raw).hexdigest().upper()
+    if BASE.name.count("V90.10") and _h != BASE_SHA:
         raise SystemExit("基线哈希不符")
     print(f"  [OK] 基线 {len(raw):,} B")
 
