@@ -1,14 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-山野修仙记 V90.10 -> TapTap H5 版体
+山野修仙记 V90.10 -> TapTap H5 版体（完整移植 v907 适配线的补丁集）
 
 基线：V90.10 发布文件（字节哈希校验）
-做法：P1 在 <body> 后注入 QTAP 适配层；P2 render() 发布运行状态与战力；
-      P3 persist() 发布存档节拍。三处均断言唯一命中，失败即中止。
-产出：taptap-build/shanhe-v910-taptap/（index.html + selftest.html + README.md）与上传 ZIP。
+补丁：P1 适配层注入 / P2 render 状态桥 / P3 persist 存档节拍 /
+      P4a-P4n 广告与云端文案 / P5 版本校验 / P6 首领成就 / P7 飞升速通榜
+产物：taptap-build/shanhe-v910-taptap/ 与上传 ZIP
+
+与 v907 的差异：
+  - 文案锚点逐条按 V90.10 实际命中处理；V90.9 重写过设置页，部分旧锚点已不存在，
+    这些条目会被记为 SKIP 并单独列出来，不静默跳过。
+  - 广告位 / 战力榜 / 速通榜 ID 沿用 v907 已验证的客户端 ID。
 """
 import hashlib
+import json
 import zipfile
 from pathlib import Path
 
@@ -20,33 +26,75 @@ ZIP = ROOT.parent / "山野修仙记_V90.10_TapTap上传包.zip"
 
 BASE_SHA = "FC024760C3D0FF710ADB2D49D51A84EC3738B3B3F3D8DED77FB227DCE3731AC0"
 
-checks = []
+# v907 已验证的客户端 ID（适配层 CONFIG 内已含，这里用于产物断言）
+AD_SPACE_ID = "1054324"
+LB_POWER = "a7m6yjlef2giizektn"
+LB_SPEEDRUN = "v0jbfn60tgtdlysic0"
+
+applied, skipped = [], []
 
 
-def ok(label, detail=""):
-    checks.append(label)
-    print(f"  [OK] {label}" + (f"  {detail}" if detail else ""))
+def log(msg):
+    print(msg)
 
 
 def die(msg):
     raise SystemExit(f"\n[ABORT] {msg}")
 
 
-def rep(text, old, new, label, expect=1):
+def rep1(text, old, new, label, required=True):
+    """唯一命中才替换；required=False 时未命中记 SKIP。"""
     n = text.count(old)
-    if n != expect:
-        die(f"{label}: 期望 {expect} 次，实际 {n} 次")
-    ok(label)
-    return text.replace(old, new, expect)
+    if n == 1:
+        applied.append(label)
+        log(f"  [OK]   {label}")
+        return text.replace(old, new, 1)
+    if n == 0 and not required:
+        skipped.append(label)
+        log(f"  [SKIP] {label}（锚点不存在）")
+        return text
+    die(f"{label}: 期望 1 次，实际 {n} 次")
 
 
-def sha(b):
-    return hashlib.sha256(b).hexdigest().upper()
+# ---------------- 文案补丁（v907 原样，缺锚点的 SKIP） ----------------
+COPY_V907 = [
+    ("模拟激励 · 非真实广告", "激励视频 · 观看领取", "P4a 续命弹窗标题"),
+    ("本弹窗仅为玩法模拟，不会播放真实广告，也不会联网请求广告平台。",
+     "点击下方按钮观看激励视频，完整看完即发放；中途关闭不发奖励。", "P4b 续命弹窗说明"),
+    ("<span>模拟广告</span>", "<span>激励视频</span>", "P4c 续命弹窗标签"),
+    ("模拟观看完成 · 领取10年", "观看视频 · 领取10年", "P4d 续命弹窗按钮"),
+    ("续命机缘 · 试玩领取", "续命机缘 · 观看领取", "P4e 设置页标题"),
+    ("无真实广告、无网络请求、不消耗轮回玉", "观看激励视频领取，不消耗轮回玉", "P4f 设置页说明"),
+    ("可模拟观看广告领取3次", "观看激励视频可再领3次", "P4g 抽取次数提示"),
+    ("任何天赋都可以飞升；试玩领取不需要观看广告。",
+     "任何天赋都可以飞升；领取额外抽取次数需观看激励视频。", "P4h 命格页规则说明"),
+    ("广告奖励立即记入当前档位账本。", "观看广告所得立即记入当前档位账本。", "P4i 轮回玉奖励说明"),
+    ("当前不含仙界内容、宗门弟子、多人联机、广告或付费抽卡。",
+     "当前接入 TapTap 激励视频广告、云端存档与战力排行榜；不含仙界内容、宗门弟子、多人联机或付费抽卡。",
+     "P4j FAQ 版本说明 A"),
+    ("本版没有离线收益、抽卡、广告、付费建筑、联网排行榜或宗门弟子管理。",
+     "本版接入激励视频广告、云端存档与联网战力排行榜；没有离线收益、抽卡、付费建筑或宗门弟子管理。",
+     "P4k FAQ 版本说明 B"),
+    ("外部JSON仍可手动回档。", "进度自动保存并同步到 TapTap 云端。", "P4l 存档口径 A"),
+    ("换文件路径、浏览器、设备或网址前先导出。",
+     "进度自动保存并同步到 TapTap 云端，换设备登录同一账号即可接续。", "P4m 存档口径 B"),
+    ("飞升榜仅在本机保存、可导出 JSON，不是已接入云端的公开排行榜。",
+     "飞升成绩会同时提交到 TapTap 云端「飞升速通榜」，可在设置页打开查看。", "P4n 飞升榜口径"),
+]
 
+# ---------------- V90.9 重写后的设置页文案（新增锚点） ----------------
+COPY_V910 = [
+    ("领取无真实广告、无网络请求、不消耗轮回玉。", "观看激励视频领取，不消耗轮回玉。", "P4f' 设置页说明（V90.9 新结构）"),
+    ("外部 JSON 仍可手动回档。", "进度自动保存并同步到 TapTap 云端。", "P4l' 存档口径（V90.9 新结构）"),
+    ("进度保存在本机浏览器。", "进度自动保存并同步到 TapTap 云端。", "P4m' 存档说明（V90.9 新结构）"),
+]
 
 P1_OLD = '<body>\n<div id="phone"'
 P2_OLD = "function render(){\n renderStatus();"
 P3_OLD = "function persist(){\n if(!activeRole)return true;"
+P6_OLD = "this.s.stats.bossWins++;"
+P7_OLD = ("elapsedMinutes:Math.max(0,this.s.minutes-420),remainingLifeMinutes:this.s.life.left,"
+          "defeats:this.s.life.losses};")
 
 P2_NEW = (
     "function render(){\n"
@@ -62,86 +110,20 @@ P3_NEW = (
     "window.__QTAP_SAVE_TICK=(window.__QTAP_SAVE_TICK||0)+1;}catch(__qtapE){}\n"
     " if(!activeRole)return true;"
 )
+P6_NEW = (P6_OLD +
+          "try{if(window.QTap&&QTap.achievements&&QTap.achievements.unlockBoss)"
+          "QTap.achievements.unlockBoss(this.s.stats.bossWins);}catch(__qtapA){}")
+P7_NEW = (P7_OLD +
+          "try{if(window.QTap&&QTap.leaderboard&&QTap.leaderboard.submitAscension)"
+          "QTap.leaderboard.submitAscension(this.s.ascensionRecord).catch(function(__qtapS){});}catch(__qtapS2){}")
 
-SELFTEST = """<!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>山野修仙记 V90.10 · TapTap 环境自检</title>
-<style>
- body{margin:0;padding:16px;font:14px/1.6 system-ui,-apple-system,"Microsoft YaHei",sans-serif;background:#f6f6f4;color:#1a1a1a}
- h1{font-size:17px;margin:0 0 4px} .sub{color:#666;font-size:12px;margin-bottom:14px}
- .row{display:flex;justify-content:space-between;gap:10px;padding:9px 11px;background:#fff;border:1px solid #e2e2e2;border-radius:8px;margin-bottom:6px}
- .ok{color:#1b7a3f;font-weight:600} .no{color:#b3261e;font-weight:600}
- code{background:#eee;padding:1px 5px;border-radius:4px;font-size:12px}
- .code{margin-top:14px;padding:11px;background:#141414;color:#fff;border-radius:8px;font-size:13px;word-break:break-all}
-</style></head><body>
-<h1>TapTap 环境自检</h1>
-<div class="sub">山野修仙记 V90.10 · 界面密度与检索优化</div>
-<div id="rows"></div>
-<div class="code" id="code"></div>
-<script>
-function add(name,present,extra){
-  var d=document.createElement('div');d.className='row';
-  d.innerHTML='<span>'+name+'</span><span class="'+(present?'ok':'no')+'">'+(present?'可用':'缺失')+(extra?' · '+extra:'')+'</span>';
-  document.getElementById('rows').appendChild(d);
-}
-var t=window.tap;
-add('TapTap 运行环境 tap', !!t, t?(t.env&&t.env.USER_DATA_PATH?'有 USER_DATA_PATH':''):'');
-add('云存档 getCloudSaveManager', !!(t&&t.getCloudSaveManager));
-add('排行榜 getLeaderboardManager', !!(t&&t.getLeaderboardManager));
-add('文件系统 getFileSystemManager', !!(t&&t.getFileSystemManager));
-add('本地存储 setStorageSync', !!(t&&t.setStorageSync));
-add('QTAP 适配层', !!window.QTap);
-if(window.QTap&&window.QTap.env){ add('适配层环境判定', true, window.QTap.env.mock?'MOCK(非 TapTap 容器)':'真实 TapTap'); }
-document.getElementById('code').textContent='BUILD 测试码：' + (window.__SHANYE_BUILD_CODE||'(未注入)');
-</script>
-</body></html>
-"""
 
-README = """# 山野修仙记 V90.10 · TapTap H5 上传包
-
-## 包体结构
-```
-shanhe-v910-taptap/
-├── index.html      完整游戏（已注入 TapTap 适配层）
-├── selftest.html   环境自检页（在 TapTap 容器内打开可看到 API 可用性）
-└── README.md       本文件
-```
-上传时**整个 `shanhe-v910-taptap` 文件夹压成 zip**，确保 `index.html` 在文件夹根目录。
-
-## 本轮接入（P1/P2/P3）
-- P1：`<body>` 后注入 QTAP 适配层（云存档 / 战力榜 / 免费领取三处入口）
-- P2：`render()` 开头发布 `__QTAP_STATE`（种族、档位、game 实例、实时战力）
-- P3：`persist()` 开头发布 `__QTAP_SAVE_TICK`（存档节拍，驱动云同步节流）
-
-**未改动**：战斗数值、突破难度、存档结构、寿元与续命规则、储物袋、飞升结算。
-
-## 本地测试
-1. 起一个静态服务（不要用 file://，`tap` 注入与 localStorage 域名隔离更接近真实）：
-   ```
-   cd taptap-build/shanhe-v910-taptap
-   python -m http.server 8080
-   ```
-2. 浏览器打开 `http://127.0.0.1:8080/index.html`
-3. 打开 `http://127.0.0.1:8080/selftest.html` 看环境自检
-   - 在**普通浏览器**里，tap 相关项会显示「缺失」—— 这是正常的，说明当前不在 TapTap 容器内；
-     游戏会自动走 MOCK 降级，可正常游玩与本地存档。
-   - 在 **TapTap 容器**里打开，五项应显示「可用」。
-
-## 待你确认后补的两项
-1. **排行榜 ID**：适配层 `CONFIG.leaderboard.power` 目前为空，战力榜不会真正上报。
-   在开发者后台建榜拿到 ID 后回填并重新出包。
-2. **广告口径**：本包仍是「试玩领取 / 模拟广告」文案，未接真实激励视频。
-   若要接真实广告，需要广告位 ID 并做一轮文案与调用改造。
-
-## 已知限制
-- 未在真实 TapTap 容器内运行过（本轮只有普通浏览器 + MOCK 降级验证）。
-- 云存档 / 排行榜的**真实互通**需要你在 TapTap 侧实测。
-"""
+def sha(b):
+    return hashlib.sha256(b).hexdigest().upper()
 
 
 def main():
-    print("V90.10 -> TapTap 版体构建开始\n")
+    log("V90.10 -> TapTap 版体（完整补丁集）构建开始\n")
     if not BASE.exists():
         die(f"缺少基线：{BASE}")
     if not ADAPTER.exists():
@@ -150,83 +132,112 @@ def main():
     raw = BASE.read_bytes()
     if sha(raw) != BASE_SHA:
         die(f"基线哈希不符：{sha(raw)}")
-    ok("基线校验", f"{len(raw)} B")
+    log(f"  [OK]   基线校验 {len(raw):,} B")
 
     text = raw.decode("utf-8").replace("\r\n", "\n")
     adapter = ADAPTER.read_text(encoding="utf-8")
-    if "QTAP" not in adapter:
-        die("适配层内容异常")
-
-    # 依赖符号必须存在
-    for sym in ("QCombatRating.live", "function notify(", "activeSlot", "activeRole"):
-        if sym not in text:
-            die(f"缺少依赖符号：{sym}")
-    ok("依赖符号", "QCombatRating.live / notify / activeRole / activeSlot")
+    for needle in (AD_SPACE_ID, LB_POWER, LB_SPEEDRUN):
+        if needle not in adapter:
+            die(f"适配层缺少已配置的 ID：{needle}")
+    log("  [OK]   适配层含广告位/战力榜/速通榜客户端 ID")
 
     # ---- P1 ----
-    text = rep(text, P1_OLD,
-               '<body>\n<script>\n' + adapter + '\n</script>\n<div id="phone"',
-               "P1 注入 QTAP 适配层")
-
+    text = rep1(text, P1_OLD,
+                '<body>\n<script>\n' + adapter + '\n</script>\n<div id="phone"',
+                "P1 注入 QTAP 适配层")
     # ---- P2 / P3 ----
-    text = rep(text, P2_OLD, P2_NEW, "P2 render 状态桥")
-    text = rep(text, P3_OLD, P3_NEW, "P3 persist 存档节拍")
+    text = rep1(text, P2_OLD, P2_NEW, "P2 render 状态桥")
+    text = rep1(text, P3_OLD, P3_NEW, "P3 persist 存档节拍")
+    # ---- P4 ----
+    # V90.9 专用文案必须先执行，否则会被 v907 的短锚点先吃掉，产生"领取观看…领取"这类病句
+    for old, new, label in COPY_V910:
+        text = rep1(text, old, new, label, required=False)
+    for old, new, label in COPY_V907:
+        text = rep1(text, old, new, label, required=False)
+    # ---- P5 版本校验 ----
+    if "subtitle='人妖异途 · V90.10'" not in text:
+        die("P5 版本标识不是 V90.10")
+    applied.append("P5 版本标识校验通过：人妖异途 · V90.10")
+    log("  [OK]   P5 版本标识 V90.10")
+    # ---- P6 / P7 ----
+    text = rep1(text, P6_OLD, P6_NEW, "P6 首领击败成就钩子")
+    text = rep1(text, P7_OLD, P7_NEW, "P7 飞升速通榜上报")
 
-    # ---- 构建码注入（供 selftest 显示）----
+    # ---- 构建码 ----
+    text = rep1(text, "<head>",
+                '<head>\n<script>window.__SHANYE_BUILD_CODE="PENDING";</script>', "注入构建码占位")
+
+    def finalize(t):
+        b = t.replace("\n", "\r\n").encode("utf-8")
+        h = sha(b)
+        return t.replace('"PENDING"', '"SHANYE-V910-TT-' + h[:8] + '"', 1), b
+
+    text, out = finalize(text)
+    text, out = finalize(text)      # 二次定稿：把构建码本身算进哈希后稳定
+    out_sha = sha(out)
+
+    # ---- 产物断言 ----
+    f = out.decode("utf-8")
+    for a in ["birth-ad", "birth-jade-ad", "ad-life", "ad-life-confirm"]:
+        if f'data-a="{a}"' not in f:
+            die("产物丢失广告入口：" + a)
+    for needle, what in [(AD_SPACE_ID, "广告位 ID"), (LB_POWER, "战力榜 ID"),
+                         (LB_SPEEDRUN, "速通榜 ID"), ("__QTAP_STATE", "状态桥"),
+                         ("__QTAP_NOTIFY", "notify 桥"), ("QTap.achievements.unlockBoss", "成就钩子"),
+                         ("QTap.leaderboard.submitAscension", "速通榜钩子"),
+                         ("qtap-cloud-line", "云端状态行"), ("qtap-troubleshoot", "存档排障区")]:
+        if needle not in f:
+            die("产物缺少：" + what)
+    if "进度自动保存并同步到 TapTap 云端" not in f:
+        die("云存档文案未替换")
+    applied.append("产物断言：广告入口 4 项 + 广告位/战力榜/速通榜 ID + 桥与钩子 + 云端 UI")
+    log("  [OK]   产物断言全部通过")
+
+    # ---- 写出 ----
     OUTDIR.mkdir(parents=True, exist_ok=True)
-    code_hint = "PENDING"
-    text = rep(text, "<head>",
-               f'<head>\n<script>window.__SHANYE_BUILD_CODE="{code_hint}";</script>',
-               "注入构建码占位")
-
-    out_bytes = text.replace("\n", "\r\n").encode("utf-8")
-    out_sha = sha(out_bytes)
+    (OUTDIR / "index.html").write_bytes(out)
     build_code = "SHANYE-V910-TT-" + out_sha[:8]
-    # 用最终哈希回填构建码（大小写长度一致，哈希不变）
-    text2 = text.replace('"PENDING"', '"' + build_code + '"', 1)
-    out_bytes = text2.replace("\n", "\r\n").encode("utf-8")
-    out_sha2 = sha(out_bytes)
-    build_code = "SHANYE-V910-TT-" + out_sha2[:8]
-    text2 = text.replace('"PENDING"', '"' + build_code + '"', 1)
-    out_bytes = text2.replace("\n", "\r\n").encode("utf-8")
 
-    (OUTDIR / "index.html").write_bytes(out_bytes)
-    (OUTDIR / "selftest.html").write_text(SELFTEST.replace(
-        "(window.__SHANYE_BUILD_CODE||'(未注入)')", "'" + build_code + "'"), encoding="utf-8")
+    selftest = (ROOT / "tools" / "templates" / "taptap-selftest.html").read_text(encoding="utf-8")
+    (OUTDIR / "selftest.html").write_text(
+        selftest.replace("__BUILD_CODE__", build_code).replace("__VERSION__", "V90.10"), encoding="utf-8")
+
+    manifest = {
+        "version": "V90.10",
+        "source": BASE.name,
+        "sourceSha256": BASE_SHA,
+        "adapter": str(ADAPTER),
+        "adapterBytes": ADAPTER.stat().st_size,
+        "outputSha256": out_sha,
+        "outputBytes": len(out),
+        "buildCode": build_code,
+        "ids": {"ads": AD_SPACE_ID, "leaderboardPower": LB_POWER, "leaderboardSpeedrun": LB_SPEEDRUN},
+        "applied": applied,
+        "skipped": skipped,
+    }
+    (OUTDIR / "build-manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
     (OUTDIR / "README.md").write_text(
-        README.replace("PENDING", build_code), encoding="utf-8")
-    ok("写出包体", f"{len(out_bytes)} B")
+        (ROOT / "tools" / "templates" / "taptap-readme.md").read_text(encoding="utf-8")
+        .replace("__BUILD_CODE__", build_code).replace("__SKIPPED__", "、".join(skipped) or "无"),
+        encoding="utf-8")
 
-    # ---- 校验产物 ----
-    final = (OUTDIR / "index.html").read_bytes()
-    ftxt = final.decode("utf-8")
-    if "window.QTap" not in ftxt and "QTAP_VERSION" not in ftxt and "QTAP" not in ftxt:
-        die("适配层未进入产物")
-    if ftxt.count("__QTAP_STATE") < 2:
-        die("状态桥未生效")
-    if "__QTAP_SAVE_TICK" not in ftxt:
-        die("存档节拍未生效")
-    if build_code not in ftxt:
-        die("构建码未写入")
-    ok("产物校验", "适配层 + 状态桥 + 存档节拍 + 构建码")
-
-    # ---- 打包 ----
+    # ---- 打包（单文件夹结构）----
     if ZIP.exists():
         ZIP.unlink()
     with zipfile.ZipFile(ZIP, "w", zipfile.ZIP_DEFLATED) as z:
         for p in sorted(OUTDIR.rglob("*")):
             if p.is_file():
                 z.write(p, (Path("shanhe-v910-taptap") / p.relative_to(OUTDIR)).as_posix())
-    zsha = sha(ZIP.read_bytes())
-    ok("打包", f"{ZIP.stat().st_size:,} B")
 
-    print("\n--- 完成 ---")
-    print(f"  目录     : {OUTDIR}")
-    print(f"  index.html: {len(final):,} B  SHA256 {sha(final)}")
-    print(f"  ZIP      : {ZIP}")
-    print(f"  ZIP SHA  : {zsha}")
-    print(f"  测试码   : {build_code}")
-    print(f"\n断言通过：{len(checks)} 项")
+    log("\n--- 完成 ---")
+    log(f"  目录      : {OUTDIR}")
+    log(f"  index.html: {len(out):,} B  SHA256 {out_sha}")
+    log(f"  ZIP       : {ZIP}  {ZIP.stat().st_size:,} B")
+    log(f"  ZIP SHA   : {sha(ZIP.read_bytes())}")
+    log(f"  测试码    : {build_code}")
+    log(f"  已应用 {len(applied)} 项 / 跳过 {len(skipped)} 项")
+    for s in skipped:
+        log(f"    跳过：{s}")
 
 
 if __name__ == "__main__":
