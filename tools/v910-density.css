@@ -1,0 +1,48 @@
+/* V90.10 界面密度规范：统一卡片行高、间距、分区标题；只调密度与层级，不改任何功能。 */
+
+/* ---- 密度基准：行高 40 / 卡片内距 9-11 / 卡片间距 7 ---- */
+#panel-root .book-list{gap:7px}
+#panel-root .book-list .book-entry-link{padding:8px 11px;min-height:42px;border-radius:6px}
+#panel-root .book-list .book-entry-title{font-size:13px;line-height:1.3}
+#panel-root .book-list .book-entry-sub{font-size:10px;line-height:1.35;margin-top:2px}
+
+/* ---- 图鉴：成就折叠 + 分类折叠 ---- */
+#panel-root .book-rewards-fold{border:1px solid var(--line,#ddd);border-radius:8px;background:var(--surface,#fff);margin-bottom:1px}
+#panel-root .book-rewards-fold>summary{display:flex;align-items:center;justify-content:space-between;gap:8px;
+ padding:9px 11px;font-size:12px;cursor:pointer;list-style:none;min-height:40px}
+#panel-root .book-rewards-fold>summary::-webkit-details-marker{display:none}
+#panel-root .book-rewards-flag{font-size:11px;color:var(--muted,#555);white-space:nowrap}
+#panel-root .book-rewards-fold>.book-rewards{border:0;margin:0;padding:0 9px 9px;background:transparent}
+#panel-root .book-group{border:1px solid var(--line,#ddd);border-radius:8px;background:var(--surface,#fff)}
+#panel-root .book-group>summary{display:flex;align-items:center;justify-content:space-between;gap:8px;
+ padding:9px 11px;font-size:12px;font-weight:600;cursor:pointer;list-style:none;min-height:40px;color:var(--ink,#222)}
+#panel-root .book-group>summary::-webkit-details-marker{display:none}
+#panel-root .book-group>summary::before{content:"▸";font-size:10px;color:var(--muted,#555);margin-right:2px}
+#panel-root .book-group[open]>summary::before{content:"▾"}
+#panel-root .book-group>summary>span:first-of-type{flex:1;min-width:0;overflow-wrap:anywhere}
+#panel-root .book-group-count{font-size:11px;font-weight:400;color:var(--muted,#555);white-space:nowrap}
+#panel-root .book-group-body{display:flex;flex-direction:column;gap:6px;padding:0 9px 9px}
+
+/* ---- 炼制：汇总条 + 可炼制卡片强调 + 采集指路 ---- */
+#panel-root .craft-summary{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 9px;font-size:11px;color:var(--muted,#555)}
+#panel-root .craft-summary>span{border:1px solid var(--line,#ddd);border-radius:4px;padding:3px 7px;background:var(--surface,#fff)}
+#panel-root .craft-summary .craft-ok{color:var(--ink,#222);font-weight:600}
+#panel-root .craft-summary .craft-total{margin-left:auto;color:var(--muted,#555)}
+#panel-root .recipe{padding:9px 10px;margin-bottom:7px;border-radius:7px}
+#panel-root .recipe-ready{border-color:var(--ink,#222)}
+#panel-root .recipe-hint{margin-top:5px;font-size:10px;line-height:1.5;color:var(--muted,#555);overflow-wrap:anywhere}
+
+/* ---- 背包：储物袋折叠 + 物品行密度 ---- */
+#panel-root .storage-bag-fold{border:1px solid var(--line,#ddd);border-radius:9px;background:var(--surface,#fff);margin:9px 0 10px}
+#panel-root .storage-bag-fold>summary{display:flex;align-items:center;justify-content:space-between;gap:8px;
+ padding:9px 11px;font-size:12px;cursor:pointer;list-style:none;min-height:40px;color:var(--ink,#222)}
+#panel-root .storage-bag-fold>summary::-webkit-details-marker{display:none}
+#panel-root .storage-bag-fold>summary>span:first-child{flex:1;min-width:0;overflow-wrap:anywhere}
+#panel-root .storage-bag-cap{font-size:11px;color:var(--muted,#555);white-space:nowrap}
+#panel-root .storage-bag-fold>.storage-bag-card{border:0;border-top:1px solid var(--line,#ddd);border-radius:0;margin:0;background:transparent}
+#panel-root .item-row{min-height:38px;padding:5px 1px}
+#panel-root .item-row .btn{min-height:30px;padding:4px 9px;font-size:11px}
+
+/* ---- 极简黑白主题下保持对比度 ---- */
+body.theme-mono #panel-root .book-group>summary::before,
+body.theme-mono #panel-root .book-rewards-flag {color:#444}

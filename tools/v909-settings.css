@@ -1,0 +1,36 @@
+/* V90.9: 设置页分区重排 —— 只调整布局与视觉层级。
+   不修改存档数据、寿元机制、备份规则、续命机制，也不改动任何 data-a 行为。
+   目标：手机端单列优先，消除按钮挤压、横向溢出与说明文字裁切。 */
+#panel-root .v909-set{display:flex;flex-direction:column;gap:10px;min-width:0;width:100%}
+#panel-root .v909-set-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-width:0}
+#panel-root .v909-set-id{font-size:11px;font-weight:600;color:var(--ink,#222);border:1px solid var(--line,#ddd);
+ border-radius:4px;padding:3px 7px;background:var(--surface,#fff);min-width:0;overflow-wrap:anywhere}
+#panel-root .v909-set-save{font-size:10px;border-radius:4px;padding:3px 7px;border:1px solid var(--line,#ddd);white-space:nowrap}
+#panel-root .v909-set-save.is-ok{color:var(--muted,#555)}
+#panel-root .v909-set-save.is-bad{color:var(--danger,#a04b42);border-color:var(--danger,#a04b42)}
+#panel-root .v909-set-status{margin:0;font-size:11px;line-height:1.6;color:var(--muted,#555);overflow-wrap:anywhere}
+#panel-root .v909-mod{border:1px solid var(--line,#ddd);border-radius:8px;background:var(--surface,#fff);
+ padding:11px 12px 12px;min-width:0}
+#panel-root .v909-mod-title{margin:0 0 8px!important;font-size:13px;font-weight:600;color:var(--ink,#222);line-height:1.4}
+#panel-root .v909-mod-hint{margin:0 0 9px!important;font-size:11px;line-height:1.65;color:var(--muted,#555);overflow-wrap:anywhere}
+#panel-root .v909-note{margin:9px 0 0!important;font-size:10px;line-height:1.7;color:var(--muted,#555);overflow-wrap:anywhere}
+#panel-root .v909-actions{display:grid;grid-template-columns:1fr;gap:7px;min-width:0}
+#panel-root .v909-btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:40px;
+ padding:8px 10px;white-space:normal;text-align:center;line-height:1.35;font-size:12px}
+#panel-root .v909-btn:disabled{opacity:.5}
+#panel-root .v909-kv{display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+ padding:5px 0;border-bottom:1px dashed var(--line,#ddd);font-size:11px;color:var(--muted,#555);min-width:0}
+#panel-root .v909-kv:last-of-type{border-bottom:0}
+#panel-root .v909-kv b{font-size:12px;color:var(--ink,#222);font-weight:600;white-space:nowrap}
+#panel-root .v909-themes{display:grid;grid-template-columns:1fr;gap:7px;margin:0 0 9px}
+#panel-root .v909-themes .theme-choice{min-height:40px!important;padding:8px 10px!important;font-size:12px!important;
+ white-space:normal;line-height:1.35}
+#panel-root .v909-mod-danger{border-style:dashed}
+#panel-root .v909-mod-danger .v909-btn{border-style:dashed}
+#panel-root .v909-mod-gold{border-color:var(--gold,#bbb)}
+@media(min-width:380px){
+ #panel-root .v909-actions{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #panel-root .v909-actions .v909-btn:only-child{grid-column:1 / -1}
+ #panel-root .v909-themes{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-height:640px){#panel-root .v909-btn{min-height:36px}}

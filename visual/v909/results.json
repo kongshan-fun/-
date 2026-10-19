@@ -1,0 +1,315 @@
+{
+  "generatedAt": "2026-10-19T10:30:49.153Z",
+  "totals": {
+    "total": 51,
+    "fail": 0
+  },
+  "results": [
+    {
+      "section": "0. 启动与入世",
+      "name": "完成开局流程（选族→选档→命格→入世）",
+      "pass": true,
+      "detail": "已进入游戏"
+    },
+    {
+      "section": "0. 启动与入世",
+      "name": "设置入口存在",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "section": "0. 启动与入世",
+      "name": "设置面板可打开",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "section": "1. 分区结构（六模块）",
+      "name": ".v909-mod 数量为 6",
+      "pass": true,
+      "detail": "实际 6"
+    },
+    {
+      "section": "1. 分区结构（六模块）",
+      "name": "分区标题与顺序正确",
+      "pass": true,
+      "detail": "存档与备份 / 修行状态与寿元 / 角色与档案 / 视觉与体验 / 帮助与记录 / 重新修行"
+    },
+    {
+      "section": "1. 分区结构（六模块）",
+      "name": "八个功能区按钮均在",
+      "pass": true,
+      "detail": "export,import,restore,ad-life,characters,ranking-open,motion,panel,panel,reset"
+    },
+    {
+      "section": "1. 分区结构（六模块）",
+      "name": "三种主题按钮保留",
+      "pass": true,
+      "detail": "forest,mono,immortal"
+    },
+    {
+      "section": "1. 分区结构（六模块）",
+      "name": "旧长页面容器已移除",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "320x568 无横向溢出",
+      "pass": true,
+      "detail": "panel-body=0 set=0 mod=0"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "320x568 按钮不撑破容器",
+      "pass": true,
+      "detail": "内溢出=0"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "320x568 按钮高度达标",
+      "pass": true,
+      "detail": "最小高=36.0px"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "320x568 六分区完整",
+      "pass": true,
+      "detail": "mod=6 btn=10"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "320x568 文档无横向滚动",
+      "pass": true,
+      "detail": "溢出=0"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "360x640 无横向溢出",
+      "pass": true,
+      "detail": "panel-body=0 set=0 mod=0"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "360x640 按钮不撑破容器",
+      "pass": true,
+      "detail": "内溢出=0"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "360x640 按钮高度达标",
+      "pass": true,
+      "detail": "最小高=36.0px"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "360x640 六分区完整",
+      "pass": true,
+      "detail": "mod=6 btn=10"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "360x640 文档无横向滚动",
+      "pass": true,
+      "detail": "溢出=0"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "390x844 无横向溢出",
+      "pass": true,
+      "detail": "panel-body=0 set=0 mod=0"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "390x844 按钮不撑破容器",
+      "pass": true,
+      "detail": "内溢出=0"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "390x844 按钮高度达标",
+      "pass": true,
+      "detail": "最小高=40.0px"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "390x844 六分区完整",
+      "pass": true,
+      "detail": "mod=6 btn=10"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "390x844 文档无横向滚动",
+      "pass": true,
+      "detail": "溢出=0"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "412x915 无横向溢出",
+      "pass": true,
+      "detail": "panel-body=0 set=0 mod=0"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "412x915 按钮不撑破容器",
+      "pass": true,
+      "detail": "内溢出=0"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "412x915 按钮高度达标",
+      "pass": true,
+      "detail": "最小高=40.0px"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "412x915 六分区完整",
+      "pass": true,
+      "detail": "mod=6 btn=10"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "412x915 文档无横向滚动",
+      "pass": true,
+      "detail": "溢出=0"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "1080x1920 无横向溢出",
+      "pass": true,
+      "detail": "panel-body=0 set=0 mod=0"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "1080x1920 按钮不撑破容器",
+      "pass": true,
+      "detail": "内溢出=0"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "1080x1920 按钮高度达标",
+      "pass": true,
+      "detail": "最小高=40.0px"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "1080x1920 六分区完整",
+      "pass": true,
+      "detail": "mod=6 btn=10"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "1080x1920 文档无横向滚动",
+      "pass": true,
+      "detail": "溢出=0"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "1440x900-desktop 无横向溢出",
+      "pass": true,
+      "detail": "panel-body=0 set=0 mod=0"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "1440x900-desktop 按钮不撑破容器",
+      "pass": true,
+      "detail": "内溢出=0"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "1440x900-desktop 按钮高度达标",
+      "pass": true,
+      "detail": "最小高=40.0px"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "1440x900-desktop 六分区完整",
+      "pass": true,
+      "detail": "mod=6 btn=10"
+    },
+    {
+      "section": "2. 三种手机宽度下的排版",
+      "name": "1440x900-desktop 文档无横向滚动",
+      "pass": true,
+      "detail": "溢出=0"
+    },
+    {
+      "section": "3. 主题切换",
+      "name": "切换到 mono",
+      "pass": true,
+      "detail": "body.class=\"theme-mono\""
+    },
+    {
+      "section": "3. 主题切换",
+      "name": "切换到 immortal",
+      "pass": true,
+      "detail": "body.class=\"theme-immortal\""
+    },
+    {
+      "section": "3. 主题切换",
+      "name": "切换到 forest",
+      "pass": true,
+      "detail": "body.class=\"\""
+    },
+    {
+      "section": "4. 动效开关与减少动效显示",
+      "name": "动效按钮文案切换",
+      "pass": true,
+      "detail": "减少动效 → 恢复动效"
+    },
+    {
+      "section": "4. 动效开关与减少动效显示",
+      "name": "减少动效时分区仍正常显示",
+      "pass": true,
+      "detail": "模块高=226.5px"
+    },
+    {
+      "section": "4. 动效开关与减少动效显示",
+      "name": "减少动效生效（过渡为 0s）",
+      "pass": true,
+      "detail": "transition=0s"
+    },
+    {
+      "section": "5. 行记 / 教程跳转",
+      "name": "行记可跳转且内容变化",
+      "pass": true,
+      "detail": "行记 × 1日 07:00抵达废弃营坪。先备工具，择地筑庐。"
+    },
+    {
+      "section": "5. 行记 / 教程跳转",
+      "name": "完整教程可跳转且内容变化",
+      "pass": true,
+      "detail": "教程 × 首次试玩建议 建议先玩人族或妖族一个新档，完成采集、工具制作、洞府、首"
+    },
+    {
+      "section": "6. 资质榜 / 新开存档 / 续命状态",
+      "name": "本机资质榜可打开",
+      "pass": true,
+      "detail": "{\"modal\":true,\"hasRankText\":true}"
+    },
+    {
+      "section": "6. 资质榜 / 新开存档 / 续命状态",
+      "name": "新开存档弹二次确认",
+      "pass": true,
+      "detail": "重新开始修行？ 将返回档案页选择空档，不删除当前角色，不清理任何旧档。 导出存档 取消 确认新开"
+    },
+    {
+      "section": "6. 资质榜 / 新开存档 / 续命状态",
+      "name": "续命入口存在",
+      "pass": true,
+      "detail": "寿元低于16年时可领"
+    },
+    {
+      "section": "6. 资质榜 / 新开存档 / 续命状态",
+      "name": "寿元充足时正确禁用",
+      "pass": true,
+      "detail": "disabled=true label=寿元低于16年时可领"
+    },
+    {
+      "section": "7. 运行期异常",
+      "name": "无未捕获 JavaScript 异常",
+      "pass": true,
+      "detail": "0 个"
+    }
+  ]
+}
