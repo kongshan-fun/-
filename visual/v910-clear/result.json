@@ -1,0 +1,311 @@
+{
+  "final": {
+    "zone": 0,
+    "major": 0,
+    "level": 18,
+    "daoXp": 99999,
+    "lifeYears": 999,
+    "ritual": true,
+    "cleared": false,
+    "settled": true,
+    "atCamp": true,
+    "ascended": false,
+    "ended": false,
+    "combat": false,
+    "coreTrial": {
+      "phase": 0,
+      "marks": 0,
+      "started": false,
+      "complete": false
+    },
+    "heartTrial": {
+      "phase": 0,
+      "started": false,
+      "complete": false,
+      "choices": []
+    },
+    "needDao": null,
+    "primary": null,
+    "secondary": null,
+    "panel": null,
+    "modal": null
+  },
+  "log": [],
+  "stall": {
+    "at": "boss",
+    "realm": 0,
+    "visible": [
+      {
+        "a": "characters",
+        "n": "",
+        "i": "",
+        "t": "档案"
+      },
+      {
+        "a": "panel",
+        "n": "help",
+        "i": "",
+        "t": "教程"
+      },
+      {
+        "a": "panel",
+        "n": "settings",
+        "i": "",
+        "t": "设置"
+      },
+      {
+        "a": "panel",
+        "n": "quest",
+        "i": "",
+        "t": "立山门挑战噬灵妖魇 · 找地"
+      },
+      {
+        "a": "panel",
+        "n": "camp",
+        "i": "",
+        "t": "洞府"
+      },
+      {
+        "a": "rest",
+        "n": "",
+        "i": "",
+        "t": "休息"
+      },
+      {
+        "a": "gather",
+        "n": "",
+        "i": "0",
+        "t": "枯枝×1"
+      },
+      {
+        "a": "gather",
+        "n": "",
+        "i": "1",
+        "t": "低阶灵石×1"
+      },
+      {
+        "a": "gather",
+        "n": "",
+        "i": "2",
+        "t": "枯枝×1"
+      },
+      {
+        "a": "gather",
+        "n": "",
+        "i": "3",
+        "t": "低阶灵石×1"
+      },
+      {
+        "a": "gather",
+        "n": "",
+        "i": "4",
+        "t": "灵果×1"
+      },
+      {
+        "a": "gather",
+        "n": "",
+        "i": "5",
+        "t": "枯枝×1"
+      },
+      {
+        "a": "gather",
+        "n": "",
+        "i": "6",
+        "t": "灵草×2"
+      },
+      {
+        "a": "panel",
+        "n": "pack",
+        "i": "",
+        "t": "全部 ›"
+      },
+      {
+        "a": "peek",
+        "n": "",
+        "i": "wood",
+        "t": "灵木2000"
+      },
+      {
+        "a": "peek",
+        "n": "",
+        "i": "stone",
+        "t": "灵石2000"
+      },
+      {
+        "a": "peek",
+        "n": "",
+        "i": "fiber",
+        "t": "青藤2000"
+      },
+      {
+        "a": "peek",
+        "n": "",
+        "i": "ore",
+        "t": "玄铁2000"
+      },
+      {
+        "a": "peek",
+        "n": "",
+        "i": "herb",
+        "t": "药草2000"
+      },
+      {
+        "a": "peek",
+        "n": "",
+        "i": "rune",
+        "t": "阵纹2000"
+      },
+      {
+        "a": "peek",
+        "n": "",
+        "i": "hide",
+        "t": "兽皮2000"
+      },
+      {
+        "a": "peek",
+        "n": "",
+        "i": "dust",
+        "t": "灵尘2000"
+      },
+      {
+        "a": "expand-map",
+        "n": "",
+        "i": "",
+        "t": "展开"
+      },
+      {
+        "a": "mini-step",
+        "n": "",
+        "i": "",
+        "t": "矿"
+      },
+      {
+        "a": "mini-step",
+        "n": "",
+        "i": "",
+        "t": "草"
+      },
+      {
+        "a": "mini-step",
+        "n": "",
+        "i": "",
+        "t": "林"
+      },
+      {
+        "a": "mini-step",
+        "n": "",
+        "i": "",
+        "t": "草"
+      },
+      {
+        "a": "mini-step",
+        "n": "",
+        "i": "",
+        "t": "我"
+      },
+      {
+        "a": "mini-step",
+        "n": "",
+        "i": "",
+        "t": "草"
+      },
+      {
+        "a": "mini-step",
+        "n": "",
+        "i": "",
+        "t": "林"
+      },
+      {
+        "a": "mini-step",
+        "n": "",
+        "i": "",
+        "t": "草"
+      },
+      {
+        "a": "mini-step",
+        "n": "",
+        "i": "",
+        "t": "宝"
+      },
+      {
+        "a": "travel-toggle",
+        "n": "",
+        "i": "",
+        "t": "出行青岚山麓⌄"
+      },
+      {
+        "a": "home",
+        "n": "",
+        "i": "",
+        "t": "回府"
+      },
+      {
+        "a": "stop",
+        "n": "",
+        "i": "",
+        "t": "停步"
+      },
+      {
+        "a": "consume",
+        "n": "",
+        "i": "berry",
+        "t": "灵果 2000"
+      },
+      {
+        "a": "consume",
+        "n": "",
+        "i": "water",
+        "t": "饮水 2000"
+      },
+      {
+        "a": "consume",
+        "n": "",
+        "i": "salve",
+        "t": "回春 2000"
+      },
+      {
+        "a": "quick-rest",
+        "n": "",
+        "i": "",
+        "t": "休息"
+      },
+      {
+        "a": "panel",
+        "n": "camp",
+        "i": "",
+        "t": "洞府"
+      },
+      {
+        "a": "panel",
+        "n": "craft",
+        "i": "",
+        "t": "炼制"
+      },
+      {
+        "a": "panel",
+        "n": "pack",
+        "i": "",
+        "t": "背包"
+      },
+      {
+        "a": "panel",
+        "n": "character",
+        "i": "",
+        "t": "人物"
+      },
+      {
+        "a": "panel",
+        "n": "book",
+        "i": "",
+        "t": "图鉴"
+      },
+      {
+        "a": "guide",
+        "n": "",
+        "i": "",
+        "t": "收起"
+      }
+    ]
+  },
+  "frames": 1
+}
