@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>山野修仙记 V90.10 · TapTap 环境自检</title>
+<style>
+ body{margin:0;padding:16px;font:14px/1.6 system-ui,-apple-system,"Microsoft YaHei",sans-serif;background:#f6f6f4;color:#1a1a1a}
+ h1{font-size:17px;margin:0 0 4px} .sub{color:#666;font-size:12px;margin-bottom:14px}
+ .row{display:flex;justify-content:space-between;gap:10px;padding:9px 11px;background:#fff;border:1px solid #e2e2e2;border-radius:8px;margin-bottom:6px}
+ .ok{color:#1b7a3f;font-weight:600} .no{color:#b3261e;font-weight:600}
+ code{background:#eee;padding:1px 5px;border-radius:4px;font-size:12px}
+ .code{margin-top:14px;padding:11px;background:#141414;color:#fff;border-radius:8px;font-size:13px;word-break:break-all}
+</style></head><body>
+<h1>TapTap 环境自检</h1>
+<div class="sub">山野修仙记 V90.10 · 界面密度与检索优化</div>
+<div id="rows"></div>
+<div class="code" id="code"></div>
+<script>
+function add(name,present,extra){
+  var d=document.createElement('div');d.className='row';
+  d.innerHTML='<span>'+name+'</span><span class="'+(present?'ok':'no')+'">'+(present?'可用':'缺失')+(extra?' · '+extra:'')+'</span>';
+  document.getElementById('rows').appendChild(d);
+}
+var t=window.tap;
+add('TapTap 运行环境 tap', !!t, t?(t.env&&t.env.USER_DATA_PATH?'有 USER_DATA_PATH':''):'');
+add('云存档 getCloudSaveManager', !!(t&&t.getCloudSaveManager));
+add('排行榜 getLeaderboardManager', !!(t&&t.getLeaderboardManager));
+add('文件系统 getFileSystemManager', !!(t&&t.getFileSystemManager));
+add('本地存储 setStorageSync', !!(t&&t.setStorageSync));
+add('QTAP 适配层', !!window.QTap);
+if(window.QTap&&window.QTap.env){ add('适配层环境判定', true, window.QTap.env.mock?'MOCK(非 TapTap 容器)':'真实 TapTap'); }
+document.getElementById('code').textContent='BUILD 测试码：' + 'SHANYE-V910-TT-F120ED9E';
+</script>
+</body></html>

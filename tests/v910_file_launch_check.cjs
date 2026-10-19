@@ -64,6 +64,13 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
       out.hasEntry=!!document.querySelector('[data-a="characters"]');
       out.hasNav=!!document.querySelector('[data-a="panel"][data-name="camp"]');
       out.nodeCount=document.querySelectorAll('*').length;
+      out.hasQTAP = (typeof window.QTap === 'object' && window.QTap !== null);
+      out.qtapMock = out.hasQTAP && typeof window.QTap.isMock === 'function' ? !!window.QTap.isMock() : null;
+      out.tapType = typeof window.tap;
+      out.envKeys = out.hasQTAP && window.QTap.env ? Object.keys(window.QTap.env).join(',') : null;
+      out.qtapCloud = out.hasQTAP && typeof window.QTap.cloud === 'object';
+      out.qtapBoard = out.hasQTAP && typeof window.QTap.leaderboard === 'object';
+      out.buildCode = window.__SHANYE_BUILD_CODE || null;
       try{ localStorage.setItem('__probe__','1'); out.lsWrite=localStorage.getItem('__probe__')==='1'; localStorage.removeItem('__probe__'); }
       catch(e){ out.lsWrite=false; out.lsError=String(e); }
       out.origin=location.origin;
@@ -78,6 +85,10 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     console.log(`  DOM 节点        ${r.nodeCount}`);
     console.log(`  localStorage    ${r.lsWrite ? '可读写' : '不可用 ' + (r.lsError || '')}`);
     console.log(`  origin          ${r.origin}`);
+    if (r.hasQTAP) {
+      console.log(`  QTAP 适配层     ${r.hasQTAP ? '已初始化' : '未加载'}（MOCK=${r.qtapMock}，云存档=${r.qtapCloud}，排行榜=${r.qtapBoard}）`);
+      console.log(`  构建码          ${r.buildCode || '(无)'}`);
+    }
     const ok = r.booted && r.hasWordmark && r.hasEntry && r.lsWrite;
     console.log(`\n结论: ${ok ? 'PASS 双击打开可正常运行并保存' : 'FAIL 见上'}`);
     process.exitCode = ok ? 0 : 1;
