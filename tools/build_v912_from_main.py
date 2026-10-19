@@ -72,7 +72,7 @@ def main():
     old_camp = extract_fn(text, "function campBody(){")
     mod = (ROOT / "tools" / "v912-panels.js").read_text(encoding="utf-8").rstrip("\n")
     for must in ("function craftBody", "function craftListBody", "function campBody",
-                 "function campBuildBody", "function isListChild"):
+                 "camp-func-row"):
         if must not in mod:
             die(f"模块缺少 {must}")
 
@@ -92,23 +92,21 @@ def main():
     # 路由
     text = rep(text, "panel==='craft'?craftBody():",
                "panel==='craft'?craftBody():panel==='craft-cat'?craftListBody():", "路由：炼制子页")
-    text = rep(text, "panel==='camp'?campBody():",
-               "panel==='camp'?campBody():panel==='camp-build'?campBuildBody():", "路由：洞府子页")
+
 
     # 标题
     text = rep(text, "craft:'炼制'", "craft:'炼制','craft-cat':'炼制 · 配方'", "标题：炼制子页")
-    text = rep(text, "camp:'洞府'", "camp:'洞府','camp-build':'洞府设施'", "标题：洞府子页")
+
 
     # 返回按钮
     old_back = "(panel==='warehouse'||panel==='cultivate')?'<button class=\"panel-back\" data-a=\"panel-back\" aria-label=\"返回洞府\">← 返回洞府</button>'"
     new_back = ("panel==='craft-cat'?'<button class=\"panel-back\" data-a=\"panel-back\" aria-label=\"返回炼制\">← 返回炼制</button>':"
-                "panel==='camp-build'?'<button class=\"panel-back\" data-a=\"panel-back\" aria-label=\"返回洞府\">← 返回洞府</button>':"
                 + old_back)
     text = rep(text, old_back, new_back, "子页头部返回按钮")
 
     # panel-back 处理（子页回父页）
     pb_old = "if(isCultChild(panel)){panel='cultivate';render();"
-    pb_new = ("if(panel==='craft-cat'||panel==='camp-build'){panel=panel==='craft-cat'?'craft':'camp';render();"
+    pb_new = ("if(panel==='craft-cat'){panel='craft';render();"
               "if($('panel-body'))$('panel-body').scrollTop=0;return;}" + pb_old)
     text = rep(text, pb_old, pb_new, "panel-back 支持炼制/洞府子页")
 
@@ -123,11 +121,14 @@ def main():
                "<title>山野修仙记 V90.12 · 炼制与洞府父子页</title>", "标题版本号")
     text = rep(text, "subtitle='人妖异途 · V90.11'", "subtitle='人妖异途 · V90.12'", "副标题版本号")
 
-    for must in ["craftListBody", "campBuildBody", "panel-step", "craft-cat", "camp-build"]:
+    for must in ["craftListBody", "panel-step", "craft-cat", "camp-func-row"]:
         if must not in text:
             die(f"产物缺少：{must}")
     ok("产物关键片段")
 
+    css = (ROOT / "tools" / "v912-camp-density.css").read_text(encoding="utf-8").rstrip("\n")
+    text = rep(text, "</head>\n<body>",
+               '<style id="v912-camp-density">\n' + css + "\n</style>\n</head>\n<body>", "注入洞府密度样式")
     out = text.replace("\n", "\r\n").encode("utf-8")
     (RELEASES / OUT_NAME).write_bytes(out)
     (ROOT / "index.html").write_bytes(out)

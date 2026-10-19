@@ -1450,6 +1450,26 @@ body.theme-mono #panel-root .book-rewards-flag {color:#444}
 #panel-root .cult-art-list{display:flex;flex-direction:column;gap:7px;margin:9px 0}
 #panel-root .cult-art-list .btn{width:100%;min-height:42px;white-space:normal;text-align:center;line-height:1.35}
 </style>
+<style id="v912-camp-density">
+/* V90.12 洞府页内密度：设施属于洞府本体，就地展示并把高度压下来 */
+#panel-root .camp-func-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin:8px 0}
+#panel-root .camp-func-row .btn{padding:4px 0;min-height:34px;font-size:11px;white-space:nowrap}
+#panel-root .camp-build-title{margin:10px 0 6px;display:flex;align-items:baseline;gap:8px;font-size:14px}
+#panel-root .camp-build-title small{font-size:10.5px;font-weight:400;color:#888}
+#panel-root .camp-rest-note{margin:10px 0 0}
+/* 卡片压缩：效果两行、成本一行、按钮更紧凑 */
+#panel-root .build-grid{gap:6px}
+#panel-root .build-grid .building-card{min-height:124px;padding:7px}
+#panel-root .building-card .building-heading{height:30px;gap:5px}
+#panel-root .building-card .building-mark{width:26px;height:26px;font-size:17px}
+#panel-root .building-card .building-heading strong{font-size:12px}
+#panel-root .building-card .building-heading small{font-size:9.5px}
+#panel-root .building-card .building-effect{min-height:28px;max-height:30px;font-size:9.5px;line-height:1.55;margin:4px 0 2px}
+#panel-root .building-card .building-cost{min-height:22px;font-size:9.5px;line-height:1.5}
+#panel-root .building-card .building-footer{height:28px;margin-top:2px}
+#panel-root .building-card .building-footer span{font-size:8.5px}
+#panel-root .building-card .building-footer .btn{min-height:24px;padding:2px 8px;font-size:11px}
+</style>
 </head>
 <body>
 
@@ -6253,14 +6273,11 @@ function riftBody(){
    父页只保留摘要与入口；法门 / 破境条件 / 休整各自成子页，用返回按钮回父页。
    不新增滚动容器、不改任何既有动作与规则。 */
 
-/* ===== V90.12 面板父子级扩展：炼制 / 洞府 =====
-   沿用 V90.11 的父子页模式：父页留摘要与分类入口，子页承接列表。
-   不新增滚动容器，不改任何动作、数值、配方与建筑规则。 */
+/* ===== V90.12 面板父子级扩展：炼制 =====
+   炼制 8.48 屏 → 父页（品类入口）+ 子页（配方列表）。
+   洞府不做子页：设施属于洞府本体，改在页内压缩密度。 */
 
-function isListChild(p){return p==='craft-cat'||p==='camp-build';}
-
-/* ---------- 炼制 ---------- */
-const CRAFT_CATS=[
+const CRAFT_CATS_HELP=[
  {key:'all',name:'全部配方',sub:'按可炼制程度排序'},
  {key:'food',name:'丹药 · 食物',sub:'回血、灵机与补给'},
  {key:'tool',name:'工具',sub:'斧、镐等采集工具'},
@@ -6279,18 +6296,15 @@ function craftRowsFor(key){
   .filter(r=>key==='all'||(key==='bag'?!!r.storageBag:key==='tool'?r.type==='工具':key==='gear'?!!(r.gear||r.flag):r.type==='丹药'||r.type==='食物'));
 }
 
+function craftCounts(rows){const c={ok:0,mat:0,other:0};for(const r of rows){const s=craftStat(r);if(s.ok)c.ok++;else if(!s.wrong)c.mat++;else c.other++;}return c;}
+
 function craftBody(){
- const all=craftRowsFor('all');
- const total={ok:0,mat:0,other:0};
- for(const r of all){const s=craftStat(r);if(s.ok)total.ok++;else if(!s.wrong)total.mat++;else total.other++;}
- const rows=CRAFT_CATS.map(c=>{
-  const list=craftRowsFor(c.key);
-  const st={ok:0,mat:0,other:0};
-  for(const r of list){const s=craftStat(r);if(s.ok)st.ok++;else if(!s.wrong)st.mat++;else st.other++;}
-  const state=list.length?`可炼 ${st.ok} / ${list.length}`:'暂无解锁';
+ const all=craftRowsFor('all'),total=craftCounts(all);
+ const rows=CRAFT_CATS_HELP.map(c=>{
+  const list=craftRowsFor(c.key),st=craftCounts(list);
   return `<button type="button" class="cult-nav-row" data-a="panel-step" data-name="craft-cat" data-cat="${c.key}">`+
    `<span class="cult-nav-main"><b>${c.name}</b><small>${c.sub}</small></span>`+
-   `<span class="cult-nav-right">${state}<i>›</i></span></button>`;
+   `<span class="cult-nav-right">${list.length?'可炼 '+st.ok+' / '+list.length:'暂无解锁'}<i>›</i></span></button>`;
  }).join('');
  return `<div class="craft-summary"><span class="craft-ok">可炼制 ${total.ok}</span><span>缺材料 ${total.mat}</span><span>未就绪 ${total.other}</span><span class="craft-total">共 ${all.length}</span></div>`+
   `<p class="muted">按类型进入；每个类型内按「可炼制 → 缺材料 → 未就绪」排序，采集指路保留。</p>`+
@@ -6298,13 +6312,10 @@ function craftBody(){
 }
 
 function craftListBody(){
- const rows=craftRowsFor(filter);
- const counts={ok:0,mat:0,other:0};
- for(const r of rows){const s=craftStat(r);if(s.ok)counts.ok++;else if(!s.wrong)counts.mat++;else counts.other++;}
- const cat=CRAFT_CATS.find(c=>c.key===filter)||CRAFT_CATS[0];
+ const rows=craftRowsFor(filter),counts=craftCounts(rows);
  const bar=`<div class="craft-summary"><span class="craft-ok">可炼制 ${counts.ok}</span><span>缺材料 ${counts.mat}</span><span>未就绪 ${counts.other}</span><span class="craft-total">共 ${rows.length}</span></div>`;
  const sorted=[...rows].sort((a,b)=>{const ra=craftStat(a),rb=craftStat(b);const ka=ra.ok?0:ra.wrong?2:1,kb=rb.ok?0:rb.wrong?2:1;return ka-kb;});
- if(!sorted.length)return bar+`<p class="muted">「${cat.name}」当前没有解锁的配方，提升境界或解锁新境域后会出现在这里。</p>`;
+ if(!sorted.length)return bar+'<p class="muted">该类当前没有解锁的配方，提升境界或解锁新境域后会出现在这里。</p>';
  return bar+sorted.map(r=>{const s=craftStat(r),done=s.done,wrong=s.wrong;
    const miss=Object.keys(r.cost).filter(k=>game.has(k)<(r.cost[k]||0));
    const src=miss.length?progMatSource(miss[0]):null;
@@ -6312,7 +6323,7 @@ function craftListBody(){
    return `<div class="recipe${s.ok?' recipe-ready':''}" id="recipe-${r.id}"><div class="recipe-top"><b>${r.name}</b><small>${r.storageBag?'负重 +'+D.STORAGE_BAGS.find(b=>b.id===r.storageBag).bonus:r.gear?'基础'+(r.gear==='weapon'?'攻击':'防御')+'+'+r.bonus:r.type}</small></div><div class="recipe-cost">${cost(r.cost)}</div><div class="recipe-bottom"><span>${r.room?D.BUILDINGS[r.room].name+' '+r.tier+'阶':r.home?'洞府炼制':'随身可制'}${wrong?' · '+wrong:r.storageBag?' · 本档永久生效，不叠加':r.gear?' · 品质随机':''}</span><button class="btn ${s.ok?'primary':''}" data-a="craft" data-id="${r.id}" ${done?'disabled':''}>${done?'已拥有':wrong?'缺设施':game.enough(r.cost)?'炼制':'缺材料'}</button></div>${hint?`<div class="recipe-hint">采集：${esc(hint)}</div>`:''}</div>`;}).join('');
 }
 
-/* ---------- 洞府 ---------- */
+/* ---------- 洞府：设施就地展示，不做子页 ---------- */
 function campBody(){
  const c=game.camp,at=game.atCamp,why=game.canSettle(),possible=!why&&!at;
  const banner=c?`<div class="camp-summary"><div><strong>${esc(game.campName())}</strong><small>${c.pos.x+1}列 ${c.pos.y+1}行 · ${at?'身在洞府':'外出中'}</small></div>${!at?'<button class="btn primary" data-a="home">回府</button>':'<span class="camp-seal">府</span>'}</div>`:`<div class="camp-summary"><div><strong>尚未定居</strong><small>每境一座，选址后再营建</small></div><span class="camp-seal unbuilt">坪</span></div>`;
@@ -6322,29 +6333,21 @@ function campBody(){
   out+='<h3>已探明的候选地</h3>'+campCandidates().map(t=>`<div class="candidate-row"><div><b>${esc(t.name)}</b><small>${t.x+1}, ${t.y+1}${t.tip?' · '+t.tip:''}</small></div><button class="btn" data-a="map" data-x="${t.x}" data-y="${t.y}">前往</button></div>`).join('');
   return out+'<p class="muted">营坪、草坡、林地、石岗和花田可筑庐；水面、妖窟、奇遇和祭坛不可覆盖。</p>';
  }
- if(at){
-  const forecast=game.restForecast('camp'),weak=forecast.factor===0;
-  out+='<section class="trial-note"><strong>'+(weak?'饥渴虚弱 · 请先补给':'休息结算 · 根据时间恢复')+'</strong><p>洞府休息180分钟：预计气血'+(forecast.netHp>=0?'+':'')+forecast.netHp+'，灵力'+(forecast.netSpirit>=0?'+':'')+forecast.netSpirit+'；饱腹−'+forecast.hungerCost+'，饮水−'+forecast.waterCost+'。</p>'
-   +'<p class="'+(weak?'danger-text':'muted')+'">'+(forecast.willCollapse?'该次休息预计会重伤折寿，建议先用餐补水。':weak?'无法从睡眠获得气血或灵力；零饱腹、零饮水会随时间持续扣血。请先在洞府用餐补水。':'饱腹与饮水低于35时恢复逐步减弱，低于或等于10时停止恢复。长时间睡眠也按真实时长计算。')+'</p></section>';
- }
- out+=`<div class="camp-training-entry"><div><strong>洞府静修</strong><small>吐纳、试剑、境界突破、功法与血脉修炼</small></div><button class="btn primary" data-a="panel" data-name="cultivate">进入修炼</button></div><div class="camp-shortcuts"><button class="btn" data-a="panel" data-name="warehouse">仓库</button><button class="btn" data-a="room" data-room="forge">炼器</button><button class="btn" data-a="room" data-room="alchemy">炼丹</button><button class="btn" data-a="panel" data-name="manuals">功法</button></div>`;
+ /* 功能入口：一行五格，不再占两行 */
+ out+=`<div class="camp-func-row">`+
+  `<button class="btn primary" data-a="panel" data-name="cultivate">修炼</button>`+
+  `<button class="btn" data-a="panel" data-name="warehouse">仓库</button>`+
+  `<button class="btn" data-a="room" data-room="forge">炼器</button>`+
+  `<button class="btn" data-a="room" data-room="alchemy">炼丹</button>`+
+  `<button class="btn" data-a="panel" data-name="manuals">功法</button></div>`;
  const left=game.farmRemaining();
  out+=`<div class="farm-strip"><span>灵田 · ${left===null?'未建':game.farmBatches?'可收'+game.farmBatches+'轮':left>0?'余'+Math.ceil(left/60)+'小时':'待收获'}</span><button class="btn" data-a="farm" ${left===null?'disabled':''}>收获</button></div>`;
+ /* 设施：洞府本体内容，就地展示 */
  const built=Object.keys(D.BUILDINGS).filter(id=>D.BUILDINGS[id].zone===undefined||D.BUILDINGS[id].zone===game.s.zone);
  const up=built.filter(id=>c.buildings?.[id]).length;
- out+=`<button type="button" class="cult-nav-row" data-a="panel-step" data-name="camp-build">`+
-  `<span class="cult-nav-main"><b>洞府设施</b><small>炼器 · 炼丹 · 仓房 · 静室 · 灵田</small></span>`+
-  `<span class="cult-nav-right">已建 ${up} / ${built.length}<i>›</i></span></button>`;
+ out+=`<h3 class="camp-build-title">洞府设施 <small>已建 ${up} / ${built.length}</small></h3>`;
+ out+=`<div class="build-grid">${built.map(buildingCard).join('')}</div>`;
  return out;
-}
-
-function campBuildBody(){
- const c=game.camp;
- if(!c)return '<p class="muted">尚未定居，无法营建设施。</p>';
- const built=Object.keys(D.BUILDINGS).filter(id=>D.BUILDINGS[id].zone===undefined||D.BUILDINGS[id].zone===game.s.zone);
- const up=built.filter(id=>c.buildings?.[id]).length;
- return `<h3>洞府设施</h3><p class="muted">已建 ${up} / ${built.length}。设施决定可炼制的品阶与仓房容量。</p>`+
-  `<div class="build-grid">${built.map(buildingCard).join('')}</div>`;
 }
 
 function isCultChild(p){return p==='cultivate-trial'||p==='cultivate-art'||p==='cultivate-rest';}
@@ -6748,10 +6751,10 @@ function renderPanel(){const root=$('panel-root');if(!panel){root.innerHTML='';r
  const characterGearOffset=panel==='character'?(characterGearResetScroll?0:document.querySelector('.character-gear-list')?.scrollTop??0):null;
  characterGearResetScroll=false;
  const focus=document.activeElement,focusId=focus?.id,start=focus?.selectionStart,end=focus?.selectionEnd;
- const names={'quest-guide':'本境探索与生存指引','quest-world':'凡界十二境进度',birth:'命格',camp:'洞府','camp-build':'洞府设施',warehouse:'仓库',craft:'炼制','craft-cat':'炼制 · 配方',pack:'背包',cultivate:'洞府 · 修炼','cultivate-trial':'破境条件','cultivate-art':'境界法门','cultivate-rest':'休整',character:'人物装备',manuals:'功法',tribulation:'凝丹雷劫',hearttrial:'元婴问心',rift:'空间裂隙',mirror:'映心镜台',karma:'旧印因果',dao:'大道残碑',estate:'仙人遗府',heaven:'九霄终劫',book:'图鉴',lore:'上古见闻',help:'教程',settings:'设置',quest:'主线',log:'行记'};
+ const names={'quest-guide':'本境探索与生存指引','quest-world':'凡界十二境进度',birth:'命格',camp:'洞府',warehouse:'仓库',craft:'炼制','craft-cat':'炼制 · 配方',pack:'背包',cultivate:'洞府 · 修炼','cultivate-trial':'破境条件','cultivate-art':'境界法门','cultivate-rest':'休整',character:'人物装备',manuals:'功法',tribulation:'凝丹雷劫',hearttrial:'元婴问心',rift:'空间裂隙',mirror:'映心镜台',karma:'旧印因果',dao:'大道残碑',estate:'仙人遗府',heaven:'九霄终劫',book:'图鉴',lore:'上古见闻',help:'教程',settings:'设置',quest:'主线',log:'行记'};
  const tools=panel==='book'&&!bookDetailKey?`<input id="book-search" type="search" aria-label="搜索图鉴" placeholder="搜索已发现名称或地区" value="${esc(search)}"><select id="panel-filter" aria-label="图鉴类型">${[['all','全部'],['life','灵物'],['mineral','矿材'],['tool','工具'],['bag','储物袋'],['food','丹药食物'],['enemy','妖兽'],['gear','装备法器'],['home','建筑'],['secret','秘境'],['zone','境域'],['realm','修炼']].map(([k,v])=>`<option value="${k}" ${filter===k?'selected':''}>${v}</option>`).join('')}</select>`:panel==='craft'?`<span class="muted" style="flex:1;align-self:center">${game.workshop?'器'+game.roomLevel('forge')+'阶 · 丹'+game.roomLevel('alchemy')+'阶':'野外 · 仅随身配方'}</span><select id="panel-filter" aria-label="配方类型">${[['all','全部'],['bag','储物袋'],['tool','工具'],['gear','法器'],['food','丹药食物']].map(([k,v])=>`<option value="${k}" ${filter===k?'selected':''}>${v}</option>`).join('')}</select>`:'';
- const content=panel==='birth'?E.sheet(game):panel==='camp'?campBody():panel==='camp-build'?campBuildBody():panel==='warehouse'?warehouseBody():panel==='craft'?craftBody():panel==='craft-cat'?craftListBody():panel==='pack'?packBody():panel==='cultivate'?cultivateBody():isCultChild(panel)?(panel==='cultivate-trial'?cultivateTrialBody():panel==='cultivate-art'?cultivateArtBody():cultivateRestBody()):panel==='character'?characterBody():panel==='manuals'?manualBody():panel==='tribulation'?tribulationBody():panel==='hearttrial'?heartTrialBody():panel==='rift'?riftBody():panel==='mirror'?mirrorBody():panel==='karma'?karmaBody():panel==='dao'?daoBody():panel==='estate'?estateBody():panel==='heaven'?heavenBody():panel==='book'?bookBody():panel==='lore'?loreBody():panel==='help'?helpBody():panel==='settings'?settingsBody():panel==='quest'?questBody():panel==='quest-guide'?guidePage():panel==='quest-world'?worldPage():game.s.logs.map(l=>`<div class="history ${esc(l.tone)}"><time>${esc(l.time)}</time>${esc(l.msg)}</div>`).join('');
- root.innerHTML=`<div class="panel-overlay" aria-hidden="false"><div class="panel" aria-label="${names[panel]}"><div class="panel-head ${['tribulation','hearttrial','rift','mirror','karma','dao','estate','heaven'].includes(panel)?'trial-head':''}"><div class="panel-heading-group">${isQuestChild(panel)?'<button class="panel-back" data-a="quest-return" aria-label="返回主线">← 返回主线</button>':isCultChild(panel)?'<button class="panel-back" data-a="panel-back" aria-label="返回修炼">← 返回修炼</button>':panel==='craft-cat'?'<button class="panel-back" data-a="panel-back" aria-label="返回炼制">← 返回炼制</button>':panel==='camp-build'?'<button class="panel-back" data-a="panel-back" aria-label="返回洞府">← 返回洞府</button>':(panel==='warehouse'||panel==='cultivate')?'<button class="panel-back" data-a="panel-back" aria-label="返回洞府">← 返回洞府</button>':['manuals','tribulation','hearttrial'].includes(panel)?'<button class="panel-back" data-a="panel-back" aria-label="返回修炼">← 返回修炼</button>':panel==='lore'?'<button class="panel-back" data-a="panel-back" aria-label="返回主线">← 返回主线</button>':''}<strong>${panel==='book'&&bookDetailKey?'图鉴 · 详情':names[panel]}</strong>${panel==='book'?'<span>'+game.bookCount+'/'+bookRows().length+'</span>':''}</div><button class="panel-close" data-a="close-panel" aria-label="${isQuestChild(panel)?'返回主线':(panel==='warehouse'||panel==='cultivate')?'返回洞府':['manuals','tribulation','hearttrial'].includes(panel)?'返回修炼':panel==='lore'?'返回主线':panel==='book'&&bookDetailKey?'返回图鉴列表':['rift','mirror','karma','dao','estate','heaven'].includes(panel)?'返回地图':'关闭'+names[panel]}">${isQuestChild(panel)||['warehouse','cultivate','manuals','tribulation','hearttrial','lore','rift','mirror','karma','dao','estate','heaven'].includes(panel)||panel==='book'&&bookDetailKey?'←':'×'}</button></div>${tools?'<div class="panel-toolbar">'+tools+'</div>':''}<div id="panel-body" class="panel-body ${panel==='character'?'character-body-v92':panel==='quest'?'q3-body':isQuestChild(panel)?'q4-body':''}">${panel==='craft'&&codexRecipeReturn?'<button class="btn" data-a="codex-return" style="width:100%;margin-bottom:10px">← 返回图鉴</button>':''}${content}</div></div></div>`;
+ const content=panel==='birth'?E.sheet(game):panel==='camp'?campBody():panel==='warehouse'?warehouseBody():panel==='craft'?craftBody():panel==='craft-cat'?craftListBody():panel==='pack'?packBody():panel==='cultivate'?cultivateBody():isCultChild(panel)?(panel==='cultivate-trial'?cultivateTrialBody():panel==='cultivate-art'?cultivateArtBody():cultivateRestBody()):panel==='character'?characterBody():panel==='manuals'?manualBody():panel==='tribulation'?tribulationBody():panel==='hearttrial'?heartTrialBody():panel==='rift'?riftBody():panel==='mirror'?mirrorBody():panel==='karma'?karmaBody():panel==='dao'?daoBody():panel==='estate'?estateBody():panel==='heaven'?heavenBody():panel==='book'?bookBody():panel==='lore'?loreBody():panel==='help'?helpBody():panel==='settings'?settingsBody():panel==='quest'?questBody():panel==='quest-guide'?guidePage():panel==='quest-world'?worldPage():game.s.logs.map(l=>`<div class="history ${esc(l.tone)}"><time>${esc(l.time)}</time>${esc(l.msg)}</div>`).join('');
+ root.innerHTML=`<div class="panel-overlay" aria-hidden="false"><div class="panel" aria-label="${names[panel]}"><div class="panel-head ${['tribulation','hearttrial','rift','mirror','karma','dao','estate','heaven'].includes(panel)?'trial-head':''}"><div class="panel-heading-group">${isQuestChild(panel)?'<button class="panel-back" data-a="quest-return" aria-label="返回主线">← 返回主线</button>':isCultChild(panel)?'<button class="panel-back" data-a="panel-back" aria-label="返回修炼">← 返回修炼</button>':panel==='craft-cat'?'<button class="panel-back" data-a="panel-back" aria-label="返回炼制">← 返回炼制</button>':(panel==='warehouse'||panel==='cultivate')?'<button class="panel-back" data-a="panel-back" aria-label="返回洞府">← 返回洞府</button>':['manuals','tribulation','hearttrial'].includes(panel)?'<button class="panel-back" data-a="panel-back" aria-label="返回修炼">← 返回修炼</button>':panel==='lore'?'<button class="panel-back" data-a="panel-back" aria-label="返回主线">← 返回主线</button>':''}<strong>${panel==='book'&&bookDetailKey?'图鉴 · 详情':names[panel]}</strong>${panel==='book'?'<span>'+game.bookCount+'/'+bookRows().length+'</span>':''}</div><button class="panel-close" data-a="close-panel" aria-label="${isQuestChild(panel)?'返回主线':(panel==='warehouse'||panel==='cultivate')?'返回洞府':['manuals','tribulation','hearttrial'].includes(panel)?'返回修炼':panel==='lore'?'返回主线':panel==='book'&&bookDetailKey?'返回图鉴列表':['rift','mirror','karma','dao','estate','heaven'].includes(panel)?'返回地图':'关闭'+names[panel]}">${isQuestChild(panel)||['warehouse','cultivate','manuals','tribulation','hearttrial','lore','rift','mirror','karma','dao','estate','heaven'].includes(panel)||panel==='book'&&bookDetailKey?'←':'×'}</button></div>${tools?'<div class="panel-toolbar">'+tools+'</div>':''}<div id="panel-body" class="panel-body ${panel==='character'?'character-body-v92':panel==='quest'?'q3-body':isQuestChild(panel)?'q4-body':''}">${panel==='craft'&&codexRecipeReturn?'<button class="btn" data-a="codex-return" style="width:100%;margin-bottom:10px">← 返回图鉴</button>':''}${content}</div></div></div>`;
  $('panel-body').scrollTop=old;
  if(warehouseOffsets)document.querySelectorAll('.warehouse-side-list').forEach((e,i)=>{e.scrollTop=warehouseOffsets[i]||0;});
  if(characterGearOffset!==null&&document.querySelector('.character-gear-list'))document.querySelector('.character-gear-list').scrollTop=characterGearOffset;
@@ -7201,7 +7204,7 @@ if(a==='birth-confirm-final'&&frontPage?.kind==='birth-confirm'){selectCharacter
  if(a==='panel'){openPanel(b.dataset.name);return;}
    if(a==='panel-step'){if(b.dataset.cat)filter=b.dataset.cat;panel=b.dataset.name;render();if($('panel-body'))$('panel-body').scrollTop=0;return;}
    if(a==='cult-step'){panel=b.dataset.name;render();if($('panel-body'))$('panel-body').scrollTop=0;return;}
- if(a==='panel-back'||a==='close-panel'){if(isQuestChild(panel)){leaveQuestChild();return;}if(panel==='craft-cat'||panel==='camp-build'){panel=panel==='craft-cat'?'craft':'camp';render();if($('panel-body'))$('panel-body').scrollTop=0;return;}if(isCultChild(panel)){panel='cultivate';render();if($('panel-body'))$('panel-body').scrollTop=0;return;}if(panel)panelScroll[panel]=$('panel-body')?.scrollTop||0;if(['karma','mirror','rift','dao','estate','heaven'].includes(panel)){panel=null;persist();render();return;}if(panel==='book'&&bookDetailKey){panelScroll.bookDetail=$('panel-body')?.scrollTop||0;bookDetailKey=null;render();$('panel-body').scrollTop=panelScroll.book||0;return;}if(['warehouse','cultivate','manuals','tribulation','hearttrial','lore','mirror','rift'].includes(panel)){const parent=panel==='lore'?'quest':['manuals','tribulation','hearttrial'].includes(panel)?'cultivate':'camp';panel=parent;persist();render();if($('panel-body'))$('panel-body').scrollTop=panelScroll[parent]||0;}else{panel=null;bookDetailKey=null;render();}return;}
+ if(a==='panel-back'||a==='close-panel'){if(isQuestChild(panel)){leaveQuestChild();return;}if(panel==='craft-cat'){panel='craft';render();if($('panel-body'))$('panel-body').scrollTop=0;return;}if(isCultChild(panel)){panel='cultivate';render();if($('panel-body'))$('panel-body').scrollTop=0;return;}if(panel)panelScroll[panel]=$('panel-body')?.scrollTop||0;if(['karma','mirror','rift','dao','estate','heaven'].includes(panel)){panel=null;persist();render();return;}if(panel==='book'&&bookDetailKey){panelScroll.bookDetail=$('panel-body')?.scrollTop||0;bookDetailKey=null;render();$('panel-body').scrollTop=panelScroll.book||0;return;}if(['warehouse','cultivate','manuals','tribulation','hearttrial','lore','mirror','rift'].includes(panel)){const parent=panel==='lore'?'quest':['manuals','tribulation','hearttrial'].includes(panel)?'cultivate':'camp';panel=parent;persist();render();if($('panel-body'))$('panel-body').scrollTop=panelScroll[parent]||0;}else{panel=null;bookDetailKey=null;render();}return;}
  if(a==='travel-toggle'){
   stop();mapOpen=false;if(game.s.combat){notify('斗法中不能出行','warn');return;}travelOpen=!travelOpen;panel=null;if(travelOpen)flush(game.act('travel-open'));else{persist();render();}return;
  }

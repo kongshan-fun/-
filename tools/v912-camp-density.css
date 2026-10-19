@@ -1,0 +1,18 @@
+/* V90.12 洞府页内密度：设施属于洞府本体，就地展示并把高度压下来 */
+#panel-root .camp-func-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin:8px 0}
+#panel-root .camp-func-row .btn{padding:4px 0;min-height:34px;font-size:11px;white-space:nowrap}
+#panel-root .camp-build-title{margin:10px 0 6px;display:flex;align-items:baseline;gap:8px;font-size:14px}
+#panel-root .camp-build-title small{font-size:10.5px;font-weight:400;color:#888}
+#panel-root .camp-rest-note{margin:10px 0 0}
+/* 卡片压缩：效果两行、成本一行、按钮更紧凑 */
+#panel-root .build-grid{gap:6px}
+#panel-root .build-grid .building-card{min-height:124px;padding:7px}
+#panel-root .building-card .building-heading{height:30px;gap:5px}
+#panel-root .building-card .building-mark{width:26px;height:26px;font-size:17px}
+#panel-root .building-card .building-heading strong{font-size:12px}
+#panel-root .building-card .building-heading small{font-size:9.5px}
+#panel-root .building-card .building-effect{min-height:28px;max-height:30px;font-size:9.5px;line-height:1.55;margin:4px 0 2px}
+#panel-root .building-card .building-cost{min-height:22px;font-size:9.5px;line-height:1.5}
+#panel-root .building-card .building-footer{height:28px;margin-top:2px}
+#panel-root .building-card .building-footer span{font-size:8.5px}
+#panel-root .building-card .building-footer .btn{min-height:24px;padding:2px 8px;font-size:11px}
