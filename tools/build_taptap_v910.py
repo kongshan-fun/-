@@ -184,6 +184,7 @@ def main():
         die("构建码替换失败")
     if build_code not in out.decode("utf-8"):
         die("构建码未进入包体")
+    file_sha = sha(out)   # 写盘字节的真实哈希（与用于生成测试码的 out_sha 不同，必须分开记）
 
     # ---- 产物断言 ----
     f = out.decode("utf-8")
@@ -216,7 +217,7 @@ def main():
         "sourceSha256": BASE_SHA,
         "adapter": str(ADAPTER),
         "adapterBytes": ADAPTER.stat().st_size,
-        "outputSha256": out_sha,
+        "outputSha256": file_sha,
         "outputBytes": len(out),
         "buildCode": build_code,
         "ids": {"ads": AD_SPACE_ID, "leaderboardPower": LB_POWER, "leaderboardSpeedrun": LB_SPEEDRUN},
@@ -239,7 +240,7 @@ def main():
 
     log("\n--- 完成 ---")
     log(f"  目录      : {OUTDIR}")
-    log(f"  index.html: {len(out):,} B  SHA256 {out_sha}")
+    log(f"  index.html: {len(out):,} B  SHA256 {file_sha}")
     log(f"  ZIP       : {ZIP}  {ZIP.stat().st_size:,} B")
     log(f"  ZIP SHA   : {sha(ZIP.read_bytes())}")
     log(f"  测试码    : {build_code}")
