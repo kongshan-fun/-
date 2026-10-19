@@ -22,4 +22,13 @@ for(const count of [0,1,2,3,4,5,6,10,36]){
   assert.equal(rows,Math.floor(count/2)+(count%2),'two-column equipment row math');
   if(count===3)assert.equal(rows,2,'third equipment starts a second row');
 }
-console.log('V90.8 EQUIPMENT LAYOUT CONTRACT PASS: 0-36 items, fixed inspector, grid scroll, +5 cap, equal artifacts');
+for(const clause of [
+  '#panel-root .building-card .building-effect{min-height:0;max-height:none;overflow:visible}',
+  '.entry-save-content{min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}',
+  '.entry-save-grid{height:100%;min-height:340px;grid-template-rows:repeat(5,minmax(60px,1fr))}',
+  '#panel-root .character-v92-inspect-main small{display:block;-webkit-line-clamp:unset;',
+  '@media(max-height:620px){',
+  '@media(max-height:510px){',
+  '#panel-root .panel-body.character-body-v92{overflow-y:auto!important;overflow-x:hidden!important}'
+]) assert(main.includes(clause),'missing containment audit rule: '+clause);
+console.log('V90.8 UI CONTAINMENT CONTRACT PASS: 0-36 gear items, short screens, full building text, scrolling archives, +5 cap');
