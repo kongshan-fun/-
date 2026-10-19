@@ -43,6 +43,18 @@ jobs:
         run: node tests/run_v908_regression.cjs
       - name: Check 0-36 equipment and inspector layout contract
         run: node tests/v908-character-gear-layout.test.cjs
+      - name: Install Chromium browser test driver
+        run: python3 -m pip install --disable-pip-version-check playwright==1.56.0
+      - name: Run real H5 responsive Chromium suite
+        run: python3 tests/v908_browser_responsive.py
+      - name: Upload responsive screenshots and metrics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: V908-Responsive-Browser-${{ github.run_id }}
+          path: artifacts/v908-ui-browser/
+          retention-days: 14
+          if-no-files-found: warn
       - name: Ensure release artifacts remain reproducible
         run: |
           git diff --exit-code -- index.html             "releases/山野修仙记_V90.7_飞升结算与本机资质榜.html"             "releases/山野修仙记_V90.8_五阶洞府与高阶炼制版.html"
