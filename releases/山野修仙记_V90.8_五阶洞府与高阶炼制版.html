@@ -1301,6 +1301,29 @@ body.theme-mono .storage-bag-card{background:#fff;border-color:#ddd;color:#222}
   #panel-root .character-v92-inspector{flex:none;height:90px;max-height:90px}
 }
 </style>
+<style id="v908-rarity-art">
+/* V90.8 rarity typography: five original grades, presentation only. */
+body:not(.theme-mono) .rarity-0,body:not(.theme-mono) .rarity-1,body:not(.theme-mono) .rarity-2,body:not(.theme-mono) .rarity-3,body:not(.theme-mono) .rarity-4{
+ font-family:"STKaiti","KaiTi","Kaiti SC","Songti SC","Noto Serif SC",serif;font-weight:800;letter-spacing:.025em;
+ -webkit-text-stroke:.18px rgba(255,255,255,.26);text-shadow:0 1px 0 rgba(22,31,28,.14);transition:filter .2s ease,text-shadow .2s ease;
+}
+body:not(.theme-mono) .rarity-0{background-image:linear-gradient(180deg,#f1f3f5 0%,#b9c2ca 48%,#78848f 100%);background-clip:text;-webkit-background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent;text-shadow:0 1px 0 rgba(40,50,58,.14)}
+body:not(.theme-mono) .rarity-1{background-image:linear-gradient(180deg,#e4ffe9 0%,#80e2a2 48%,#278b58 100%);background-clip:text;-webkit-background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent;text-shadow:0 0 5px rgba(77,210,125,.18)}
+body:not(.theme-mono) .rarity-2{background-image:linear-gradient(180deg,#e4f7ff 0%,#83d5ff 46%,#2674c8 100%);background-clip:text;-webkit-background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent;text-shadow:0 0 6px rgba(74,166,255,.22)}
+body:not(.theme-mono) .rarity-3{background-image:linear-gradient(180deg,#fff0ff 0%,#d5a0ff 45%,#7d38c4 100%);background-clip:text;-webkit-background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent;text-shadow:0 0 7px rgba(180,104,255,.25)}
+body:not(.theme-mono) .rarity-4{
+ background-image:linear-gradient(100deg,#fff5b5 0%,#ffb7dc 18%,#c5b2ff 36%,#91ddff 54%,#a9ffd0 72%,#fff0a0 88%,#fff5b5 100%);
+ background-size:220% 100%;background-position:0% 50%;background-clip:text;-webkit-background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent;
+ -webkit-text-stroke:.22px rgba(255,255,255,.48);text-shadow:0 0 5px rgba(255,255,255,.3),0 0 10px rgba(255,157,218,.22),0 0 14px rgba(112,196,255,.18);animation:v908-prismatic-flow 8s linear infinite;
+}
+@keyframes v908-prismatic-flow{from{background-position:0% 50%}to{background-position:100% 50%}}
+@media(hover:hover){body:not(.theme-mono) .rarity-3:hover{filter:brightness(1.08)}body:not(.theme-mono) .rarity-4:hover{filter:brightness(1.12)}}
+.codex-gear-name{font-family:"STKaiti","KaiTi","Kaiti SC","Songti SC","Noto Serif SC",serif!important;font-weight:750!important;letter-spacing:.025em}
+.book-entry-link.vis-book-gear .codex-gear-name,.book-detail-card.vis-book-gear .book-detail-hero .codex-gear-name{color:var(--ink,#385a64)!important;text-shadow:0 1px 0 rgba(255,255,255,.4)}
+body.theme-immortal .book-entry-link.vis-book-gear .codex-gear-name,body.theme-immortal .book-detail-card.vis-book-gear .book-detail-hero .codex-gear-name{color:#a9dcff!important;text-shadow:0 0 7px rgba(107,194,255,.16)}
+body.theme-mono .rarity-0,body.theme-mono .rarity-1,body.theme-mono .rarity-2,body.theme-mono .rarity-3,body.theme-mono .rarity-4{background:none!important;color:inherit!important;-webkit-text-fill-color:currentColor!important;-webkit-text-stroke:0!important;text-shadow:none!important;animation:none!important;font-family:inherit;letter-spacing:normal}
+@media(prefers-reduced-motion:reduce){body:not(.theme-mono) .rarity-4{animation:none;background-position:50% 50%}}
+</style>
 </head>
 <body>
 <div id="phone" class="phone front-mode">
@@ -4907,6 +4930,7 @@ if(typeof module!=='undefined'&&module.exports)module.exports=root.QEntry;
 'use strict';
 const B=QBirth,E=QEntry;
 const D=QData,$=id=>document.getElementById(id),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rarityMarkup=x=>esc(x).replace(/(普通|精良|灵器|法宝|仙器)(?=·|$|[ +：:])/g,m=>'<span class="rarity-'+({'普通':0,'精良':1,'灵器':2,'法宝':3,'仙器':4}[m])+'">'+m+'</span>');
 let game,activeRole=null,activeSlot=1,selectedRole='human',slotPage=0,frontPage=null,slots,saveStatus='未保存',bootMessage='',saveAvailable=true,deathBoot=false,panel=null,travelOpen=false,mapOpen=false,modal=null,route=[],timer=null,toastTimer=null,guideRAF=null,focusBeforeModal=null,guideSignature='',importCandidate=null;
 let mapFocus=null,draftBirth=null,draftSlot=1,drawCount=0,entryImport=null;
 const BIRTH_FREE=3;
@@ -5050,11 +5074,11 @@ function notify(message,tone='info',kind='toast'){
  const el=$('toast');
  el.className='toast show'+(tone==='warn'?' warn':'')+(detailed?' reward-sheet':compact?' reward-compact':'');
  if(detailed){
-  el.innerHTML=`<div class="reward-head"><b>${esc(title)}</b><button type="button" class="reward-dismiss" data-a="dismiss-reward" aria-label="收起奖励">×</button></div><div class="reward-scroll" role="list" aria-label="本次完整收益">${entries.length?entries.map(item=>`<div class="reward-entry" role="listitem">${esc(item)}</div>`).join(''):'<div class="reward-entry">本次无新增物品</div>'}</div><div class="reward-foot">已按实际结算记录到行记 · 点击 × 收起</div>`;
+  el.innerHTML=`<div class="reward-head"><b>${rarityMarkup(title)}</b><button type="button" class="reward-dismiss" data-a="dismiss-reward" aria-label="收起奖励">×</button></div><div class="reward-scroll" role="list" aria-label="本次完整收益">${entries.length?entries.map(item=>`<div class="reward-entry" role="listitem">${rarityMarkup(item)}</div>`).join(''):'<div class="reward-entry">本次无新增物品</div>'}</div><div class="reward-foot">已按实际结算记录到行记 · 点击 × 收起</div>`;
  }else{
   const tool=message.includes('缺少')&&(/木斧|石镐|钓竿/.test(message));
   const room=/需.*(炼器室|丹房|洞府)|先.*(筑庐|仓房|洞府)/.test(message);
-  el.innerHTML=`<span>${esc(compact?title+' · '+entries.join(' · '):message)}</span>${tool?'<button class="toast-link" data-a="panel" data-name="craft">炼制</button>':room?'<button class="toast-link" data-a="panel" data-name="camp">洞府</button>':''}`;
+  el.innerHTML=`<span>${rarityMarkup(compact?title+' · '+entries.join(' · '):message)}</span>${tool?'<button class="toast-link" data-a="panel" data-name="craft">炼制</button>':room?'<button class="toast-link" data-a="panel" data-name="camp">洞府</button>':''}`;
  }
  const delay=detailed?8500:compact?2200:tone==='warn'?3500:2200;
  toastTimer=setTimeout(()=>el.classList.remove('show'),delay);
@@ -5732,14 +5756,14 @@ function bookListBody(){
  let rows=bookRows().filter(r=>filter==='all'||r.cat===filter).filter(r=>!search||((r.known||r.cat==='bag')?r.name:'未发现').includes(search)||r.hint.includes(search));
  const rewards=`<div class="book-rewards">${D.BOOK_REWARDS.map(r=>`<div class="reward-line"><span>${r.name} · ${game.bookCount}/${r.need}</span><button class="btn" data-a="claim-book" data-id="${r.id}" ${game.s.codex.claims[r.id]?'disabled':''}>${game.s.codex.claims[r.id]?'已领':game.bookCount>=r.need?'领取':'未达成'}</button></div>`).join('')}</div>`;
  rows.sort((a,b)=>Number(b.known)-Number(a.known));
- const list=rows.map(r=>`<button class="book-entry book-entry-link ${r.known?'vis-book-'+r.cat:'unknown'}" data-a="book-open" data-key="${r.key}"><span class="book-entry-main"><span class="book-entry-title">${r.known||r.cat==='bag'?esc(r.name):'未发现'}</span><span class="book-entry-sub">${r.known||r.cat==='bag'?({item:'资源',life:'灵物',mineral:'矿材',tool:'工具',bag:'永久储物袋',food:'食物与丹药',enemy:'妖兽',gear:'装备法器',home:'洞府建筑',secret:'秘境',zone:'境域',realm:'修炼'}[r.cat]||'已发现条目'):'尚未发现 · 点击查看线索'}</span></span><span class="book-entry-arrow">${r.known?'已识':'线索'} ›</span></button>`).join('')||'<div class="empty">没有符合条件的条目</div>';
+ const list=rows.map(r=>`<button class="book-entry book-entry-link ${r.known?'vis-book-'+r.cat:'unknown'}" data-a="book-open" data-key="${r.key}"><span class="book-entry-main"><span class="book-entry-title ${r.cat==='gear'?'codex-gear-name':''}">${r.known||r.cat==='bag'?esc(r.name):'未发现'}</span><span class="book-entry-sub">${r.known||r.cat==='bag'?({item:'资源',life:'灵物',mineral:'矿材',tool:'工具',bag:'永久储物袋',food:'食物与丹药',enemy:'妖兽',gear:'装备法器',home:'洞府建筑',secret:'秘境',zone:'境域',realm:'修炼'}[r.cat]||'已发现条目'):'尚未发现 · 点击查看线索'}</span></span><span class="book-entry-arrow">${r.known?'已识':'线索'} ›</span></button>`).join('')||'<div class="empty">没有符合条件的条目</div>';
  return `<div class="book-list">${rewards}${list}</div>`;
 }
 function bookDetailBody(){
  const row=getBookRow(bookDetailKey);
  if(!row){bookDetailKey=null;return bookListBody();}
  const detail=(row.known||row.cat==='bag')?bookDetailLayout(row.detail)+codexLinks(row):`<div class="book-clue-card codex-clue"><strong>尚未发现</strong><p>线索：${esc(row.hint)}</p><small>获得、发现或遭遇后解锁完整资料。</small></div>`;
- return `<div class="book-detail-page"><div class="book-detail-card ${row.known?'vis-book-'+row.cat:'unknown'}"><div class="book-detail-hero"><div><h3>${row.known||row.cat==='bag'?esc(row.name):'未发现'}</h3><p>${row.known||row.cat==='bag'?esc(row.hint||'图鉴条目'):'继续探索以解锁完整资料'}</p></div><span class="book-detail-badge">${row.known?'已识':'线索'}</span></div><div class="book-content codex-detail-body">${detail}</div></div></div>`;
+ return `<div class="book-detail-page"><div class="book-detail-card ${row.known?'vis-book-'+row.cat:'unknown'}"><div class="book-detail-hero"><div><h3 class="${row.cat==='gear'?'codex-gear-name':''}">${row.known||row.cat==='bag'?esc(row.name):'未发现'}</h3><p>${row.known||row.cat==='bag'?esc(row.hint||'图鉴条目'):'继续探索以解锁完整资料'}</p></div><span class="book-detail-badge">${row.known?'已识':'线索'}</span></div><div class="book-content codex-detail-body">${detail}</div></div></div>`;
 }
 function bookBody(){return bookDetailKey?bookDetailBody():bookListBody();}
 function helpBody(){const g=game.s.guide;return `<div class="manual-hints"><h3>首次试玩建议</h3><p>建议先玩人族或妖族一个新档，完成采集、工具制作、洞府、首境仪式与首领，再测试秘境。遇到问题请记录种族、档位、地图、游戏日与操作。</p><p>每次更换HTML文件、设备或浏览器前，在【设置】导出JSON存档；不要把浏览器本地存储当作跨文件通用存档。</p></div><div class="help-intro"><p>当前引导：${{new:'尚未开始',active:'进行中',paused:'已暂停',skipped:'已跳过',done:'已完成'}[g.status]}${g.step<D.GUIDE.length?' · '+(g.step+1)+'/'+D.GUIDE.length:''}</p><div class="inline-buttons"><button class="btn primary" data-a="guide" data-mode="${g.status==='new'?'start':g.step>=D.GUIDE.length?'replay':'resume'}">${g.step>=D.GUIDE.length?'重播引导':'继续引导'}</button><button class="btn" data-a="guide" data-mode="skip">跳过引导</button></div></div>${D.HELP.map(c=>`<details class="help-chapter" data-help="${c.id}" ${helpOpen.has(c.id)?'open':''}><summary>${c.title}</summary>${c.paragraphs.map(p=>'<p>'+esc(p)+'</p>').join('')}</details>`).join('')}`;}
