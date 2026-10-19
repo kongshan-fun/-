@@ -1,0 +1,95 @@
+{
+  "panels": {
+    "character": {
+      "medianMs": 10.8,
+      "samples": [
+        5.5,
+        10.8,
+        23.7
+      ]
+    },
+    "pack": {
+      "medianMs": 7.3,
+      "samples": [
+        4.4,
+        7.3,
+        13.6
+      ]
+    },
+    "craft": {
+      "medianMs": 12.7,
+      "samples": [
+        8.6,
+        12.7,
+        17.7
+      ]
+    },
+    "camp": {
+      "medianMs": 16.8,
+      "samples": [
+        5.7,
+        16.8,
+        18.7
+      ]
+    },
+    "book": {
+      "medianMs": 11.1,
+      "samples": [
+        8.2,
+        11.1,
+        23.7
+      ]
+    },
+    "settings": {
+      "medianMs": 16.2,
+      "samples": [
+        6.9,
+        16.2,
+        16.3
+      ]
+    },
+    "quest": {
+      "medianMs": -1,
+      "samples": []
+    }
+  },
+  "boot": {
+    "engineReadyMs": 45,
+    "firstPaintMs": 94.9
+  },
+  "storage": {
+    "keyCount": 3,
+    "bytes": 6880,
+    "writes": 30,
+    "writeTotalBytes": 89042,
+    "writeMaxMs": 0.2,
+    "writeMedianMs": 0,
+    "topKeys": [
+      {
+        "k": "qinglan-wendao-v14-human-slot-001",
+        "n": 3388
+      },
+      {
+        "k": "qinglan-wendao-v14-human-slot-001-backup",
+        "n": 3388
+      },
+      {
+        "k": "qinglan-wendao-v14-current",
+        "n": 5
+      }
+    ]
+  },
+  "dom": {
+    "nodes": 224,
+    "elements": 224,
+    "styleSheets": 30,
+    "cssRules": 1791,
+    "htmlBytes": 643542,
+    "jsHeapMB": 2.82,
+    "jsHeapTotalMB": 5.75,
+    "layoutCount": 127,
+    "recalcStyleCount": 283,
+    "jsEventListeners": 10,
+    "documents": 4
+  }
+}

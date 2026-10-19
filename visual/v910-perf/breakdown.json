@@ -1,0 +1,154 @@
+{
+  "rounds": [
+    {
+      "action": "open-settings",
+      "wallMs": 28.6,
+      "scriptMs": 1.8,
+      "layoutMs": 24.3,
+      "styleMs": 1.2,
+      "taskMs": 29.5,
+      "layouts": 3,
+      "restyles": 4
+    },
+    {
+      "action": "close-panel",
+      "wallMs": 5.2,
+      "scriptMs": 0.9,
+      "layoutMs": 1,
+      "styleMs": 0.6,
+      "taskMs": 4.2,
+      "layouts": 3,
+      "restyles": 3
+    },
+    {
+      "action": "open-settings",
+      "wallMs": 19.7,
+      "scriptMs": 1.7,
+      "layoutMs": 1.6,
+      "styleMs": 0.8,
+      "taskMs": 5.9,
+      "layouts": 3,
+      "restyles": 4
+    },
+    {
+      "action": "close-panel",
+      "wallMs": 10.3,
+      "scriptMs": 1.1,
+      "layoutMs": 1.1,
+      "styleMs": 0.6,
+      "taskMs": 4.4,
+      "layouts": 3,
+      "restyles": 3
+    },
+    {
+      "action": "open-settings",
+      "wallMs": 6.8,
+      "scriptMs": 2.3,
+      "layoutMs": 2,
+      "styleMs": 1.4,
+      "taskMs": 7.5,
+      "layouts": 3,
+      "restyles": 4
+    },
+    {
+      "action": "close-panel",
+      "wallMs": 3.7,
+      "scriptMs": 1,
+      "layoutMs": 1.1,
+      "styleMs": 0.6,
+      "taskMs": 4.4,
+      "layouts": 3,
+      "restyles": 3
+    },
+    {
+      "action": "open-settings",
+      "wallMs": 13.8,
+      "scriptMs": 1.4,
+      "layoutMs": 1.5,
+      "styleMs": 0.8,
+      "taskMs": 5.8,
+      "layouts": 3,
+      "restyles": 4
+    },
+    {
+      "action": "close-panel",
+      "wallMs": 8.6,
+      "scriptMs": 0.8,
+      "layoutMs": 1,
+      "styleMs": 0.6,
+      "taskMs": 3.8,
+      "layouts": 3,
+      "restyles": 3
+    },
+    {
+      "action": "open-settings",
+      "wallMs": 4.5,
+      "scriptMs": 1.2,
+      "layoutMs": 1.3,
+      "styleMs": 0.7,
+      "taskMs": 5.2,
+      "layouts": 3,
+      "restyles": 4
+    },
+    {
+      "action": "close-panel",
+      "wallMs": 16.3,
+      "scriptMs": 0.9,
+      "layoutMs": 1.1,
+      "styleMs": 0.6,
+      "taskMs": 4.3,
+      "layouts": 3,
+      "restyles": 3
+    },
+    {
+      "action": "open-settings",
+      "wallMs": 8.7,
+      "scriptMs": 1.1,
+      "layoutMs": 1.2,
+      "styleMs": 0.6,
+      "taskMs": 5.2,
+      "layouts": 3,
+      "restyles": 4
+    },
+    {
+      "action": "close-panel",
+      "wallMs": 5.3,
+      "scriptMs": 1,
+      "layoutMs": 1.2,
+      "styleMs": 0.6,
+      "taskMs": 4.6,
+      "layouts": 3,
+      "restyles": 3
+    },
+    {
+      "action": "open-settings",
+      "wallMs": 15.5,
+      "scriptMs": 1.4,
+      "layoutMs": 1.4,
+      "styleMs": 0.8,
+      "taskMs": 5.8,
+      "layouts": 3,
+      "restyles": 4
+    },
+    {
+      "action": "close-panel",
+      "wallMs": 10.7,
+      "scriptMs": 0.9,
+      "layoutMs": 1.2,
+      "styleMs": 0.6,
+      "taskMs": 4.7,
+      "layouts": 3,
+      "restyles": 3
+    }
+  ],
+  "summary": {
+    "rounds": 14,
+    "avgWallMs": 11.26,
+    "avgScriptMs": 1.25,
+    "avgLayoutMs": 2.93,
+    "avgStyleMs": 0.75,
+    "avgTaskMs": 6.81,
+    "avgLayouts": 3,
+    "avgRestyles": 3.5
+  }
+}
