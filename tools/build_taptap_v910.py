@@ -168,18 +168,22 @@ def main():
     text = rep1(text, "<head>",
                 '<head>\n<script>window.__SHANYE_BUILD_CODE="PENDING";</script>', "注入构建码占位")
 
-    def finalize(t):
-        b = t.replace("\n", "\r\n").encode("utf-8")
-        h = sha(b)
-        return t.replace('"PENDING"', '"SHANYE-V910-TT-' + h[:8] + '"', 1), b
-
-    text, out = finalize(text)
+    # 固定长度占位 -> 算哈希 -> 等长替换，保证测试码可复现且与包体内嵌值一致
+    HOLD = "SHANYE-V910-TT-XXXXXXXX"
+    if '"PENDING"' not in text:
+        die("构建码占位未被注入")
+    text = text.replace('"PENDING"', '"' + HOLD + '"', 1)
+    out = text.replace("\n", "\r\n").encode("utf-8")
     out_sha = sha(out)
-    # 测试码必须取自包体里真正嵌入的值（不能用替换后的哈希反推）
-    _m = re.search(r'__SHANYE_BUILD_CODE="([^"]+)"', text)
-    if not _m:
-        die('构建码未写入')
-    build_code = _m.group(1)
+    build_code = "SHANYE-V910-TT-" + out_sha[:8]
+    if len(build_code) != len(HOLD):
+        die("测试码长度与占位符不一致，等长替换会破坏哈希")
+    text = text.replace(HOLD, build_code, 1)
+    out = text.replace("\n", "\r\n").encode("utf-8")
+    if '"PENDING"' in out.decode("utf-8"):
+        die("构建码替换失败")
+    if build_code not in out.decode("utf-8"):
+        die("构建码未进入包体")
 
     # ---- 产物断言 ----
     f = out.decode("utf-8")

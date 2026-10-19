@@ -4,9 +4,9 @@
   "sourceSha256": "FC024760C3D0FF710ADB2D49D51A84EC3738B3B3F3D8DED77FB227DCE3731AC0",
   "adapter": "D:\\deepseek harness\\shanhe-v907\\taptap\\taptap-adapter.js",
   "adapterBytes": 45313,
-  "outputSha256": "3BCF54899372316AC4A2A6E9B8DEF26BE8BA5C1A536E710E3978F067B786313B",
-  "outputBytes": 795656,
-  "buildCode": "SHANYE-V910-TT-3BCF5489",
+  "outputSha256": "BD672573741815C46BC8E86F2BF42A9BBD0C0107B489D8F201C7EF7BEA0E2428",
+  "outputBytes": 795672,
+  "buildCode": "SHANYE-V910-TT-BD672573",
   "ids": {
     "ads": "1054324",
     "leaderboardPower": "a7m6yjlef2giizektn",

@@ -46,7 +46,7 @@ python -m http.server 8080
 在 TapTap 容器内打开自检页，各项应为「可用」且 MOCK 为「否」。
 
 ## 测试码
-`SHANYE-V910-TT-3BCF5489`
+`SHANYE-V910-TT-BD672573`
 
 已写入包体 `window.__SHANYE_BUILD_CODE`，可在自检页底部核对。
 
