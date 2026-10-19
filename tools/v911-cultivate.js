@@ -8,11 +8,12 @@ function cultivateBody(){const s=game.s,m=s.meditation.day===game.day?s.meditati
  const rating=globalThis.QCombatRating.live(game);
  const trialName=s.zone===5&&s.major===1?(s.character==='demon'?'妖丹血雷':'金丹雷劫'):
    s.zone===6&&s.major===2?(s.character==='demon'?'本相问心':'元婴问心'):
-   s.zone===11&&s.major===8?'飞升天门':s.ascended?'飞升已成':'破境条件';
+   s.zone===11&&s.major===8?'飞升天门':s.ascended?'飞升已成':
+   s.zone>=5?'突破 · '+game.realmAt(s.zone-3):'晋升条件';
  const trialState=s.ascended?'飞升已成 · 可自由选择':
    s.zone===5&&s.major===1?(game.coreTrial.complete?'三重已渡 · 可正式破境':game.coreTrial.phase?'进行至第'+(game.coreTrial.phase+1)+'重':'尚未启劫'):
    s.zone===6&&s.major===2?(game.heartTrial.complete?'三重已过':game.heartTrial.started?'第'+(game.heartTrial.phase+1)+'重':'尚未入定'):
-   '查看本境破境所需条件';
+   s.zone>=5?'查看本境破境所需条件':'当前境界以修为与等级晋升，无大境界试炼';
  const artTop=s.major>=2?3:s.major>=1?2:1;
  const nav=(name,title,sub,state)=>`<button type="button" class="cult-nav-row" data-a="cult-step" data-name="${name}"><span class="cult-nav-main"><b>${title}</b><small>${sub}</small></span><span class="cult-nav-right">${state||''}<i>›</i></span></button>`;
  return `<div class="inline-buttons"><button class="btn primary" data-a="panel" data-name="manuals">功法传承</button><button class="btn" data-a="panel" data-name="birth">命格 · ${esc(game.s.birth.name)}</button></div>
