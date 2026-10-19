@@ -1,0 +1,268 @@
+[
+  {
+    "n": 1,
+    "label": "《山野修仙记》V90.10 · 新人开局到核心循环",
+    "sel": null,
+    "hit": true,
+    "dwell": 1300
+  },
+  {
+    "n": 2,
+    "label": "选择人族 · 问道",
+    "sel": "[data-a=\"choose-role\"][data-role=\"human\"]",
+    "hit": true,
+    "dwell": 1200
+  },
+  {
+    "n": 3,
+    "label": "进入档案，选择修行档位",
+    "sel": "[data-a=\"view-slots\"]",
+    "hit": true,
+    "dwell": 1200
+  },
+  {
+    "n": 4,
+    "label": "选择 001 号空白档",
+    "sel": "[data-a=\"slot-open\"][data-slot=\"1\"]",
+    "hit": true,
+    "dwell": 1200
+  },
+  {
+    "n": 5,
+    "label": "抽取命格资质",
+    "sel": "[data-a=\"birth-next\"]",
+    "hit": true,
+    "dwell": 1300
+  },
+  {
+    "n": 6,
+    "label": "确认入世",
+    "sel": "[data-a=\"birth-confirm-final\"]",
+    "hit": true,
+    "dwell": 1500
+  },
+  {
+    "n": 7,
+    "label": "关闭开场引导",
+    "sel": null,
+    "hit": true,
+    "dwell": 1100
+  },
+  {
+    "n": 8,
+    "label": "收起教练浮层",
+    "sel": null,
+    "hit": true,
+    "dwell": 1100
+  },
+  {
+    "n": 9,
+    "label": "主界面：顶部状态栏 / 中部场景资源 / 底部五格导航",
+    "sel": null,
+    "hit": true,
+    "dwell": 1500
+  },
+  {
+    "n": 10,
+    "label": "采集资源（第 1 次）",
+    "sel": null,
+    "hit": true,
+    "dwell": 1000
+  },
+  {
+    "n": 11,
+    "label": "采集资源（第 2 次）",
+    "sel": null,
+    "hit": true,
+    "dwell": 1000
+  },
+  {
+    "n": 12,
+    "label": "采集资源（第 3 次）",
+    "sel": null,
+    "hit": true,
+    "dwell": 1000
+  },
+  {
+    "n": 13,
+    "label": "采集资源（第 4 次）",
+    "sel": null,
+    "hit": true,
+    "dwell": 1000
+  },
+  {
+    "n": 14,
+    "label": "采集资源（第 5 次）",
+    "sel": null,
+    "hit": true,
+    "dwell": 1000
+  },
+  {
+    "n": 15,
+    "label": "采集到的素材进入随身，负重在顶部与背包同步",
+    "sel": null,
+    "hit": true,
+    "dwell": 1100
+  },
+  {
+    "n": 16,
+    "label": "打开背包",
+    "sel": "[data-a=\"panel\"][data-name=\"pack\"]",
+    "hit": true,
+    "dwell": 1300
+  },
+  {
+    "n": 17,
+    "label": "从背包进入「行记」",
+    "sel": "[data-a=\"panel\"][data-name=\"log\"]",
+    "hit": true,
+    "dwell": 1300
+  },
+  {
+    "n": 18,
+    "label": "返回背包",
+    "sel": null,
+    "hit": true,
+    "dwell": 900
+  },
+  {
+    "n": 19,
+    "label": "关闭背包",
+    "sel": null,
+    "hit": true,
+    "dwell": 800
+  },
+  {
+    "n": 20,
+    "label": "打开炼制",
+    "sel": "[data-a=\"panel\"][data-name=\"craft\"]",
+    "hit": true,
+    "dwell": 1400
+  },
+  {
+    "n": 21,
+    "label": "炼制第一件工具",
+    "sel": null,
+    "hit": true,
+    "dwell": 1500
+  },
+  {
+    "n": 22,
+    "label": "关闭炼制",
+    "sel": null,
+    "hit": true,
+    "dwell": 800
+  },
+  {
+    "n": 23,
+    "label": "打开洞府（选址与建筑）",
+    "sel": "[data-a=\"panel\"][data-name=\"camp\"]",
+    "hit": true,
+    "dwell": 1500
+  },
+  {
+    "n": 24,
+    "label": "关闭洞府",
+    "sel": null,
+    "hit": true,
+    "dwell": 800
+  },
+  {
+    "n": 25,
+    "label": "打开图鉴（按类别折叠）",
+    "sel": "[data-a=\"panel\"][data-name=\"book\"]",
+    "hit": true,
+    "dwell": 1500
+  },
+  {
+    "n": 26,
+    "label": "展开「灵物」分类",
+    "sel": null,
+    "hit": true,
+    "dwell": 1400
+  },
+  {
+    "n": 27,
+    "label": "关闭图鉴",
+    "sel": null,
+    "hit": true,
+    "dwell": 800
+  },
+  {
+    "n": 28,
+    "label": "打开人物（装备与战力）",
+    "sel": "[data-a=\"panel\"][data-name=\"character\"]",
+    "hit": true,
+    "dwell": 1500
+  },
+  {
+    "n": 29,
+    "label": "关闭人物",
+    "sel": null,
+    "hit": true,
+    "dwell": 800
+  },
+  {
+    "n": 30,
+    "label": "打开设置（六分区）",
+    "sel": "[data-a=\"panel\"][data-name=\"settings\"]",
+    "hit": true,
+    "dwell": 1600
+  },
+  {
+    "n": 31,
+    "label": "向下滚动查看其余分区",
+    "sel": null,
+    "hit": true,
+    "dwell": 1400
+  },
+  {
+    "n": 32,
+    "label": "继续滚动到底部",
+    "sel": null,
+    "hit": true,
+    "dwell": 1400
+  },
+  {
+    "n": 33,
+    "label": "关闭设置",
+    "sel": null,
+    "hit": true,
+    "dwell": 800
+  },
+  {
+    "n": 34,
+    "label": "打开主线任务指引",
+    "sel": "#quest",
+    "hit": true,
+    "dwell": 1500
+  },
+  {
+    "n": 35,
+    "label": "关闭主线",
+    "sel": null,
+    "hit": true,
+    "dwell": 800
+  },
+  {
+    "n": 36,
+    "label": "打开完整教程",
+    "sel": "[data-a=\"panel\"][data-name=\"help\"]",
+    "hit": true,
+    "dwell": 1500
+  },
+  {
+    "n": 37,
+    "label": "关闭教程",
+    "sel": null,
+    "hit": true,
+    "dwell": 800
+  },
+  {
+    "n": 38,
+    "label": "至此覆盖：开档 → 采集 → 行记 → 背包 → 炼制 → 洞府 → 图鉴 → 人物 → 设置 → 主线 → 教程",
+    "sel": null,
+    "hit": true,
+    "dwell": 2000
+  }
+]

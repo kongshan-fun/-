@@ -1,0 +1,77 @@
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0001.png'
+duration 1.300
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0002.png'
+duration 1.200
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0003.png'
+duration 1.200
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0004.png'
+duration 1.200
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0005.png'
+duration 1.300
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0006.png'
+duration 1.500
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0007.png'
+duration 1.100
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0008.png'
+duration 1.100
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0009.png'
+duration 1.500
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0010.png'
+duration 1.000
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0011.png'
+duration 1.000
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0012.png'
+duration 1.000
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0013.png'
+duration 1.000
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0014.png'
+duration 1.000
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0015.png'
+duration 1.100
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0016.png'
+duration 1.300
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0017.png'
+duration 1.300
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0018.png'
+duration 0.900
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0019.png'
+duration 0.800
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0020.png'
+duration 1.400
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0021.png'
+duration 1.500
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0022.png'
+duration 0.800
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0023.png'
+duration 1.500
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0024.png'
+duration 0.800
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0025.png'
+duration 1.500
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0026.png'
+duration 1.400
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0027.png'
+duration 0.800
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0028.png'
+duration 1.500
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0029.png'
+duration 0.800
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0030.png'
+duration 1.600
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0031.png'
+duration 1.400
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0032.png'
+duration 1.400
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0033.png'
+duration 0.800
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0034.png'
+duration 1.500
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0035.png'
+duration 0.800
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0036.png'
+duration 1.500
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0037.png'
+duration 0.800
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0038.png'
+duration 2.000
+file 'D:/deepseek harness/shanhe-repo/visual/v910-playthrough/frames/0038.png'
