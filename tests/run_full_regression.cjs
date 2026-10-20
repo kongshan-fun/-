@@ -45,9 +45,14 @@ const LAYERS = [
 const results = [];
 let failed = 0;
 /* 已知未达标层：失败不被当成回归，但必须打印原因，且不能悄悄消失。
-   目前只有一项：洞府在 360×640 仍 1.51 屏 —— 结构性，等产品决策（docs §7.5）。 */
+   目前只有一项：洞府在 360×640 仍 1.47 屏 —— 结构性，等产品决策（docs §7.5）。
+   **必须"确实是那一条"才算已知**：把 label 映射成正则，避免洞府以外的失败（比如
+   浏览器起不来、fetch failed）被这张白名单吞掉——第一次接 CI 时就踩过这个坑。 */
 const KNOWN = {
-  '八面板 × 三宽度矩阵': '洞府 360×640 仍 1.51 屏（设施网格 407.6px ≈ 可视 413px；压到 1.02 需砍字，见 docs §7.5）',
+  '八面板 × 三宽度矩阵': {
+    match: /超出 1\.02 屏的项[^\n]*: 1 \/ 24/,
+    reason: '洞府 360×640 仍 1.47 屏（设施网格 407.6px ≈ 可视 413px；压到 1.02 需砍字，见 docs §7.5）',
+  },
 };
 let known = 0;
 console.log(`全量回归开始（play 目录：${PLAY}）\n`);
@@ -58,20 +63,21 @@ for (const [label, runner, args] of LAYERS) {
     : spawnSync(NODE, args, { cwd: ROOT, encoding: 'utf8' });
   const secs = ((Date.now() - started) / 1000).toFixed(1);
   const okRun = !r.error && r.status === 0;
-  const isKnown = !okRun && KNOWN[label];
+  const out = `${r.stdout || ''}\n${r.stderr || ''}`.trim();
+  const knownSpec = KNOWN[label];
+  const isKnown = !okRun && !!knownSpec && knownSpec.match.test(out) && !/fetch failed/i.test(out);
   if (!okRun && !isKnown) failed++;
   if (isKnown) known++;
   results.push({ label, ok: okRun, known: !!isKnown, secs, code: r.status });
   console.log(`${okRun ? 'PASS' : isKnown ? 'KNOWN' : 'FAIL'}  ${label}  (${secs}s)`);
-  if (isKnown) console.log(`  已知：${KNOWN[label]}`);
+  if (isKnown) console.log(`  已知：${knownSpec.reason}`);
   if (!okRun) {
-    const out = `${r.stdout || ''}\n${r.stderr || ''}`.trim();
     const tail = out.split(/\r?\n/).slice(-14);
     console.log('  ---- 输出尾部 ----');
     console.log(tail.map((l) => '  ' + l).join('\n'));
     /* GitHub Actions 会把 ::error:: 转成检查注解——失败层名与尾部输出因此不需要登录也能读 */
     if (!isKnown) {
-      console.log(`::error::${isKnown ? 'KNOWN ' : ''}${label} 失败：${r.error ? r.error.message : 'exit ' + r.status}`);
+      console.log(`::error::${label} 失败：${r.error ? r.error.message : 'exit ' + r.status}`);
       for (const l of tail.slice(-8)) console.log('::error::' + String(l).replace(/\r/g, '').slice(0, 900));
     }
   }

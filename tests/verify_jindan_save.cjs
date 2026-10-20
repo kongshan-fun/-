@@ -46,7 +46,7 @@ const click = (c, sel) => c.eval(`(function(){var b=document.querySelector(${JSO
   const srv = await serve(ROOT);
   const port = 9993;
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'imp-'));
-  const proc = spawn(EDGE, ['--headless=new', '--disable-gpu', '--no-first-run', '--disable-extensions',
+  const proc = spawn(EDGE, ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--no-first-run', '--disable-extensions',
     `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`, 'about:blank'], { stdio: 'ignore' });
   let cdp;
   try {

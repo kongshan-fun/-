@@ -41,7 +41,7 @@ async function run(dirName, tag, craftSteps, campSteps) {
   const srv = await serve(path.join(ROOT, 'play', dirName));
   const port = 9955 + Math.floor(Math.random() * 20);
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'v912-'));
-  const proc = spawn(EDGE, ['--headless=new', '--disable-gpu', '--no-first-run', '--disable-extensions',
+  const proc = spawn(EDGE, ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--no-first-run', '--disable-extensions',
     `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`, 'about:blank'], { stdio: 'ignore' });
   let cdp;
   try {

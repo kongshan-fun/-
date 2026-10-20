@@ -43,7 +43,7 @@ async function grab(dirName, tag, steps) {
   const srv = await serve(path.join(ROOT, 'play', dirName));
   const port = 9989 + Math.floor(Math.random() * 8);
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'cap-'));
-  const proc = spawn(EDGE, ['--headless=new', '--disable-gpu', '--no-first-run', '--disable-extensions',
+  const proc = spawn(EDGE, ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--no-first-run', '--disable-extensions',
     `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`, 'about:blank'], { stdio: 'ignore' });
   let cdp;
   try {

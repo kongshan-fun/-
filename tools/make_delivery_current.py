@@ -153,7 +153,10 @@ def main() -> None:
     # 三宽度矩阵的已知红项：只有 360 档洞府（结构性，需产品决策），不算回归
     matrix_body = bodies.get("matrix", "")
     flagged = [seg for line in matrix_body.splitlines() for seg in line.split() if seg.endswith("!")]
-    known_matrix = (not results[4]) and all("洞府" in f for f in flagged) and len(flagged) <= 1
+    # 三宽度矩阵的已知红项：**只有** 360 档洞府（结构性，需产品决策），不算回归。
+    # 必须精确匹配一条：让浏览器起不来之类的问题不会被这张白名单吞掉。
+    known_matrix = (not results[4]) and len(flagged) == 1 and "洞府" in flagged[0] \
+        and "fetch failed" not in matrix_body
     camp360 = camp390 = "未知"
     for line in matrix_body.splitlines():
         if line.strip().startswith("360x640"):

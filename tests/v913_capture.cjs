@@ -26,7 +26,7 @@ async function run(dir, tag, children) {
   const srv = await serve(path.join(ROOT, 'play', dir));
   const port = 9920 + Math.floor(Math.random() * 30);
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'v913-'));
-  const proc = spawn(EDGE, ['--headless=new', '--disable-gpu', '--no-first-run', '--disable-extensions',
+  const proc = spawn(EDGE, ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--no-first-run', '--disable-extensions',
     `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`, 'about:blank'], { stdio: 'ignore' });
   let ws;
   try {

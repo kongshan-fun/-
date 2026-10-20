@@ -26,7 +26,7 @@ function serve(root) {
   const srv = await serve(DIR);
   const port = 9994;
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'seed-'));
-  const proc = spawn(EDGE, ['--headless=new', '--disable-gpu', '--no-first-run', '--disable-extensions',
+  const proc = spawn(EDGE, ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--no-first-run', '--disable-extensions',
     `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`, 'about:blank'], { stdio: 'ignore' });
   let ws;
   try {

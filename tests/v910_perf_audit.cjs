@@ -125,7 +125,7 @@ async function waitDebug(port) {
   const origin = `http://127.0.0.1:${srv.address().port}`;
   const port = 9971;
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'perf-'));
-  const proc = spawn(EDGE, ['--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check',
+  const proc = spawn(EDGE, ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--no-first-run', '--no-default-browser-check',
     '--disable-extensions', '--mute-audio', `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`, 'about:blank'], { stdio: 'ignore' });
   let cdp;
   const report = { panels: {}, boot: {}, storage: {}, dom: {} };
