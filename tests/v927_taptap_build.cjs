@@ -17,7 +17,21 @@ const os = require('os');
 const { spawn, execFileSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
-const BUILD = path.join(ROOT, 'taptap-build', 'shanhe-v927-taptap');
+/* 自动挑「与 index.html 标题版本同号」的 TapTap 构建目录，升版本不用改本测试 */
+function detectBuild() {
+  const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  const version = (html.match(/<title>[^<]*?(V\d+\.\d+)/) || [])[1];
+  const root = path.join(ROOT, 'taptap-build');
+  if (!fs.existsSync(root)) return path.join(root, 'missing');
+  const dirs = fs.readdirSync(root).filter((d) => fs.existsSync(path.join(root, d, 'build-manifest.json')));
+  const hit = dirs.find((d) => {
+    try { return JSON.parse(fs.readFileSync(path.join(root, d, 'build-manifest.json'), 'utf8')).version === version; }
+    catch { return false; }
+  });
+  if (hit) return path.join(root, hit);
+  return dirs.length ? path.join(root, dirs.sort().pop()) : path.join(root, 'missing');
+}
+const BUILD = process.argv[2] ? path.join(ROOT, 'taptap-build', process.argv[2]) : detectBuild();
 const EDGE = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 

@@ -1,0 +1,9 @@
+$ C:\Users\33617\AppData\Local\Programs\Python\Python313\python.exe tools/check_entry_consistency.py
+# 入口/发布文件/构建器一致
+# 退出码 0 → PASS
+
+  ����汾 : V90.28  ��ɽҰ���ɼ� V90.28 �� ��������ս���
+  �����ļ� : ɽҰ���ɼ�_V90.28_��������ս���.html  (768,779 B)
+  SHA256   : A7E4D7BFC4E61573FF2019BE8B6C45940D493F176697448F86CB4DA1D6DFB328
+  ������   : build_v928_from_main.py  ���� ɽҰ���ɼ�_V90.27_����խ��������.html����ϣУ��ͨ����
+ENTRY CONSISTENCY PASS

@@ -1,0 +1,25 @@
+$ node tests/v927_taptap_build.cjs
+# 适配包 17 项（QTAP/构建码/玩法标记/冷启动）
+# 退出码 0 → PASS
+
+包体：V90.27  815,832 B  测试码 SHANYE-V927-TT-4320C8E5
+
+  PASS  构建码与 manifest 一致  — SHANYE-V927-TT-4320C8E5
+  PASS  没有残留构建码占位
+  PASS  广告入口 birth-ad 存在
+  PASS  广告入口 birth-jade-ad 存在
+  PASS  广告入口 ad-life 存在
+  PASS  广告入口 ad-life-confirm 存在
+  PASS  首领器材掉落（V90.23） 仍在包体里
+  PASS  轮回玉每档一次旁路键（V90.25） 仍在包体里
+  PASS  轮回玉领取守卫（V90.25） 仍在包体里
+  PASS  云存档文案 仍在包体里
+  PASS  适配层命名空间 仍在包体里
+  PASS  QTAP 适配层已初始化
+  PASS  无真实 tap 时自动降级为 MOCK  — isMock=true tap=undefined
+  PASS  云存档/排行榜/成就三模块就绪
+  PASS  运行时构建码与 manifest 一致  — SHANYE-V927-TT-4320C8E5
+  PASS  首屏入世入口正常渲染  — 山野修仙记 V90.27 · 主线窄屏收敛
+  PASS  冷启动无未捕获异常  — 0 个
+
+合计 17 项：17 通过 / 0 失败

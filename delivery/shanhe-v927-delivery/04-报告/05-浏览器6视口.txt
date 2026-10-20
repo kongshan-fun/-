@@ -1,0 +1,13 @@
+$ C:\Users\33617\AppData\Local\Programs\Python\Python313\python.exe tests/browser_responsive.py
+# Chromium 6 视口布局 + 截图
+# 退出码 0 → PASS
+
+FULL H5 BROWSER RESPONSIVE PASS {"version": "V90.27", "release": "ɽҰ���ɼ�_V90.27_����խ��������.html", "channel": "msedge", "gear": 24, "archives": 6, "buildings": 6, "viewports": [[320, 568], [360, 640], [390, 844], [412, 915], [1080, 1920], [1440, 900]]}
+127.0.0.1 - - [20/Oct/2026 16:27:45] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [20/Oct/2026 16:27:46] code 404, message File not found
+127.0.0.1 - - [20/Oct/2026 16:27:46] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [20/Oct/2026 16:27:46] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [20/Oct/2026 16:27:47] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [20/Oct/2026 16:27:48] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [20/Oct/2026 16:27:49] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [20/Oct/2026 16:27:50] "GET /index.html HTTP/1.1" 200 -

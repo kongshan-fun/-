@@ -1,0 +1,284 @@
+{
+  "commit": "local",
+  "version": "V90.24",
+  "release": "山野修仙记_V90.24_建筑卡文字不裁切版.html",
+  "source": "full-H5-with-test-only-hook",
+  "gear": [
+    {
+      "viewport": "320x568",
+      "count": 2,
+      "gridHeight": 125.2,
+      "inspectorHeight": 90,
+      "scrollHeight": 125,
+      "result": "PASS"
+    },
+    {
+      "viewport": "320x568",
+      "count": 3,
+      "gridHeight": 125.2,
+      "inspectorHeight": 90,
+      "scrollHeight": 237,
+      "result": "PASS"
+    },
+    {
+      "viewport": "320x568",
+      "count": 10,
+      "gridHeight": 125.2,
+      "inspectorHeight": 90,
+      "scrollHeight": 585,
+      "result": "PASS"
+    },
+    {
+      "viewport": "320x568",
+      "count": 36,
+      "gridHeight": 125.2,
+      "inspectorHeight": 90,
+      "scrollHeight": 2093,
+      "result": "PASS"
+    },
+    {
+      "viewport": "360x640",
+      "count": 2,
+      "gridHeight": 62.0,
+      "inspectorHeight": 106,
+      "scrollHeight": 126,
+      "result": "PASS"
+    },
+    {
+      "viewport": "360x640",
+      "count": 3,
+      "gridHeight": 62.0,
+      "inspectorHeight": 106,
+      "scrollHeight": 242,
+      "result": "PASS"
+    },
+    {
+      "viewport": "360x640",
+      "count": 10,
+      "gridHeight": 62.0,
+      "inspectorHeight": 106,
+      "scrollHeight": 590,
+      "result": "PASS"
+    },
+    {
+      "viewport": "360x640",
+      "count": 36,
+      "gridHeight": 62.0,
+      "inspectorHeight": 106,
+      "scrollHeight": 2098,
+      "result": "PASS"
+    },
+    {
+      "viewport": "390x844",
+      "count": 2,
+      "gridHeight": 203.4,
+      "inspectorHeight": 116,
+      "scrollHeight": 203,
+      "result": "PASS"
+    },
+    {
+      "viewport": "390x844",
+      "count": 3,
+      "gridHeight": 203.4,
+      "inspectorHeight": 116,
+      "scrollHeight": 246,
+      "result": "PASS"
+    },
+    {
+      "viewport": "390x844",
+      "count": 10,
+      "gridHeight": 203.4,
+      "inspectorHeight": 116,
+      "scrollHeight": 594,
+      "result": "PASS"
+    },
+    {
+      "viewport": "390x844",
+      "count": 36,
+      "gridHeight": 203.4,
+      "inspectorHeight": 116,
+      "scrollHeight": 2102,
+      "result": "PASS"
+    },
+    {
+      "viewport": "412x915",
+      "count": 2,
+      "gridHeight": 274.4,
+      "inspectorHeight": 116,
+      "scrollHeight": 274,
+      "result": "PASS"
+    },
+    {
+      "viewport": "412x915",
+      "count": 3,
+      "gridHeight": 274.4,
+      "inspectorHeight": 116,
+      "scrollHeight": 274,
+      "result": "PASS"
+    },
+    {
+      "viewport": "412x915",
+      "count": 10,
+      "gridHeight": 274.4,
+      "inspectorHeight": 116,
+      "scrollHeight": 594,
+      "result": "PASS"
+    },
+    {
+      "viewport": "412x915",
+      "count": 36,
+      "gridHeight": 274.4,
+      "inspectorHeight": 116,
+      "scrollHeight": 2102,
+      "result": "PASS"
+    },
+    {
+      "viewport": "1080x1920",
+      "count": 2,
+      "gridHeight": 239.4,
+      "inspectorHeight": 116,
+      "scrollHeight": 239,
+      "result": "PASS"
+    },
+    {
+      "viewport": "1080x1920",
+      "count": 3,
+      "gridHeight": 239.4,
+      "inspectorHeight": 116,
+      "scrollHeight": 246,
+      "result": "PASS"
+    },
+    {
+      "viewport": "1080x1920",
+      "count": 10,
+      "gridHeight": 239.4,
+      "inspectorHeight": 116,
+      "scrollHeight": 594,
+      "result": "PASS"
+    },
+    {
+      "viewport": "1080x1920",
+      "count": 36,
+      "gridHeight": 239.4,
+      "inspectorHeight": 116,
+      "scrollHeight": 2102,
+      "result": "PASS"
+    },
+    {
+      "viewport": "1440x900",
+      "count": 2,
+      "gridHeight": 239.4,
+      "inspectorHeight": 116,
+      "scrollHeight": 239,
+      "result": "PASS"
+    },
+    {
+      "viewport": "1440x900",
+      "count": 3,
+      "gridHeight": 239.4,
+      "inspectorHeight": 116,
+      "scrollHeight": 246,
+      "result": "PASS"
+    },
+    {
+      "viewport": "1440x900",
+      "count": 10,
+      "gridHeight": 239.4,
+      "inspectorHeight": 116,
+      "scrollHeight": 594,
+      "result": "PASS"
+    },
+    {
+      "viewport": "1440x900",
+      "count": 36,
+      "gridHeight": 239.4,
+      "inspectorHeight": 116,
+      "scrollHeight": 2102,
+      "result": "PASS"
+    }
+  ],
+  "archives": [
+    {
+      "viewport": "320x568",
+      "cellHeight": 64.8,
+      "scrollHeight": 354,
+      "areaHeight": 271,
+      "result": "PASS"
+    },
+    {
+      "viewport": "360x640",
+      "cellHeight": 64,
+      "scrollHeight": 354,
+      "areaHeight": 343,
+      "result": "PASS"
+    },
+    {
+      "viewport": "390x844",
+      "cellHeight": 91.0,
+      "scrollHeight": 499,
+      "areaHeight": 499,
+      "result": "PASS"
+    },
+    {
+      "viewport": "412x915",
+      "cellHeight": 105.2,
+      "scrollHeight": 570,
+      "areaHeight": 570,
+      "result": "PASS"
+    },
+    {
+      "viewport": "1080x1920",
+      "cellHeight": 98.2,
+      "scrollHeight": 535,
+      "areaHeight": 535,
+      "result": "PASS"
+    },
+    {
+      "viewport": "1440x900",
+      "cellHeight": 98.2,
+      "scrollHeight": 535,
+      "areaHeight": 535,
+      "result": "PASS"
+    }
+  ],
+  "buildings": [
+    {
+      "viewport": "320x568",
+      "buildingCards": 7,
+      "maxDescriptionHeight": 42,
+      "result": "PASS"
+    },
+    {
+      "viewport": "360x640",
+      "buildingCards": 7,
+      "maxDescriptionHeight": 42,
+      "result": "PASS"
+    },
+    {
+      "viewport": "390x844",
+      "buildingCards": 7,
+      "maxDescriptionHeight": 28,
+      "result": "PASS"
+    },
+    {
+      "viewport": "412x915",
+      "buildingCards": 7,
+      "maxDescriptionHeight": 44,
+      "result": "PASS"
+    },
+    {
+      "viewport": "1080x1920",
+      "buildingCards": 7,
+      "maxDescriptionHeight": 44,
+      "result": "PASS"
+    },
+    {
+      "viewport": "1440x900",
+      "buildingCards": 7,
+      "maxDescriptionHeight": 44,
+      "result": "PASS"
+    }
+  ],
+  "errors": [],
+  "channel": "msedge"
+}

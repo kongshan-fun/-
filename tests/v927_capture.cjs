@@ -8,7 +8,7 @@ const { spawn, execFileSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
 const DIR = process.argv[2] || 'jindan-v927';
-const OUT = path.join(ROOT, 'visual', 'v927-narrow');
+const OUT = path.join(ROOT, 'visual', process.argv[3] || 'v928-narrow');
 const EDGE = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 fs.mkdirSync(OUT, { recursive: true });
