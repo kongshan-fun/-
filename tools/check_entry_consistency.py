@@ -26,6 +26,16 @@ def sha(b: bytes) -> str:
     return hashlib.sha256(b).hexdigest().upper()
 
 
+def canonical_sha(b: bytes) -> str:
+    """归一化成 CRLF 再算哈希。
+
+    仓库在 Windows 工作副本里是 CRLF，CI（Linux 检出）是 LF；
+    构建器里写死的 BASE_SHA 是按 CRLF 算的。不归一化的话，
+    "本地全绿、云端全红"就是这么来的。
+    """
+    return sha(b.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n"))
+
+
 def fail(msg: str) -> None:
     print(f"[FAIL] {msg}")
     raise SystemExit(1)
@@ -72,9 +82,9 @@ def main() -> None:
     base_path = RELEASES / base_name.group(1)
     if not base_path.exists():
         fail(f"{builder.name} 声明的基线文件不存在：{base_name.group(1)}")
-    actual = sha(base_path.read_bytes())
+    actual = canonical_sha(base_path.read_bytes())
     if actual != base_sha.group(1).upper():
-        fail(f"{builder.name} 的 BASE_SHA 与基线文件实际哈希不符\n"
+        fail(f"{builder.name} 的 BASE_SHA 与基线文件实际哈希不符（按 CRLF 归一）\n"
              f"        声明 {base_sha.group(1).upper()}\n        实际 {actual}")
     print(f"  构建器   : {builder.name}  基线 {base_name.group(1)}（哈希校验通过）")
 

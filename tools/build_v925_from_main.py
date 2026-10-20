@@ -92,8 +92,10 @@ def eol_of(raw: bytes) -> str:
 
 def main():
     raw = BASE.read_bytes()
-    if sha(raw) != BASE_SHA:
-        raise SystemExit(f"[ABORT] 基线哈希不符：{sha(raw)}")
+    # BASE_SHA 是按 CRLF 记的；CI（Linux 检出）拿到的是 LF，先归一再比
+    norm = raw.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n")
+    if sha(norm) != BASE_SHA:
+        raise SystemExit(f"[ABORT] 基线哈希不符：{sha(norm)}")
     text = raw.decode("utf-8").replace("\r\n", "\n")
     ok("基线校验", f"{len(raw):,} B")
 
