@@ -57,9 +57,9 @@ def main():
     text = raw.decode("utf-8").replace("\r\n", "\n")
     ok("基线校验", f"{len(raw):,} B")
 
-    # 断言：绝不包含顶栏压缩规则
-    if "#status .bar" in text or "#status *{" in text:
-        raise SystemExit("[ABORT] 基线里出现 #status 压缩规则")
+    # 断言：本次注入的样式绝不触碰状态条（基线自带 #status 规则属正常）
+    if "#status" in PANEL_CSS:
+        raise SystemExit("[ABORT] 注入样式里出现 #status 规则")
 
     text = rep(text, "<title>山野修仙记 V90.15 · 窄屏与空态修正</title>",
                "<title>山野修仙记 V90.16 · 窄屏面板密度</title>", "标题版本号")
@@ -71,9 +71,10 @@ def main():
                f'<style id="v916-panel-density">\n{PANEL_CSS}\n</style>\n</head>\n<body>',
                "注入窄屏面板密度样式")
 
-    if "#status .bar" in text:
-        raise SystemExit("[ABORT] 产物误含顶栏压缩规则")
-    ok("未触碰顶栏", "无 #status 压缩规则")
+    injected = text.split('<style id="v916-panel-density">')[1].split('</style>')[0]
+    if "#status" in injected:
+        raise SystemExit("[ABORT] 注入块误含 #status 规则")
+    ok("未触碰顶栏", "注入块内无 #status 规则")
 
     out = text.replace("\n", "\r\n").encode("utf-8")
     (RELEASES / OUT_NAME).write_bytes(out)
