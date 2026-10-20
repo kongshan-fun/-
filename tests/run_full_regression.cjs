@@ -66,8 +66,14 @@ for (const [label, runner, args] of LAYERS) {
   if (isKnown) console.log(`  已知：${KNOWN[label]}`);
   if (!okRun) {
     const out = `${r.stdout || ''}\n${r.stderr || ''}`.trim();
+    const tail = out.split(/\r?\n/).slice(-14);
     console.log('  ---- 输出尾部 ----');
-    console.log(out.split(/\r?\n/).slice(-12).map((l) => '  ' + l).join('\n'));
+    console.log(tail.map((l) => '  ' + l).join('\n'));
+    /* GitHub Actions 会把 ::error:: 转成检查注解——失败层名与尾部输出因此不需要登录也能读 */
+    if (!isKnown) {
+      console.log(`::error::${isKnown ? 'KNOWN ' : ''}${label} 失败：${r.error ? r.error.message : 'exit ' + r.status}`);
+      for (const l of tail.slice(-8)) console.log('::error::' + String(l).replace(/\r/g, '').slice(0, 900));
+    }
   }
 }
 
