@@ -68,14 +68,19 @@ jobs:
       - name: 全 H5 Chromium 响应式验收（含截图）
         run: python3 tests/browser_responsive.py
 
-      - name: 界面层回归（16 层全量，Chromium 走 SHANHE_BROWSER）
+      - name: 界面层快检（Chromium，2 个代表套件）
         run: |
           set -o pipefail
-          # 仓库里的 CDP 测试现在都通过 tests/lib/browser.js 解析浏览器；
-          # CI 没有 Edge，这里指到 playwright 自带的 chromium。
+          # 仓库里的 CDP 测试都通过 tests/lib/browser.js 解析浏览器；CI 没有 Edge，
+          # 这里指到 playwright 自带的 chromium，并带 --no-sandbox（脚本里已内置）。
           export SHANHE_BROWSER="$(ls -d ~/.cache/ms-playwright/chromium-*/chrome-linux/chrome | head -1)"
+          PLAY="$(ls -d play/jindan-v* | sort -V | tail -1)"
           echo "浏览器：$SHANHE_BROWSER"
-          node tests/run_full_regression.cjs 2>&1 | tee /tmp/full-regression.txt
+          echo "试玩页：$PLAY"
+          # 为什么只挑两个：runner 是软件渲染，8 个 CDP 会话要跑 25 分钟以上（会撞超时）。
+          # 完整 16 层在本地由 tests/run_full_regression.cjs 跑，发版前必须跑一遍。
+          node tests/v914_ui_structure.cjs "$PLAY" 2>&1 | tee /tmp/ui-structure.txt
+          node tests/v929_save_roundtrip.cjs "$PLAY" 2>&1 | tee /tmp/save-roundtrip.txt
 
       - name: 上传截图与 metrics
         if: always()
@@ -84,6 +89,7 @@ jobs:
           name: browser-responsive-${{ github.run_id }}
           path: |
             artifacts/browser-responsive/
-            /tmp/full-regression.txt
+            /tmp/ui-structure.txt
+            /tmp/save-roundtrip.txt
           retention-days: 14
           if-no-files-found: warn
