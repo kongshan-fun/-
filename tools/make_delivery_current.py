@@ -29,7 +29,8 @@ def detect_version() -> tuple[str, str]:
 
 
 VERSION, TAG = detect_version()
-_stage_tag = "v" + "".join(c for c in VERSION if c.isdigit())[-3:]
+_digits = "".join(c for c in VERSION if c.isdigit())      # 9028
+_stage_tag = f"v{_digits[0]}{_digits[-2:]}"               # v928（不是 v028）
 STAGE = ROOT / "delivery" / f"shanhe-{_stage_tag}-delivery"
 ZIP_PATH = ROOT.parent / f"山野修仙记_{VERSION}_交付包.zip"
 _play = sorted((ROOT / "play").glob(f"jindan-{_stage_tag}"))
