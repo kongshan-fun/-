@@ -73,6 +73,16 @@ def main():
                "<title>山野修仙记 V90.14 · 入口去重版</title>", "标题版本号")
     text = rep(text, "subtitle='人妖异途 · V90.13'", "subtitle='人妖异途 · V90.14'", "副标题版本号")
 
+
+    # ---- 版本号与导出文件名去硬化 ----
+    text = rep(text, 'V90.13 · ${game.character.name}', 'V90.14 · ${game.character.name}',
+               "设置页头部版本号")
+    text = rep(text, '<p class="v909-note">当前版本 V90.13：设置改为分区进入；炼制按品类与品阶进入；洞府设施回归本体展示。</p>',
+               '<p class="v909-note">当前版本 V90.14：设置按分区进入；炼制按品类与品阶进入；洞府设施回归本体；顶栏与背包的外部入口已收拢。</p>',
+               "帮助与记录说明")
+    text = rep(text, "山野修仙记_V90.10_本机飞升资质榜.json", "山野修仙记_V90.14_本机飞升资质榜.json",
+               "资质榜导出文件名")
+
     # 断言：背包里只应剩一个外部 panel 入口（仓库）
     i = text.find("function packBody(")
     d, st = 0, False

@@ -6757,7 +6757,7 @@ function leaderboardBody(){
 function exportLeaderboard(){
  try{const envelope={format:'ShanyeAscensionLocalLeaderboard',schemaVersion:1,origin:'local_unverified',exportedAt:new Date().toISOString(),...slots.leaderboard()};
   const data=JSON.stringify(envelope,null,2),url=URL.createObjectURL(new Blob([data],{type:'application/json'})),link=document.createElement('a');
-  link.href=url;link.download='山野修仙记_V90.10_本机飞升资质榜.json';link.click();
+  link.href=url;link.download='山野修仙记_V90.14_本机飞升资质榜.json';link.click();
   setTimeout(()=>URL.revokeObjectURL(url),3000);notify('已导出本机排行榜，仅为可迁移备份、非云端认证','ok');
  }catch(e){notify('排行榜导出失败：'+e.message,'warn');}
 }
@@ -6774,7 +6774,7 @@ function settingsBody(){
   `<span class="cult-nav-main"><b>${title}</b><small>${sub}</small></span>`+
   `<span class="cult-nav-right">${state||''}<i>›</i></span></button>`;
  return `<div class="v909-set">
-<div class="v909-set-head"><span class="v909-set-id">V90.13 · ${game.character.name} · 档位 ${String(activeSlot).padStart(3,'0')}</span><span class="v909-set-save ${saveAvailable?'is-ok':'is-bad'}">${saveAvailable?'可本地保存':'存储受限'}</span></div>
+<div class="v909-set-head"><span class="v909-set-id">V90.14 · ${game.character.name} · 档位 ${String(activeSlot).padStart(3,'0')}</span><span class="v909-set-save ${saveAvailable?'is-ok':'is-bad'}">${saveAvailable?'可本地保存':'存储受限'}</span></div>
 <p class="v909-set-status">${esc(saveStatus)}</p>
 ${game.s.ascended?`<section class="v909-mod v909-mod-gold"><h3 class="v909-mod-title">飞升已成 · 轮回结算</h3><p class="v909-mod-hint">可在人间继续发育，或确认结束当前本世领取轮回玉；首次飞升资质成绩不随之后的岁月改变。</p><div class="v909-actions"><button class="btn primary v909-btn" data-a="ascension-retire">结束本世 · 结算轮回玉</button></div></section>`:''}
 <nav class="cult-nav" aria-label="设置分区">
@@ -6801,7 +6801,7 @@ function settingsChildBody(){
  if(sub==='visual')return `<div class="v909-set">
 <section class="v909-mod"><h3 class="v909-mod-title">视觉与体验</h3><div class="theme-picker v909-themes" role="group" aria-label="视觉主题"><button class="btn theme-choice" data-a="theme-set" data-theme="forest" aria-pressed="false">暖白松绿</button><button class="btn theme-choice" data-a="theme-set" data-theme="mono" aria-pressed="false">极简黑白</button><button class="btn theme-choice" data-a="theme-set" data-theme="immortal" aria-pressed="false">✦ 流光仙境</button></div><div class="v909-actions"><button class="btn v909-btn" data-a="motion">${game.s.settings.motion?'减少动效':'恢复动效'}</button></div><p class="v909-note">三种主题可自由切换。流光仙境包含灵光与粒子动效；「减少动效」会关闭过渡与动画，不影响任何操作与显示。</p></section></div>`;
  if(sub==='help')return `<div class="v909-set">
-<section class="v909-mod"><h3 class="v909-mod-title">帮助与记录</h3><div class="v909-actions"><button class="btn v909-btn" data-a="panel" data-name="log">行记</button><button class="btn v909-btn" data-a="panel" data-name="help">完整教程</button></div><p class="v909-note">当前版本 V90.13：设置改为分区进入；炼制按品类与品阶进入；洞府设施回归本体展示。</p></section></div>`;
+<section class="v909-mod"><h3 class="v909-mod-title">帮助与记录</h3><div class="v909-actions"><button class="btn v909-btn" data-a="panel" data-name="log">行记</button><button class="btn v909-btn" data-a="panel" data-name="help">完整教程</button></div><p class="v909-note">当前版本 V90.14：设置按分区进入；炼制按品类与品阶进入；洞府设施回归本体；顶栏与背包的外部入口已收拢。</p></section></div>`;
  return `<div class="v909-set">
 <section class="v909-mod v909-mod-danger"><h3 class="v909-mod-title">重新修行</h3><p class="v909-mod-hint">新开存档需要再次确认，不会删除旧版存档。当前档位的命格、寿元与背包会被新档取代。</p><div class="v909-actions"><button class="btn warn v909-btn" data-a="reset">新开存档</button></div></section></div>`;
 }
