@@ -71,12 +71,16 @@ async function grab(dir, tag) {
 
 (async () => {
   fs.mkdirSync(OUT, { recursive: true });
-  for (const v of ['A', 'B', 'C']) await grab('jindan-v916' + v, v);
+  const targets = process.argv.slice(2);
+  const list = targets.length
+    ? targets.map((d) => [d, d.replace(/^jindan-/, '').toUpperCase()])
+    : [['jindan-v916A', 'A'], ['jindan-v916B', 'B'], ['jindan-v916C', 'C']];
+  for (const [dir, tag] of list) await grab(dir, tag);
   // 拼三图对比
   for (const file of ['camp', 'settings', 'book']) {
     const args = ['-y', '-loglevel', 'error'];
-    for (const v of ['A', 'B', 'C']) args.push('-i', path.join(OUT, v + '-' + file + '.png'));
-    args.push('-filter_complex', '[0:v]scale=400:-1[a];[1:v]scale=400:-1[b];[2:v]scale=400:-1[c];[a][b][c]hstack=3', path.join(OUT, 'cmp-' + file + '.png'));
+    for (const [dir, tag] of list) args.push('-i', path.join(OUT, tag + '-' + file + '.png'));
+    args.push('-filter_complex', '[0:v]scale=520:-1[a];[1:v]scale=520:-1[b];[a][b]hstack', path.join(OUT, 'cmp-' + file + '.png'));
     try {
       execFileSync('ffmpeg', args, { stdio: 'ignore' });
       console.log('  已拼接 cmp-' + file + '.png');
