@@ -17,7 +17,7 @@ const { spawn, execFileSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
 const DIR = process.argv[2] || 'jindan-v916';
-const EDGE = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
+const EDGE = require('./lib/browser').BROWSER;   // Edge / Chrome / Chromium / playwright 自带，CI 里也能跑
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const WIDTHS = [[320, 568], [360, 640], [390, 844]];
 const PANELS = [['camp', '洞府'], ['craft', '炼制'], ['pack', '背包'], ['character', '人物'],

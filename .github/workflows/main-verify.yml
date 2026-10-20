@@ -51,7 +51,6 @@ jobs:
           node tests/v926_realm_guide.cjs
           node tests/v927_gear_economy.cjs
           node tests/v908-character-gear-layout.test.cjs
-
       - name: 安装 Playwright 与 Chromium
         run: |
           python3 -m pip install --disable-pip-version-check playwright==1.56.0
@@ -59,6 +58,14 @@ jobs:
 
       - name: 全 H5 Chromium 响应式验收（含截图）
         run: python3 tests/browser_responsive.py
+
+      - name: 界面层回归（16 层全量，Chromium 走 SHANHE_BROWSER）
+        run: |
+          # 仓库里的 CDP 测试现在都通过 tests/lib/browser.js 解析浏览器；
+          # CI 没有 Edge，这里指到 playwright 自带的 chromium。
+          export SHANHE_BROWSER="$(ls -d ~/.cache/ms-playwright/chromium-*/chrome-linux/chrome | head -1)"
+          echo "浏览器：$SHANHE_BROWSER"
+          node tests/run_full_regression.cjs
 
       - name: 上传截图与 metrics
         if: always()

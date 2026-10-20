@@ -32,7 +32,7 @@ function detectBuild() {
   return dirs.length ? path.join(root, dirs.sort().pop()) : path.join(root, 'missing');
 }
 const BUILD = process.argv[2] ? path.join(ROOT, 'taptap-build', process.argv[2]) : detectBuild();
-const EDGE = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
+const EDGE = require('./lib/browser').BROWSER;   // Edge / Chrome / Chromium / playwright 自带，CI 里也能跑
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 let pass = 0, fail = 0;

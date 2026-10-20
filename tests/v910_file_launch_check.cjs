@@ -8,7 +8,7 @@ const { spawn, execFileSync } = require('child_process');
 const { pathToFileURL } = require('url');
 
 const ROOT = path.resolve(__dirname, '..');
-const EDGE = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
+const EDGE = require('./lib/browser').BROWSER;   // Edge / Chrome / Chromium / playwright 自带，CI 里也能跑
 /* P1 修复：不再钉死 V90.10。默认取「与 index.html 字节一致」的发布文件，
    找不到就退化为 index.html 本身（同样要能双击打开）。 */
 function currentRelease() {

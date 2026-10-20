@@ -16,7 +16,7 @@ const { spawn, execFileSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
 const RELEASE = process.argv[2] || '山野修仙记_V90.22_评价触发时机版.html';
-const EDGE = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
+const EDGE = require('./lib/browser').BROWSER;   // Edge / Chrome / Chromium / playwright 自带，CI 里也能跑
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 let pass = 0, fail = 0;

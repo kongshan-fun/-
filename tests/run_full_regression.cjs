@@ -36,6 +36,7 @@ const LAYERS = [
   ['评价与加群入口', 'node', ['tests/v919_promo.cjs', PLAY]],
   ['评价入口触发时机（关闭重开）', 'node', ['tests/v922_promo_trigger.cjs']],
   ['轮回玉每档一次（刷新 / 换档）', 'node', ['tests/v925_jade_once.cjs', PLAY]],
+  ['存档往返（关闭重开 / 导出 / 旧档导入 / 备份）', 'node', ['tests/v929_save_roundtrip.cjs', PLAY]],
   ['八面板 × 三宽度矩阵', 'node', ['tests/v915_widths_matrix.cjs', PLAY]],
   ['file:// 双击直开', 'node', ['tests/v910_file_launch_check.cjs']],
   ['8 视口 Chromium 布局（含百档 20 格 / 洞府建筑）', 'python', ['tests/browser_responsive.py']],
