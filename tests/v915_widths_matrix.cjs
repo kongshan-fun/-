@@ -85,13 +85,17 @@ function serve(root) {
         await sleep(560);
         const r = await ratio();
         total++;
-        const flag = (r !== null && r > 1.02) ? '!' : ' ';
-        if (flag === '!') bad++;
+        /* 分级判定（交接文档 3.4）：320×568 归"允许滚动"档，只用 ~ 标注不判红；
+           360×640 以上必须收敛到 1.02 屏内，超出才算失败。 */
+        const over = r !== null && r > 1.02;
+        const strict = w >= 360;
+        const flag = over ? (strict ? '!' : '~') : ' ';
+        if (over && strict) bad++;
         line.push(label + ':' + r + flag);
       }
       console.log(`  ${String(w).padStart(3)}x${h}  ` + line.join('  '));
     }
-    console.log(`\n  超出 1.02 屏的项: ${bad} / ${total}`);
+    console.log(`\n  超出 1.02 屏的项（360 以上才判红；~ = 320 允许滚动）: ${bad} / ${total}`);
 
     /* 行记空态：必须真的进入「行记」，并断言占位文案 */
     await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 2, mobile: true });
