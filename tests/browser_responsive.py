@@ -147,9 +147,20 @@ def building_case(page, width, height):
     ensure(cards.count() >= 6, "building grid not generated")
     max_lines = 0
     for idx in range(cards.count()):
-        m = cards.nth(idx).locator(".building-effect").evaluate(
-            """e=>({scroll:e.scrollHeight,client:e.clientHeight})""")
-        ensure(m["scroll"] <= m["client"] + 2, f"building {idx} effect clipped {m}")
+        # V90.35 起设施卡不再有「升级后…」说明行（攻略文案已移出卡片），
+        # 所以这里改判「材料清单 + 卡内所有文本都不越界」。
+        m = cards.nth(idx).evaluate(
+            """e=>{
+                 const rows=[...e.querySelectorAll('.building-cost,.building-footer,.building-heading')];
+                 const out=rows.map(r=>({scroll:r.scrollHeight,client:r.clientHeight,
+                                         bottom:r.getBoundingClientRect().bottom}));
+                 const box=e.getBoundingClientRect();
+                 return {scroll:e.scrollHeight,client:e.clientHeight,
+                         overflow:out.filter(r=>r.scroll>r.client+2).length,
+                         outside:out.filter(r=>r.bottom>box.bottom+1).length};
+               }""")
+        ensure(m["scroll"] <= m["client"] + 2, f"building {idx} card clipped {m}")
+        ensure(m["overflow"] == 0 and m["outside"] == 0, f"building {idx} rows clipped {m}")
         max_lines = max(max_lines, m["scroll"])
     cards.last.scroll_into_view_if_needed(timeout=12000)
     cards.last.locator("button").first.click(timeout=10000)
