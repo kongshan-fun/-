@@ -4,8 +4,16 @@ const fs=require('node:fs');
 const path=require('node:path');
 const repo=path.resolve(__dirname,'..');
 const main=fs.readFileSync(path.join(repo,'index.html'),'utf8');
-const release=fs.readFileSync(path.join(repo,'releases/山野修仙记_V90.8_五阶洞府与高阶炼制版.html'),'utf8');
-assert.equal(main,release,'default entrance must equal V90.8 release');
+/* P0-1 修复：不再钉死 V90.8 发布文件。
+   改为「index.html 必须与某一个发布文件字节一致」，且标题里的版本号与那个文件名一致。
+   这样每次发版都不用改本测试，同时仍然守住"默认入口 == 发布文件"这条约定。 */
+const title=(main.match(/<title>([^<]+)<\/title>/)||[])[1]||'';
+const version=(title.match(/V\d+\.\d+/)||[])[0]||'';
+assert.ok(version,'index.html 标题里没有版本号');
+const releases=fs.readdirSync(path.join(repo,'releases')).filter(f=>f.endsWith('.html'));
+const same=releases.filter(f=>fs.readFileSync(path.join(repo,'releases',f),'utf8')===main);
+assert.equal(same.length,1,`index.html 应恰好等于一个发布文件，实际命中 ${same.length} 个：${same.join(',')}`);
+assert.ok(same[0].includes('_'+version+'_'),`发布文件名版本与标题不一致：${same[0]} vs ${version}`);
 const rules=[
   /#panel-root \.character-v92\{display:grid;grid-template-rows:auto auto auto minmax\(0,1fr\) auto;/,
   /#panel-root \.character-gear-list\.character-v92-grid\{height:100%;min-height:0;min-width:0;align-self:stretch;display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\);grid-auto-rows:minmax\(108px,max-content\);align-content:start;[^}]*overflow-y:auto;overflow-x:hidden;/,
