@@ -104,6 +104,8 @@ function serve(root) {
     ok(modal.text.includes(GROUP), '弹窗展示 QQ 群号', GROUP);
     ok(/TapTap/.test(modal.text) && /评价/.test(modal.text), '弹窗有文字评价引导');
     ok(!/https?:/i.test(modal.text), '不出现外链（按你的选择：纯文字引导）');
+    ok(!/奖励/.test(modal.text), '文案不提「奖励」（V90.20 起）');
+    ok(/反馈问题/.test(modal.text) && /无广告单机版/.test(modal.text), '群用途写明：反馈问题 + 无广告单机版');
     ok(modal.hasCopy && modal.hasClose, '有「复制群号」与「知道了」');
     await shot('modal-390x844.png');
 
