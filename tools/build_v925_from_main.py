@@ -80,6 +80,16 @@ def actions(t):
     return set(re.findall(r'data-a="([a-z0-9-]+)"', t))
 
 
+def eol_of(raw: bytes) -> str:
+    """沿用基线文件的行尾：Windows 工作副本是 CRLF，CI（Linux 检出）是 LF。
+
+    不这样做的话，CI 里 `--rebuild` 会把 LF 基线重建成 CRLF，
+    `git diff --exit-code` 立刻报红 —— 属于"本地全绿、云端全红"的经典坑。
+    """
+    head = raw[:4000]
+    return "\r\n" if b"\r\n" in head else "\n"
+
+
 def main():
     raw = BASE.read_bytes()
     if sha(raw) != BASE_SHA:
@@ -118,10 +128,11 @@ def main():
         raise SystemExit(f"[ABORT] 动作集合被改动：{sorted(after_actions ^ before_actions)}")
     ok("动作集合不变", f"{len(after_actions)} 个")
 
-    out = text.replace("\n", "\r\n").encode("utf-8")
+    eol = eol_of(raw)
+    out = text.replace("\n", eol).encode("utf-8")
     (RELEASES / OUT_NAME).write_bytes(out)
     (ROOT / "index.html").write_bytes(out)
-    ok("产物一致性", "index.html == release")
+    ok("产物一致性", f"index.html == release（行尾 {eol.encode('unicode_escape').decode()}）")
 
     print(f"\n  releases/{OUT_NAME}")
     print(f"  字节数 : {len(out):,}")
