@@ -1,0 +1,20 @@
+/* V90.15 窄屏适配：入口行在 320/360 宽度下不再溢出 */
+/* 默认（≥401px）保持原样 */
+@media (max-width: 400px){
+  #panel-root .cult-nav-row{min-height:46px;padding:7px 10px;gap:8px}
+  #panel-root .cult-nav-main b{font-size:12.5px}
+  #panel-root .cult-nav-main small{font-size:10px;line-height:1.32}
+  #panel-root .cult-nav-right{font-size:10px}
+  #panel-root .cult-nav{gap:6px}
+}
+@media (max-width: 340px){
+  #panel-root .cult-nav-row{min-height:42px;padding:6px 9px}
+  #panel-root .cult-nav-main b{font-size:12px}
+  #panel-root .cult-nav-main small{font-size:9.5px;line-height:1.28}
+  #panel-root .cult-nav-right{font-size:9.5px;gap:4px}
+}
+/* 极窄时副标题单行截断，避免撑高 */
+@media (max-width: 340px){
+  #panel-root .cult-nav-main small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+  #panel-root .cult-nav-main{min-width:0}
+}
