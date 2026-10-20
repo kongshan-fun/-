@@ -120,6 +120,7 @@ const click = (c, sel) => c.eval(`(function(){var b=document.querySelector(${JSO
   } finally {
     if (cdp) { try { cdp.ws.close(); } catch {} }
     await sleep(200);
+    try { proc.kill('SIGKILL'); } catch {}
     try { execFileSync('taskkill', ['/PID', String(proc.pid), '/T', '/F'], { stdio: 'ignore' }); } catch {}
     srv.close();
   }

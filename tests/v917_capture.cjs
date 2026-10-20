@@ -58,6 +58,7 @@ async function withPage(dir, width, height, fn) {
   } finally {
     try { if (ws) ws.close(); } catch {}
     await sleep(150);
+    try { proc.kill('SIGKILL'); } catch {}
     try { execFileSync('taskkill', ['/PID', String(proc.pid), '/T', '/F'], { stdio: 'ignore' }); } catch {}
     srv.close();
   }

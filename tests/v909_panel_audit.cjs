@@ -241,6 +241,7 @@ const MEASURE = `(function(){
   } finally {
     if (cdp) { try { cdp.ws.close(); } catch {} }
     await sleep(300);
+    try { proc.kill('SIGKILL'); } catch {}
     try { execFileSync('taskkill', ['/PID', String(proc.pid), '/T', '/F'], { stdio: 'ignore' }); } catch {}
     srv.close();
   }

@@ -166,6 +166,7 @@ const click = (cdp, sel) => cdp.eval(`(function(){var b=document.querySelector($
   } finally {
     if (cdp) { try { await cdp.send('Browser.close'); } catch {} try { cdp.ws.close(); } catch {} }
     await sleep(400);
+    try { proc.kill('SIGKILL'); } catch {}
     try { execFileSync('taskkill', ['/PID', String(proc.pid), '/T', '/F'], { stdio: 'ignore' }); } catch {}
     srv.close();
   }

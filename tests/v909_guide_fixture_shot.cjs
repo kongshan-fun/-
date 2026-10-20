@@ -114,5 +114,6 @@ function serve(root) {
     try { ws.close(); } catch {}
     try { await send('Browser.close', {}); } catch {}
   } catch (e) { console.error('FAIL', e.message); process.exitCode = 1; }
-  finally { await sleep(300); try { execFileSync('taskkill', ['/PID', String(proc.pid), '/T', '/F'], { stdio: 'ignore' }); } catch {} srv.close(); }
+  finally { await sleep(300); try { proc.kill('SIGKILL'); } catch {}
+    try { execFileSync('taskkill', ['/PID', String(proc.pid), '/T', '/F'], { stdio: 'ignore' }); } catch {} srv.close(); }
 })();

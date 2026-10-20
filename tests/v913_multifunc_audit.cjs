@@ -67,6 +67,7 @@ function serve(root) {
   finally {
     try { if (ws) ws.close(); } catch {}
     await sleep(200);
+    try { proc.kill('SIGKILL'); } catch {}
     try { execFileSync('taskkill', ['/PID', String(proc.pid), '/T', '/F'], { stdio: 'ignore' }); } catch {}
     srv.close();
   }
