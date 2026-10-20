@@ -1,13 +1,16 @@
 'use strict';
 /*
- * V90.25 轮回玉「每档一次」验收（P0-3）
+ * V90.29 广告奖励「可重复领取」验收（取代 V90.25 的「每档一次」）
  *
- * 1. 空档：按钮「领取200轮回玉」，余额 0
- * 2. 点一次：+200，按钮变「本档已领取」且 disabled
- * 3. 强行把 disabled 去掉再点：处理器仍拦截，余额不变
- * 4. 刷新页面重进：仍是 200，按钮仍禁用（刷新不重置）
- * 5. 换到 003 档：余额 0、按钮可用、可再领 200（不串档）
- * 6. 001（种子档）未被写入
+ * 用户决策（2026-10-20）：广告是唯一盈利手段，恢复无限刷；单次从 200 降回 100。
+ * 本测试断的是"确实可以一直领、而且没有残留的一次性痕迹"：
+ *   1. 空档 002：按钮「领取100轮回玉」，余额 0
+ *   2. 连点三次 → 100 / 200 / 300，按钮始终可点、文案不变
+ *   3. 不再写 `-jadead` 键（V90.25 的旁路键必须彻底消失）
+ *   4. 刷新重进 → 余额仍是 300，且**还能继续领**（+100 → 400）
+ *   5. 换 003 档：独立账本，从 0 开始
+ *   6. 种子档 001 不受影响（余额不变、也没有 -jadead 键）
+ *   7. 无运行期异常
  */
 const fs = require('fs');
 const path = require('path');
@@ -16,8 +19,8 @@ const os = require('os');
 const { spawn, execFileSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
-const DIR = process.argv[2] || 'jindan-v925';
-const EDGE = require('./lib/browser').BROWSER;   // Edge / Chrome / Chromium / playwright 自带，CI 里也能跑
+const DIR = process.argv[2] || 'jindan-v929';
+const EDGE = require('./lib/browser').BROWSER;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 let pass = 0, fail = 0;
@@ -37,7 +40,7 @@ function serve(root) {
 (async () => {
   const srv = await serve(path.join(ROOT, 'play', DIR));
   const port = 9886;
-  const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'v925j-'));
+  const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'v925r-'));
   const proc = spawn(EDGE, ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--no-first-run', '--disable-extensions',
     `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`, 'about:blank'], { stdio: 'ignore' });
   let ws;
@@ -81,44 +84,42 @@ function serve(root) {
     await boot();
     ok(await openSlot(2), '进入 002 档命格确认页');
     const b0 = await btn();
-    ok(b0 && b0.text === '领取200轮回玉' && !b0.disabled, '按钮为「领取200轮回玉」且可用', JSON.stringify(b0));
+    ok(b0 && b0.text === '领取100轮回玉' && !b0.disabled, '按钮「领取100轮回玉」且可用', JSON.stringify(b0));
     ok((await jade()) === 0, '初始余额 0', String(await jade()));
 
-    console.log('\n=== 2. 点一次：+200 且按钮置灰 ===');
-    ok(await click('[data-a="birth-jade-ad"]'), '点领取');
-    await sleep(900);
-    ok((await jade()) === 200, '余额 200', String(await jade()));
-    const b1 = await btn();
-    ok(b1 && b1.text === '本档已领取' && b1.disabled, '按钮变「本档已领取」且 disabled', JSON.stringify(b1));
-    ok(await ev(`localStorage.getItem('qinglan-wendao-v14-human-slot-002-jadead')==='1'`), '已写入 -jadead 标记');
+    console.log('\n=== 2. 连点三次：可以一直领 ===');
+    for (const [n, want] of [[1, 100], [2, 200], [3, 300]]) {
+      ok(await click('[data-a="birth-jade-ad"]'), `第 ${n} 次点领取`);
+      await sleep(800);
+      ok((await jade()) === want, `余额 ${want}`, String(await jade()));
+      const b = await btn();
+      ok(b && !b.disabled && b.text === '领取100轮回玉', `第 ${n} 次后按钮仍可点`, JSON.stringify(b));
+    }
 
-    console.log('\n=== 3. 强行绕过 disabled 再点：处理器拦截 ===');
-    await ev(`(function(){var b=document.querySelector('[data-a="birth-jade-ad"]');b.disabled=false;b.click();})()`);
-    await sleep(800);
-    ok((await jade()) === 200, '余额仍为 200（没有第二次发放）', String(await jade()));
-    const toast = await ev(`(function(){var t=document.getElementById('toast');return t?t.innerText.replace(/\\s+/g,' ').trim():'';})()`);
-    ok(/已领取/.test(toast), '提示「已领取」', toast.slice(0, 30));
+    console.log('\n=== 3. 不再有 -jadead 一次性痕迹 ===');
+    ok(await ev(`localStorage.getItem('qinglan-wendao-v14-human-slot-002-jadead')===null`), '002 档没有 -jadead 键');
+    ok(!(await ev(`document.body.innerText.includes('本档已领取')`)), '界面上没有「本档已领取」字样');
 
-    console.log('\n=== 4. 刷新重进：不重置 ===');
+    console.log('\n=== 4. 刷新重进：余额保留，仍可继续领 ===');
     await boot();
     ok(await openSlot(2), '刷新后重进 002 档');
-    ok((await jade()) === 200, '余额仍 200', String(await jade()));
-    const b2 = await btn();
-    ok(b2 && b2.disabled && b2.text === '本档已领取', '按钮仍禁用', JSON.stringify(b2));
+    ok((await jade()) === 300, '余额仍是 300', String(await jade()));
+    ok(await click('[data-a="birth-jade-ad"]'), '刷新后再领一次');
+    await sleep(800);
+    ok((await jade()) === 400, '余额 400（刷新不封顶）', String(await jade()));
 
-    console.log('\n=== 5. 换 003 档：不串档，可再领一次 ===');
+    console.log('\n=== 5. 换 003 档：独立账本 ===');
     await boot();
     ok(await openSlot(3), '进入 003 档命格确认页');
     ok((await jade()) === 0, '003 初始余额 0', String(await jade()));
-    const b3 = await btn();
-    ok(b3 && !b3.disabled, '003 按钮可用（未被 002 的标记影响）', JSON.stringify(b3));
     ok(await click('[data-a="birth-jade-ad"]'), '003 领一次');
-    await sleep(900);
-    ok((await jade()) === 200, '003 余额 200', String(await jade()));
+    await sleep(800);
+    ok((await jade()) === 100, '003 余额 100', String(await jade()));
 
-    console.log('\n=== 6. 种子档 001 未被写入 ===');
-    const s1 = await ev(`localStorage.getItem('qinglan-wendao-v14-human-slot-001-jadead')`);
-    ok(s1 === null, '001 档没有 -jadead 标记', String(s1));
+    console.log('\n=== 6. 种子档 001 不受影响 ===');
+    const slot1 = await ev(`localStorage.getItem('qinglan-wendao-v14-human-slot-001')`);
+    ok(!!slot1, '001 档存档存在');
+    ok(await ev(`localStorage.getItem('qinglan-wendao-v14-human-slot-001-jadead')===null`), '001 档也没有 -jadead 键');
 
     console.log('\n=== 7. 运行期异常 ===');
     ok(errors === 0, '无未捕获异常/console.error', errors + ' 个');

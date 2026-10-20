@@ -1,8 +1,8 @@
-# 山野修仙记 · V90.28 洞府外框收紧
+# 山野修仙记 · V90.29 广告奖励可重复
 
-原创竖屏 H5 文字修仙生存 RPG。**当前 GitHub `main` 最新游戏版本为 V90.28**，默认入口为 [`index.html`](index.html)，与 [V90.28 独立发布文件](releases/山野修仙记_V90.28_洞府外框收紧版.html) **字节一致**（由 `tools/check_entry_consistency.py` 在 CI 里强制校验）。
+原创竖屏 H5 文字修仙生存 RPG。**当前 GitHub `main` 最新游戏版本为 V90.29**，默认入口为 [`index.html`](index.html)，与 [V90.29 独立发布文件](releases/山野修仙记_V90.29_广告奖励可重复版.html) **字节一致**（由 `tools/check_entry_consistency.py` 在 CI 里强制校验）。
 
-> **状态说明（2026-10-20）：** 仓库版本 ≠ 已上线。TapTap 上 **`V-20261019` 已审核通过并上线**（V90.16 的包）。V90.17~V90.28 仍是仓库版本；V90.28 候选包（h5VersionId `334782`）已上传但**未绑定主包位、未提交审核**。**不要据 GitHub 版本推断线上版本**，一律 `app list-app-versions` 实时回读。
+> **状态说明（2026-10-20）：** 仓库版本 ≠ 已上线。TapTap 上 **`V-20261019` 已审核通过并上线**（V90.16 的包）。V90.17~V90.28 仍是仓库版本；V90.29 候选包（h5VersionId `336192`）已上传但**未绑定主包位、未提交审核**。**不要据 GitHub 版本推断线上版本**，一律 `app list-app-versions` 实时回读。
 
 ## 立即体验
 
@@ -24,7 +24,8 @@
 | V90.25 | **轮回玉每档一次**（刷新/重开不重置、档位之间不串） |
 | V90.26 | 360×640：设置父页 1.05→1.00、修炼父页 1.15→1.00 |
 | V90.27 | 360×640：主线父页 1.23→1.00（行高收敛，未裁文字、未压字号） |
-| **V90.28** | **洞府外框收紧 20px：390×844 回到一屏（1.03→1.01）**，360×640 1.51→1.47 |
+| V90.28 | 洞府外框收紧 20px：390×844 回到一屏（1.03→1.01），360×640 1.51→1.47 |
+| **V90.29** | **广告奖励恢复无限领取，单次 200→100**（撤销 V90.25 的每档一次限制） |
 
 历史版本（V83~V90.15）仍在 [`releases/`](releases/) 里冻结保留。
 
@@ -44,14 +45,14 @@
 ## 确定性构建及回归
 
 ```bash
+python3 tools/build_v929_from_main.py               # 从 V90.28 重建 V90.29（幂等）
 python3 tools/check_entry_consistency.py --rebuild   # 一致性 + 可复现
-node tests/run_v908_regression.cjs                  # 引擎 6 套
-node tests/v926_realm_guide.cjs                     # 七境突破
-node tests/v927_gear_economy.cjs                    # 装备经济闭环
+node tests/run_full_regression.cjs                  # 16 层全量（发版前必跑）
 python3 tests/browser_responsive.py                 # 6 视口布局（需 playwright + chromium）
+python3 tools/verify_delivery.py                    # 交付包自检（解包 → 校验和 → 与仓库比对）
 ```
 
-CI 见 [`.github/workflows/main-verify.yml`](.github/workflows/main-verify.yml)：按当前版本反查发布文件与构建器，不再写死版本号。
+CI 见 [`.github/workflows/main-verify.yml`](.github/workflows/main-verify.yml)：按当前版本反查发布文件与构建器，不再写死版本号；界面层跑 playwright 的 6 视口验收（手写 CDP 套件在 runner 上不稳定，故留在本地）。
 
 ## 发行与数据边界
 

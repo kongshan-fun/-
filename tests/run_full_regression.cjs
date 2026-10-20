@@ -35,7 +35,7 @@ const LAYERS = [
   ['图鉴父子页', 'node', ['tests/v917_book_hierarchy.cjs', PLAY]],
   ['评价与加群入口', 'node', ['tests/v919_promo.cjs', PLAY]],
   ['评价入口触发时机（关闭重开）', 'node', ['tests/v922_promo_trigger.cjs']],
-  ['轮回玉每档一次（刷新 / 换档）', 'node', ['tests/v925_jade_once.cjs', PLAY]],
+  ['轮回玉广告奖励可重复领取', 'node', ['tests/v925_jade_repeat.cjs', PLAY]],
   ['存档往返（关闭重开 / 导出 / 旧档导入 / 备份）', 'node', ['tests/v929_save_roundtrip.cjs', PLAY]],
   ['八面板 × 三宽度矩阵', 'node', ['tests/v915_widths_matrix.cjs', PLAY]],
   ['file:// 双击直开', 'node', ['tests/v910_file_launch_check.cjs']],

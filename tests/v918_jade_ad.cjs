@@ -1,14 +1,14 @@
 'use strict';
 /*
- * V90.18 轮回玉广告奖励数额回归（C 方案：只改 100 -> 200）
+ * 轮回玉广告奖励数额回归（V90.29：单次 100，可重复领取）
  *
  * 断言：
- *   1. 命格确认页按钮文案是「领取200轮回玉」
- *   2. 点一次恰好 +200（不是 +100，也不是 +200 加到了错的档位）
- *   3. 加的是「当前草稿档位」的账本（换到别的档位读不到这 200）
+ *   1. 命格确认页按钮文案是「领取100轮回玉」
+ *   2. 点一次恰好 +100（数值不多不少，且加到当前草稿档位）
+ *   3. 加的是「当前草稿档位」的账本（换到别的档位读不到这 100）
  *   4. 无运行期异常
  *
- * 说明：C 方案明确不加一次性限制，本测试只锁定"一次点击 = 200"，
+ * 说明：V90.29 起恢复无限刷（广告是唯一盈利手段），本测试只锁定"一次点击 = 100"，
  *       不锁定"可重复"这一行为（那是待排期的经济问题）。
  */
 const fs = require('fs');
@@ -79,17 +79,17 @@ function serve(root) {
 
     console.log('\n=== 2. 按钮文案与数额 ===');
     const label = await ev(`(function(){var b=document.querySelector('[data-a="birth-jade-ad"]');return b?b.textContent.trim():'';})()`);
-    ok(label === '领取200轮回玉', '按钮文案为「领取200轮回玉」', label);
+    ok(label === '领取100轮回玉', '按钮文案为「领取100轮回玉」', label);
     const before = await jade();
     ok(before === 0, '空档初始轮回玉为 0', String(before));
 
-    console.log('\n=== 3. 点一次恰好 +200 ===');
+    console.log('\n=== 3. 点一次恰好 +100 ===');
     ok(await click('[data-a="birth-jade-ad"]'), '点击领取');
     await sleep(800);
     const after = await jade();
-    ok(after !== null && after - before === 200, '本档轮回玉 +200', `${before} -> ${after}`);
+    ok(after !== null && after - before === 100, '本档轮回玉 +100', `${before} -> ${after}`);
     const toast = await ev(`(function(){var t=document.getElementById('toast');return t?t.innerText.replace(/\\s+/g,' ').trim():'';})()`);
-    ok(/轮回玉\+200/.test(toast), '提示文案为 +200', toast.slice(0, 30));
+    ok(/轮回玉\+100/.test(toast), '提示文案为 +100', toast.slice(0, 30));
 
     console.log('\n=== 4. 账本落点正确，不串档 ===');
     const ledgers = await ev(`(function(){
@@ -99,7 +99,7 @@ function serve(root) {
         s2:read('qinglan-wendao-v14-human-slot-002-legacy-v1'),
         s3:read('qinglan-wendao-v14-human-slot-003-legacy-v1')
       };})()`);
-    ok(!!ledgers.s2 && ledgers.s2.balance === 200, '002 档账本余额 = 200', JSON.stringify(ledgers.s2 && { b: ledgers.s2.balance, t: ledgers.s2.total }));
+    ok(!!ledgers.s2 && ledgers.s2.balance === 100, '002 档账本余额 = 100', JSON.stringify(ledgers.s2 && { b: ledgers.s2.balance, t: ledgers.s2.total }));
     ok(!ledgers.s3 || ledgers.s3.balance === 0, '003 档未被写入', JSON.stringify(ledgers.s3 && ledgers.s3.balance));
     ok(!ledgers.s1 || ledgers.s1.balance === 0, '001 档（种子档）未被写入', JSON.stringify(ledgers.s1 && ledgers.s1.balance));
 

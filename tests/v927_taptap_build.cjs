@@ -6,7 +6,7 @@
  *   1. QTAP 适配层已注入并识别为 MOCK（本地没有真实 tap 对象）
  *   2. 构建码已烙进包体，且与 build-manifest.json 一致
  *   3. 四个广告入口都在（birth-ad / birth-jade-ad / ad-life / ad-life-confirm）
- *   4. 玩法没有被适配层改回去：首领器材掉落、轮回玉每档一次守卫都在
+ *   4. 玩法没有被适配层改回去：首领器材掉落、广告奖励可重复领取、金额 100
  *   5. 云端存档/排行榜/成就 UI 文案已替换
  *   6. 冷启动无未捕获异常
  */
@@ -62,8 +62,9 @@ function serve(root) {
   }
   for (const [needle, label] of [
     ['dropLoot(){', '首领器材掉落（V90.23）'],
-    ["'-jadead'", '轮回玉每档一次旁路键（V90.25）'],
-    ['adJadeUsed', '轮回玉领取守卫（V90.25）'],
+    ['领取100轮回玉', '广告奖励单次 100（V90.29）'],
+    ['可重复领取', '可重复领取文案（V90.29）'],
+    ['grantLegacyJade(selectedRole,draftSlot,100)', '广告发放 100（V90.29）'],
     ['进度自动保存并同步到 TapTap 云端', '云存档文案'],
     ['QTAP', '适配层命名空间'],
   ]) ok(html.includes(needle), `${label} 仍在包体里`);
