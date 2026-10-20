@@ -11,7 +11,7 @@ const { spawn, execFileSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
 const DIR = process.argv[2] || 'jindan-v934';
-const OUT = path.join(ROOT, 'visual', 'v934-camp');
+const OUT = path.join(ROOT, 'visual', process.env.CAMP_OUT || 'v934-camp');
 const EDGE = require('./lib/browser').BROWSER;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 fs.mkdirSync(OUT, { recursive: true });
