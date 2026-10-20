@@ -105,7 +105,8 @@ function serve(root) {
     ok(/TapTap/.test(modal.text) && /评价/.test(modal.text), '弹窗有文字评价引导');
     ok(!/https?:/i.test(modal.text), '不出现外链（按你的选择：纯文字引导）');
     ok(!/奖励/.test(modal.text), '文案不提「奖励」（V90.20 起）');
-    ok(/反馈问题/.test(modal.text) && /无广告单机版/.test(modal.text), '群用途写明：反馈问题 + 无广告单机版');
+    ok(/欢迎加群/.test(modal.text) && /反馈问题/.test(modal.text), '欢迎加群 + 反馈问题');
+    ok(/无广告的单机版/.test(modal.text), '写明本地无广告单机版可加群取');
     ok(modal.hasCopy && modal.hasClose, '有「复制群号」与「知道了」');
     await shot('modal-390x844.png');
 
