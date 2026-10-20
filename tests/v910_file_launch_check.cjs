@@ -9,7 +9,16 @@ const { pathToFileURL } = require('url');
 
 const ROOT = path.resolve(__dirname, '..');
 const EDGE = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
-const target = process.argv[2] || path.join(ROOT, 'releases', '山野修仙记_V90.10_界面密度与检索优化版.html');
+/* P1 修复：不再钉死 V90.10。默认取「与 index.html 字节一致」的发布文件，
+   找不到就退化为 index.html 本身（同样要能双击打开）。 */
+function currentRelease() {
+  const idx = fs.readFileSync(path.join(ROOT, 'index.html'));
+  const hits = fs.readdirSync(path.join(ROOT, 'releases'))
+    .filter((f) => f.endsWith('.html'))
+    .filter((f) => fs.readFileSync(path.join(ROOT, 'releases', f)).equals(idx));
+  return hits.length ? path.join(ROOT, 'releases', hits[0]) : path.join(ROOT, 'index.html');
+}
+const target = process.argv[2] || currentRelease();
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 (async () => {
@@ -61,7 +70,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
       var out={booted:${booted}};
       out.title=document.title;
       out.hasWordmark=document.body.innerText.indexOf('山野修仙记')>=0;
-      out.hasEntry=!!document.querySelector('[data-a="characters"]');
+      out.hasEntry=!!document.querySelector('[data-a="choose-role"]')||!!document.querySelector('[data-a="characters"]');
       out.hasNav=!!document.querySelector('[data-a="panel"][data-name="camp"]');
       out.nodeCount=document.querySelectorAll('*').length;
       out.hasQTAP = (typeof window.QTap === 'object' && window.QTap !== null);
@@ -80,7 +89,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     console.log(`  标题            ${r.title}`);
     console.log(`  引擎启动        ${r.booted}`);
     console.log(`  渲染出主界面    ${r.hasWordmark}`);
-    console.log(`  有「档案」入口  ${r.hasEntry}`);
+    console.log(`  有入世入口      ${r.hasEntry}（选择种族 / 角色档案）`);
     console.log(`  有底部导航      ${r.hasNav}`);
     console.log(`  DOM 节点        ${r.nodeCount}`);
     console.log(`  localStorage    ${r.lsWrite ? '可读写' : '不可用 ' + (r.lsError || '')}`);
@@ -89,7 +98,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
       console.log(`  QTAP 适配层     ${r.hasQTAP ? '已初始化' : '未加载'}（MOCK=${r.qtapMock}，云存档=${r.qtapCloud}，排行榜=${r.qtapBoard}）`);
       console.log(`  构建码          ${r.buildCode || '(无)'}`);
     }
-    const ok = r.booted && r.hasWordmark && r.hasEntry && r.lsWrite;
+    const ok = r.booted && r.hasWordmark && r.hasEntry && r.hasNav && r.lsWrite;
     console.log(`\n结论: ${ok ? 'PASS 双击打开可正常运行并保存' : 'FAIL 见上'}`);
     process.exitCode = ok ? 0 : 1;
   } catch (e) {

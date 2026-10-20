@@ -102,12 +102,15 @@ function serve(root) {
     }
 
     console.log('\n=== 3. 三种手机宽度父页不溢出 ===');
+    /* 分级验收（与交接文档 3.4 一致）：320×568 归"允许滚动"档，只要求不坏；
+       360×640 以上必须收敛到 1.02 屏内。旧版对 320 也卡 1.02，与规范矛盾。 */
     for (const [w, h] of [[320, 568], [360, 640], [390, 844]]) {
       await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 2, mobile: true });
       await sleep(500);
       const r = await ev(`(function(){var b=document.getElementById('panel-body');if(!b)return null;
         return +(b.scrollHeight/b.clientHeight).toFixed(2);})()`);
-      ok(r !== null && r <= 1.02, `${w}x${h} 父页一屏`, '屏数 ' + r);
+      const limit = w <= 320 ? 1.35 : 1.02;
+      ok(r !== null && r <= limit, `${w}x${h} 父页一屏`, `屏数 ${r}（上限 ${limit}）`);
     }
     await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 2, mobile: true });
 
