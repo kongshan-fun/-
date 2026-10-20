@@ -51,6 +51,13 @@ jobs:
           node tests/v926_realm_guide.cjs
           node tests/v927_gear_economy.cjs
           node tests/v908-character-gear-layout.test.cjs
+      - name: 中文字体（布局测量必须用真实字形）
+        run: |
+          # ubuntu runner 默认没有中文字体：CJK 会退化成 tofu，字宽/行高全错，
+          # 界面层的 1.02 屏断言就会假红。装思源黑体 + 文泉驿兜底。
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-noto-cjk fonts-wqy-zenhei
+
       - name: 安装 Playwright 与 Chromium
         run: |
           python3 -m pip install --disable-pip-version-check playwright==1.56.0
@@ -61,17 +68,20 @@ jobs:
 
       - name: 界面层回归（16 层全量，Chromium 走 SHANHE_BROWSER）
         run: |
+          set -o pipefail
           # 仓库里的 CDP 测试现在都通过 tests/lib/browser.js 解析浏览器；
           # CI 没有 Edge，这里指到 playwright 自带的 chromium。
           export SHANHE_BROWSER="$(ls -d ~/.cache/ms-playwright/chromium-*/chrome-linux/chrome | head -1)"
           echo "浏览器：$SHANHE_BROWSER"
-          node tests/run_full_regression.cjs
+          node tests/run_full_regression.cjs 2>&1 | tee /tmp/full-regression.txt
 
       - name: 上传截图与 metrics
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: browser-responsive-${{ github.run_id }}
-          path: artifacts/browser-responsive/
+          path: |
+            artifacts/browser-responsive/
+            /tmp/full-regression.txt
           retention-days: 14
           if-no-files-found: warn
