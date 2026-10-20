@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f8f7f2">
 <meta name="description" content="山野修仙记，十二境文字修仙生存游戏。离线单机，完整入门引导。">
-<title>山野修仙记 V90.29 · 广告奖励可重复</title>
+<title>山野修仙记 V90.30 · 战斗界面重做</title>
 <style>
 :root{color-scheme:light;--page:#ffffff;--surface:#ffffff;--raised:#ffffff;--line:#dddddd;--muted:#222222;--ink:#222222;--gold:#222222;--danger:#222222;--map-size:296px}
 *{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden;overscroll-behavior:none}body{background:#ffffff;color:var(--ink);font:13px/1.5 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft Yahei","Noto Sans CJK SC",sans-serif;display:grid;place-items:center}button,input,select{font:inherit}button{color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}button:disabled{opacity:.42;cursor:default}button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}button:active:not(:disabled){filter:brightness(1.15)}[hidden]{display:none!important}input,select{min-width:0;border-radius:5px;background:#ffffff;color:var(--ink);border:1px solid #dddddd;padding:7px;font-size:13px}.phone{position:relative;width:min(400px,100vw);height:min(872px,100dvh);background:var(--page);border:1px solid #dddddd;border-radius:12px;box-shadow:0 20px 70px #00000010;overflow:hidden;isolation:isolate}.game-shell{height:100%;display:flex;flex-direction:column;min-height:0;position:relative;padding-top:env(safe-area-inset-top)}.topbar{flex:none;height:40px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-bottom:1px solid var(--line)}.wordmark{color:#222222;font:700 18px/1.2 "Noto Serif CJK SC","Songti SC","SimSun",serif;letter-spacing:.1em}.wordmark span{font:500 10px/1 sans-serif;color:var(--muted);letter-spacing:0;margin-left:2px}.top-buttons{display:flex;gap:6px}.top-buttons button{height:29px;background:transparent;border:1px solid #dddddd;border-radius:4px;padding:0 9px;color:#222222;font-size:11px}#status{flex:none;height:65px;padding:7px 11px;background:#ffffff;border-bottom:1px solid var(--line)}.status-line{height:21px;display:flex;justify-content:space-between;align-items:center;white-space:nowrap;gap:4px;font-size:10px;font-variant-numeric:tabular-nums}.status-line b{font-size:12px;color:var(--gold)}.status-line .xp{margin-left:7px;color:var(--muted);font-weight:400;font-size:10px}.status-line>span{color:var(--muted)}.bars{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.bar-label{display:flex;justify-content:space-between;font-size:10px;line-height:15px;gap:2px;color:#222222;white-space:nowrap;font-variant-numeric:tabular-nums}.bar-label b{color:#222222;font-weight:500}.track{height:3px;background:#dddddd;border-radius:2px;margin-top:3px;overflow:hidden}.fill{height:100%;background:#222222}.fill.hp{background:#777777}.fill.spirit{background:#222222}.fill.hunger{background:#222222}.fill.water{background:#222222}.fill.low{background:#777777}.travel-row{flex:none;height:39px;display:flex;gap:7px;padding:4px 10px;background:#ffffff;border-bottom:1px solid var(--line)}.travel-row button{min-height:29px;border:1px solid #dddddd;border-radius:4px;background:#ffffff;white-space:nowrap}.travel-row>button:first-child{flex:1;display:flex;align-items:center;gap:10px;padding:0 9px;text-align:left}.travel-row>button:first-child>span{font-size:11px;color:#222222}.travel-row strong{flex:1;font-size:12px;font-weight:550;color:#222222}.travel-row>button:last-child{flex:none;width:52px;font-size:12px;color:#222222}.quest{flex:none;height:33px;border:0;border-bottom:1px solid #dddddd;display:flex;align-items:center;gap:9px;padding:0 11px;background:#ffffff;text-align:left;white-space:nowrap}.quest b{font-size:11px;color:var(--gold);flex:none}.quest span{font-size:11px;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1;color:#222222}.quest em{font-size:10px;font-style:normal;color:#222222}.scene{position:relative;min-height:0;flex:1;overflow:hidden;background:#ffffff;padding:7px}#scene-content{height:100%;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:#dddddd transparent;overscroll-behavior:contain;scrollbar-gutter:stable}.scene-card{height:100%;min-height:178px;border:1px solid #dddddd;border-radius:7px;padding:9px;background:#ffffff;display:flex;flex-direction:column}.location-head{height:28px;flex:none;display:flex;align-items:center;justify-content:space-between;gap:5px}.location-head h1{font:650 19px/1.25 "Noto Serif CJK SC","Songti SC","SimSun",serif;margin:0;color:#222222;letter-spacing:.04em}.risk{font-size:10px;border:1px solid #dddddd;color:#222222;background:#ffffff;padding:1px 6px;border-radius:3px;white-space:nowrap}.risk.danger{color:#222222;border-color:#dddddd;background:#ffffff}.location-tools{height:32px;flex:none;display:flex;justify-content:space-between;align-items:center;color:#222222;font-size:11px;margin-bottom:5px}.location-actions{display:flex;gap:5px}.location-actions button{height:28px;background:#ffffff;border:1px solid #dddddd;border-radius:4px;padding:0 9px;font-size:11px}.location-actions .important{background:#dddddd;color:#222222;border-color:#777777}.resources{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:5px;min-height:94px;flex:1;max-height:156px}.resource{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;position:relative;min-width:0;min-height:0;background:#ffffff;color:#222222;border:1px solid #dddddd;border-radius:5px;line-height:1.1;padding:1px}.resource b{font:650 23px/1.15 "Noto Serif CJK SC","Songti SC","SimSun",serif}.resource small{font-size:10px;color:#222222}.resource i{position:absolute;right:3px;top:3px;font-size:9px;font-style:normal;padding:1px 2px;border:1px solid #777777;border-radius:2px;background:#ffffff;color:#222222}.resource.player{background:#222222;border-color:#222222;color:#ffffff}.resource.player b{font-size:25px}.resource.empty{border-style:dashed;background:transparent;color:#dddddd}.resource.exhausted{background:#ffffff;border-style:dashed;color:#777777;opacity:.6}.resource.exhausted small{color:#777777}.resource.mineral{color:#222222;background:#ffffff}.resource.aqua{color:#222222;background:#ffffff}.resource.fire{color:#222222;background:#ffffff}.resource.yin{color:#222222;background:#ffffff}.resource.star{color:#222222;background:#ffffff}.quick-nav{flex:none;height:43px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));border-top:1px solid #dddddd;border-bottom:1px solid #dddddd;background:#ffffff}.quick-nav button{padding:0;border:0;border-right:1px solid #dddddd;background:transparent;font-size:12px;color:#222222;white-space:nowrap}.quick-nav button.active{background:#dddddd;color:#222222}.quick-nav small{font-size:10px;color:#222222;margin-left:2px;font-variant-numeric:tabular-nums}.map-dock{flex:none;padding:5px 10px calc(8px + env(safe-area-inset-bottom));background:#ffffff;border-top:1px solid #ffffff}.map-heading{width:min(var(--map-size),100%);height:23px;margin:0 auto 3px;display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:10px;color:#222222;white-space:nowrap;font-variant-numeric:tabular-nums}.map-heading button{width:29px;height:21px;flex:none;border:1px solid #dddddd;background:#ffffff;color:#222222;padding:0;border-radius:3px;font-size:11px}.map-grid{display:grid;width:min(var(--map-size),100%);margin:0 auto;grid-template-columns:repeat(8,minmax(0,1fr));gap:3px}.tile{min-width:0;aspect-ratio:1.08/1;display:grid;place-items:center;padding:0;border:1px solid #dddddd;background:#ffffff;border-radius:4px;color:#222222;font-size:13px;font-weight:650;line-height:1;position:relative}.tile.fog{background:#ffffff;border:1px dashed #dddddd;color:#777777}.tile.seen{background:#ffffff}.tile.visited{border-color:#dddddd}.tile.water{background:#ffffff;color:#222222}.tile.rock{background:#ffffff;color:#222222}.tile.yin{background:#ffffff;color:#222222}.tile.star{background:#ffffff;color:#222222}.tile.landmark{background:#dddddd;color:#222222}.tile.boss{background:#ffffff;color:#222222}.tile.route{border-color:#222222;box-shadow:inset 0 0 0 1px #77777730}.tile.current{background:#222222;color:#ffffff;border-color:#222222;font-weight:800}.travel-menu{position:absolute;top:141px;left:10px;right:10px;z-index:40;background:#ffffff;border:1px solid #777777;border-radius:6px;box-shadow:0 10px 35px #00000010;padding:5px;max-height:calc(100% - 145px);overflow-y:auto}.travel-option{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;border:0;border-bottom:1px solid #dddddd;background:transparent;border-radius:3px;padding:10px 8px;min-height:45px}.travel-option strong{display:block;font-size:13px}.travel-option small{display:block;font-size:10px;color:#222222}.travel-option.current{background:#ffffff;color:#222222}.travel-option.locked{color:#777777}.travel-option.locked small{color:#777777}.travel-option span:last-child{font-size:10px;white-space:nowrap;color:#222222}.panel-overlay{position:absolute;inset:0;z-index:10;padding:8px;background:var(--page);display:flex;flex-direction:column;overflow:hidden}.panel-overlay::before{content:'';position:absolute;inset:0;background:var(--page);opacity:.98;pointer-events:none}.panel{position:relative;inset:auto;z-index:1;display:flex;flex-direction:column;flex:1;min-width:0;min-height:0;overflow:hidden;border:1px solid var(--line-strong,#777777);background:var(--panel-bg,#ffffff);border-radius:10px;box-shadow:0 18px 40px #00000018}.panel::after{content:'';position:absolute;inset:0;border-radius:10px;box-shadow:inset 0 0 0 1px #ffffff10;pointer-events:none}.panel-head{height:54px;flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid var(--line,#dddddd);padding:0 14px;background:var(--panel-bg,#ffffff)}.panel-head strong{font:650 18px/1.2 "Noto Serif CJK SC","Songti SC",serif;color:var(--ink,#222222);letter-spacing:.04em}.panel-head span{font-size:10px;color:var(--muted,#666666);margin-left:6px}.panel-close{width:36px;height:36px;padding:0;line-height:1;border:1px solid var(--line-strong,#777777);border-radius:8px;background:var(--panel-bg,#ffffff);color:var(--ink,#222222);font-size:22px;display:grid;place-items:center}.panel-toolbar{flex:none;display:flex;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line,#dddddd);min-height:46px;background:var(--panel-subtle,#fafafa)}.panel-toolbar input{width:100%;min-height:30px;height:30px;padding:5px 8px}.panel-toolbar select{width:88px;flex:none;height:30px;padding:3px 6px;font-size:11px}.panel-body{flex:1;min-height:0;padding:12px;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#777777 #ffffff;scrollbar-gutter:stable;background:var(--panel-bg,#ffffff)}.panel-body h3{font-size:13px;color:var(--ink,#222222);font-weight:600;margin:14px 0 8px}.panel-body h3:first-child{margin-top:0}.panel-body p{margin:5px 0 9px;line-height:1.7;font-size:12px;overflow-wrap:anywhere}.muted{color:#222222;font-size:11px}.micro{font-size:10px;color:#222222}.accent{color:#222222}.danger-text{color:#222222}.line{padding:6px 0;border-bottom:1px solid #dddddd}.empty{padding:13px 5px;color:#222222;font-size:12px}.inline-buttons{display:flex;flex-wrap:wrap;gap:5px}.btn{padding:6px 9px;min-height:31px;border:1px solid #777777;border-radius:4px;background:#ffffff;color:#222222;font-size:11px;white-space:nowrap}.btn.primary{border-color:#777777;background:#ffffff;color:#222222}.btn.warn{border-color:#777777;color:#222222;background:#ffffff}.recipe,.gear-card{border:1px solid #dddddd;border-radius:5px;background:#ffffff;padding:8px;margin-bottom:6px;overflow:hidden}.recipe-top,.gear-head{display:flex;align-items:center;justify-content:space-between;gap:5px;font-size:12px}.recipe-top small,.gear-head small{font-size:10px;color:#222222}.recipe-cost{font-size:10px;color:#222222;line-height:1.8;margin:3px 0;overflow-wrap:anywhere}.recipe-cost .missing{color:#222222}.recipe-bottom{display:flex;align-items:center;justify-content:space-between;gap:5px}.recipe-bottom span{font-size:10px;color:#222222}.item-row{display:flex;justify-content:space-between;align-items:center;gap:5px;min-height:40px;border-bottom:1px solid #dddddd;padding:6px 1px}.item-row .item-name{flex:1;min-width:0;font-size:12px;overflow-wrap:anywhere}.item-row small{color:#222222;font-variant-numeric:tabular-nums}.item-row .btn{padding:4px 7px;min-height:27px;font-size:10px}.gear-attrs{font-size:11px;color:#222222;margin:4px 0 6px}.rarity-0{color:#222222}.rarity-1{color:#222222}.rarity-2{color:#222222}.rarity-3{color:#222222}.rarity-4{color:#222222}.gear-card .inline-buttons{gap:4px}.gear-card .btn{min-height:28px;padding:4px 7px;font-size:10px}.stat-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}.stat-chips span{background:#ffffff;border:1px solid #dddddd;border-radius:4px;padding:3px 6px;font-size:10px;color:#222222}.book-rewards{border:1px solid #dddddd;background:#ffffff;border-radius:5px;padding:7px;margin-bottom:8px}.reward-line{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 0;font-size:11px}.reward-line .btn{min-height:25px;font-size:10px;padding:2px 8px}.book-entry{border:1px solid #dddddd;border-radius:4px;margin-bottom:5px;background:#ffffff}.book-entry summary{display:flex;align-items:center;gap:7px;cursor:pointer;padding:8px;list-style:none;font-size:12px;min-height:38px}.book-entry summary::-webkit-details-marker{display:none}.book-entry summary b{font:650 18px "Songti SC","SimSun",serif;color:#222222;display:inline-flex;justify-content:center;width:25px;flex:none}.book-entry summary span{flex:1;min-width:0}.book-entry summary small{color:#222222;font-size:10px;white-space:nowrap}.book-entry[open] summary{border-bottom:1px solid #dddddd}.book-content{padding:8px;font-size:11px;line-height:1.7;color:#222222}.book-entry.unknown{opacity:.76}.help-chapter{border-bottom:1px solid #dddddd;padding:5px 1px}.help-chapter summary{font-size:13px;cursor:pointer;color:#222222;padding:7px 0;line-height:1.4}.help-chapter p{font-size:12px;line-height:1.85;color:#222222}.help-intro{border:1px solid #777777;border-radius:4px;padding:8px;background:#ffffff;margin-bottom:6px}.help-intro p{font-size:11px;margin:0 0 6px}.history{font-size:11px;padding:6px 0;border-bottom:1px solid #dddddd;line-height:1.7;overflow-wrap:anywhere}.history time{color:#222222;font-size:10px;margin-right:6px}.history.good{color:#222222}.history.bad{color:#222222}.task-stage{display:flex;gap:7px;border-bottom:1px solid #dddddd;padding:8px 0;font-size:12px}.task-stage b{color:#222222}.combat-card{height:100%;min-height:184px;background:#ffffff;border:1px solid #dddddd;border-radius:6px;padding:8px;display:flex;flex-direction:column;overflow:hidden}.combat-title{height:27px;flex:none;display:flex;align-items:center;justify-content:space-between;gap:5px}.combat-title h2{margin:0;color:#222222;font:650 17px "Noto Serif CJK SC","Songti SC",serif}.combat-title small{font-size:10px;color:#222222}.enemy-hp{height:23px;flex:none;font-size:10px;font-variant-numeric:tabular-nums;color:#222222}.enemy-track{height:3px;margin-top:3px;border-radius:3px;background:#dddddd;overflow:hidden}.enemy-track div{height:100%;background:#222222}.intent{height:28px;min-height:28px;line-height:26px;margin:4px 0;background:#ffffff;border:1px solid #dddddd;border-radius:4px;color:#222222;font-size:11px;padding:0 7px;white-space:nowrap}.fight-log{flex:1;min-height:17px;font-size:10px;color:#222222;line-height:17px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.combat-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;flex:none}.combat-actions button{min-width:0;height:38px;border:1px solid #dddddd;border-radius:4px;background:#ffffff;font-size:12px;line-height:1.2;padding:2px 0}.combat-actions small{display:block;font-size:9px;color:#222222;margin-top:2px}.combat-actions .spell{border-color:#777777;background:#dddddd}.toast{position:absolute;z-index:65;left:50%;top:30%;max-width:calc(100% - 24px);width:max-content;transform:translate(-50%,-5px);opacity:0;visibility:hidden;pointer-events:none;display:flex;align-items:center;gap:7px;border:1px solid #777777;border-radius:6px;padding:9px 12px;background:#ffffff;color:#222222;font-size:12px;line-height:1.5;box-shadow:0 8px 25px #00000010;transition:opacity .15s,transform .15s;overflow-wrap:anywhere}.toast.show{visibility:visible;opacity:1;transform:translate(-50%,0)}.toast.warn{border-color:#777777;background:#ffffff;color:#222222}.toast .toast-link{pointer-events:auto;flex:none;background:#dddddd;border:1px solid #777777;color:#222222;border-radius:3px;padding:4px 6px;font-size:10px;white-space:nowrap}.guide-root{position:absolute;inset:0;pointer-events:none;z-index:50}.guide-card{position:absolute;border:1px solid #222222;border-radius:6px;background:#ffffff;color:#222222;box-shadow:0 7px 24px #00000010;pointer-events:auto;padding:9px 10px;font-size:11px;line-height:1.65}.guide-card .guide-title{display:flex;justify-content:space-between;gap:5px;align-items:center;margin-bottom:3px}.guide-card strong{color:#222222;font-size:12px}.guide-card p{margin:0;font-size:11px;line-height:1.65}.guide-card button{border:0;background:transparent;color:#222222;padding:0 2px;font-size:10px;text-decoration:underline}.guide-card .guide-tip{margin-top:3px;color:#222222;font-size:10px}.guide-target{outline:2px solid #222222!important;outline-offset:-2px!important;box-shadow:inset 0 0 0 1px #222222!important}.guide-pin{position:absolute;right:8px;top:174px;border:1px solid #777777;border-radius:4px;background:#dddddd;color:#222222;padding:4px 8px;font-size:10px;pointer-events:auto}.modal-backdrop{position:absolute;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:17px;background:#00000010}.modal{width:100%;max-height:92%;overflow-y:auto;overscroll-behavior:contain;background:#ffffff;border:1px solid #777777;border-radius:8px;padding:18px;box-shadow:0 15px 40px #00000010}.modal .kicker{color:#222222;font-size:10px;letter-spacing:.17em}.modal h2{font:650 23px/1.45 "Noto Serif CJK SC","Songti SC",serif;color:#222222;margin:7px 0 10px}.modal p{color:#222222;font-size:13px;line-height:1.85;margin:7px 0}.modal .steps{font-size:12px;line-height:1.9;color:#222222;background:#ffffff;border-left:2px solid #222222;padding:9px;margin:12px 0}.modal .inline-buttons{margin-top:14px}.modal .btn{min-height:36px;font-size:12px;padding:7px 11px}.modal small{color:#222222;font-size:10px}.event-choice{display:block;width:100%;text-align:left;margin-top:8px;border:1px solid #777777;border-radius:5px;background:#ffffff;color:#222222;padding:10px;min-height:44px}.event-choice small{display:block;color:#222222;margin-top:3px}.event-choice.unavailable{opacity:.65}
@@ -1595,6 +1595,34 @@ body.theme-mono #panel-root .book-rewards-flag {color:#444}
 #panel-root .build-grid{gap:5px}
 #panel-root .build-grid .building-card{padding:6px}
 </style>
+<style id="v930-combat">
+/* V90.30 战斗界面：全屏模态，三段式（敌 / 日志 / 我+技能） */
+.combat-root{position:absolute;inset:0;z-index:63;display:flex;flex-direction:column;gap:6px;padding:8px;background:var(--page);overflow:hidden}
+.combat-root[hidden]{display:none!important}
+.cb-foe,.cb-self{flex:none;border:1px solid var(--line);border-radius:8px;padding:7px 9px;display:flex;flex-direction:column;gap:4px;background:var(--panel-bg,var(--surface,#fff))}
+.cb-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;min-width:0}
+.cb-name{font:650 15px/1.25 "Noto Serif CJK SC","Songti SC",serif;color:#222;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cb-meta{flex:none;font-size:10px;color:#777;font-variant-numeric:tabular-nums}
+.cb-bar{position:relative;height:13px;border-radius:7px;background:#e9e9e9;overflow:hidden}
+.cb-bar>i{display:block;height:100%;background:#c0392b;transition:width .18s linear}
+.cb-self .cb-bar>i{background:#2f855a}
+.cb-bar>span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#111;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.cb-hint{font-size:10.5px;color:#8a1c1c}
+.cb-hint.normal{color:#555}
+.cb-hint.recovery{color:#2f855a}
+.cb-log{flex:1 1 auto;min-height:96px;overflow-y:auto;border:1px solid var(--line);border-radius:8px;padding:8px 9px;display:flex;flex-direction:column;gap:5px;font-size:11.5px;line-height:1.62;background:var(--surface,#fff);scrollbar-width:thin}
+.cb-line{margin:0;color:#333}
+.cb-line b{font-weight:650}
+.cb-line.warn{color:#8a1c1c}
+.cb-line.good{color:#2f855a}
+.cb-line.dim{color:#888;font-size:10.5px}
+.cb-skills{flex:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.cb-actions{flex:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.cb-skills .btn,.cb-actions .btn{min-height:38px;padding:4px 5px;font-size:11.5px;line-height:1.25;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.cb-skills .btn small,.cb-actions .btn small{font-size:9px;color:#777;font-weight:400}
+.cb-cost{flex:none;font-size:9.5px;color:#888;text-align:center}
+@media (max-width:340px){.cb-log{font-size:11px;min-height:80px}.cb-skills .btn,.cb-actions .btn{min-height:34px;font-size:11px}}
+</style>
 </head>
 <body>
 <div id="phone" class="phone front-mode">
@@ -1641,7 +1669,8 @@ body.theme-mono #panel-root .book-rewards-flag {color:#444}
  </section>
  <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
  <div id="guide-root" class="guide-root"></div>
- <div id="modal-root"></div>
+ <div id="combat-root" class="combat-root" hidden></div>
+<div id="modal-root"></div>
  <div class="rotate-note" role="status"><b>请竖屏游玩</b><span>或将浏览器窗口高度调至500像素以上</span></div>
 </div>
 <input id="import-file" type="file" accept=".json,application/json" hidden>
@@ -5178,7 +5207,7 @@ root.QCharacterSlots=RaceSlots;if(typeof module!=='undefined'&&module.exports)mo
 const B=root.QBirth||(typeof require==='function'?require('./birth.js'):null);
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const num=n=>String(n).padStart(3,'0');
-function header(step,back='',subtitle='人妖异途 · V90.29'){return `<header class="entry-header">${back?`<button class="entry-back" data-a="${back}" aria-label="返回">←</button>`:''}<div class="entry-brand"><strong>山野修仙记</strong><small>${subtitle}</small></div><span class="entry-step">${step} / 03</span></header>`;}
+function header(step,back='',subtitle='人妖异途 · V90.30'){return `<header class="entry-header">${back?`<button class="entry-back" data-a="${back}" aria-label="返回">←</button>`:''}<div class="entry-brand"><strong>山野修仙记</strong><small>${subtitle}</small></div><span class="entry-step">${step} / 03</span></header>`;}
 function heading(kicker,title,note){return `<section class="entry-heading"><p>${kicker}</p><h1 id="entry-title" tabindex="-1">${title}</h1><span>${note}</span></section>`;}
 function stats(c){return `<div class="entry-stat-grid">${[['气血',c.hp],[c.energy,c.spirit],['攻击',c.attack],['寿元',c.years+'年']].map(([k,v])=>`<div><small>${k}</small><strong>${v}</strong></div>`).join('')}</div>`;}
 function races(selected,active){const c=B.RACES[selected];return header('01')+heading('择一族，入凡界','选择种族','同一片山河，两条修行之路。')+
@@ -5383,7 +5412,7 @@ function flush(result){
  }
  if(effects.some(e=>e.kind==='victory'))showModal({kind:'victory'});
  const show=effects.find(e=>['battle-loot','action-loot'].includes(e.kind))||effects.find(e=>['unlock','guide-complete'].includes(e.kind))||effects.at(-1);
- if(show)notify(show.msg,show.tone,show.kind);
+ if(show&&!(show.kind==='battle'&&game.s.combat))notify(show.msg,show.tone,show.kind);
  render();if(result?.ok)powerChangeFeedback();return result;
 }
 function run(name,args={}){const result=game.act(name,args);return flush(result);}
@@ -5421,7 +5450,7 @@ function locationActions(){const l=game.land(),s=game.s,hasGround=Object.values(
 }
 function renderScene(){
  const old=$('scene-content').scrollTop;
- if(game.s.combat){$('scene-content').innerHTML=renderCombat();$('scene-content').scrollTop=old;return;}
+ /* V90.30：斗法改由 #combat-root 全屏显示，场景卡继续画地图，战斗结束后无需重绘 */
  const t=game.atCamp?{...D.LAND[game.land()],risk:'安全'}:D.LAND[game.land()],s=game.s;
  if(game.s.secretRealm){$('scene-content').innerHTML=renderSecretRealm();$('scene-content').scrollTop=0;return;}
  const entrance=game.secretEntrance();
@@ -5468,6 +5497,46 @@ function mapTile(x,y,small=false){
  const locked=l==='boss'&&!s.ritual[s.zone]||l==='gate'&&!s.cleared[s.zone];
  return '<button class="tile '+(visible?'seen':'fog')+' '+(s.visited[key]?'visited':'')+' '+(visible&&(home||site||goal||evOn||['campsite','shrine','boss','gate'].includes(l))?'landmark':'')+' '+(goal?'q3-target':'')+' '+(route.some(p=>p.x===x&&p.y===y)?'route':'')+' '+(current?'current':'')+' '+(visible&&locked?'locked':'')+'" data-a="'+(small?'mini-step':'map')+'" data-x="'+x+'" data-y="'+y+'" '+(current?'disabled aria-current="location"':'')+' title="'+esc(name+(goal?' · 主线目标':'')+(locked&&visible?' · 未解锁':''))+'" aria-label="'+esc(name)+'，'+(x+1)+'列'+(y+1)+'行'+(goal?'，主线目标':'')+(current?'，当前位置':locked&&visible?'，未解锁':'')+'">'+(current?'我':visible?mark:'?')+'</button>';
 }
+
+/* V90.30 战斗界面：顶部敌方 / 中间日志 / 底部我方+技能。全屏模态，只有打赢或撤离才会消失。 */
+function renderCombatPanel(){
+ const b=game.s.combat,s=game.s,e=D.ENEMIES[b.type];
+ const roundSpirit=b.training?0:2+game.extra(15).spirit,needSpirit=cost=>cost+roundSpirit;
+ const bossSkill=b.intent==='skill'?game.bossSkill(b.type):null;
+ const hint=bossSkill?'首领绝技 · '+bossSkill.name+' · 防守可抵御':b.intent==='trait'?game.traitHint(b):b.intent==='heavy'?(b.charge?game.traitHint(b):'重击将至 · 宜防守'):b.intent==='recover'?'敌人调息 · 可进攻':'普通攻击';
+ const tone=b.intent==='heavy'||b.intent==='skill'||b.intent==='trait'?'danger':b.intent==='recover'?'recovery':'normal';
+ const pct=(v,max)=>Math.max(0,Math.min(100,v/Math.max(1,max)*100));
+ const logLines=(s.logs||[]).slice(0,9).reverse().map(l=>`<p class="cb-line ${esc(l.tone||'')}">${esc(l.time)} · ${esc(l.msg)}</p>`).join('');
+ const manual=["attack","guard","utility"].map(slot=>{const m=globalThis.QManuals[s.manuals.equipped[slot]];if(!m)return '';const cd=b.cooldowns?.[m.id]||0;const wait=cd>b.turn;const lack=s.spirit<m.spirit;
+   return `<button class="btn" data-a="fight" data-mode="manual" data-id="${m.id}" ${wait||lack?'disabled':''}>${esc(m.name)}<small>${wait?'冷却'+(cd-b.turn)+'回合':lack?'灵力不足 · 需'+m.spirit:'耗灵'+m.spirit+(roundSpirit?' + '+roundSpirit:'')}</small></button>`;}).join('');
+ return `<section class="cb-foe">
+  <div class="cb-head"><strong class="cb-name">${esc(e.name)}</strong><span class="cb-meta">${b.training?'练习 · ':b.repeat?'再战 · ':''}第 ${b.turn} 回合</span></div>
+  <div class="cb-bar"><i style="width:${pct(b.hp,b.maxHp)}%"></i><span>${b.hp} / ${b.maxHp}</span></div>
+  <div class="cb-hint ${tone}">${esc(hint)}${(s.zone>=5&&(b.intent==='heavy'||b.intent==='skill'))?' · 穿甲威胁，请防守':''}</div>
+ </section>
+ <div class="cb-log" id="combat-log">${logLines||'<p class="cb-line dim">斗法开始</p>'}</div>
+ <section class="cb-self">
+  <div class="cb-head"><strong class="cb-name">${esc(game.character.short)} · ${esc(game.realm)}</strong><span class="cb-meta">气血 ${s.hp}/${s.maxHp} · 灵力 ${s.spirit}/${s.maxSpirit}</span></div>
+  <div class="cb-bar"><i style="width:${pct(s.hp,s.maxHp)}%"></i><span>${s.hp} / ${s.maxHp}</span></div>
+  <div class="cb-cost">${b.training?'试剑不扣实际回合补给':`每回合自然消耗：灵力 ${roundSpirit} · 饱腹 1 · 饮水 ${1+game.extra(15).water}`}${s.spirit<=Math.max(15,needSpirit(10))?' · 灵力偏低，建议普攻／防守或回灵':''}</div>
+ </section>
+ <div class="cb-skills">${manual||'<p class="cb-cost" style="grid-column:1/-1">未装备功法 · 可在「修炼 → 功法传承」装备三个主动技能</p>'}</div>
+ <div class="cb-actions">
+  <button class="btn primary" data-a="fight" data-mode="attack">${s.character==='demon'?'爪击':'剑击'}<small>基础 ${s.attack+game.weapon}</small></button>
+  <button class="btn spell" data-a="fight" data-mode="spell">${game.character.spellName}<small>${game.character.energy} −${game.spellCost}${roundSpirit?' · 回合−'+roundSpirit:''}</small></button>
+  <button class="btn" data-a="fight" data-mode="guard">防守<small>减伤 · 蓄势</small></button>
+  <button class="btn" data-a="fight" data-mode="heal">${game.character.healSpell?'回春术':'回春散'}<small>${game.character.healSpell&&s.spirit>=14?'灵力−14':b.training?'练习药'+b.virtualHeals:'药'+(s.inv.salve||0)}</small></button>
+  <button class="btn" data-a="fight" data-mode="mana">回灵丹<small>${b.training?'练习用':'余'+(s.inv.mana||0)}</small></button>
+  <button class="btn" data-a="fight" data-mode="escape" ${b.type.startsWith('boss')?'disabled':''}>${b.training?'结束':'撤离'}<small>${b.type.startsWith('boss')?'不可撤离':b.training?'恢复原状态':'成功率80%'}</small></button>
+ </div>`;
+}
+function syncCombat(){
+ const root=$('combat-root');if(!root)return;
+ if(!game.s.combat){ if(!root.hidden){root.hidden=true;root.innerHTML='';} return; }
+ root.hidden=false; root.innerHTML=renderCombatPanel();
+ const log=$('combat-log'); if(log)log.scrollTop=log.scrollHeight;
+}
+
 function renderMap(){
  const s=game.s;let h='';for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)h+=mapTile(s.pos.x+dx,s.pos.y+dy,true);
  $('map').innerHTML=h;$('map').inert=!!game.s.secretRealm;$('map-caption').textContent=route.length?'余 '+route.length+' 步':`${s.pos.x+1}, ${s.pos.y+1}`;
@@ -5489,7 +5558,7 @@ function syncLayers(){
  $('game-shell').inert=!!frontPage||!!modal||mapOpen; $('panel-root').inert=!!frontPage||!!modal||mapOpen;
  $('entry-root').inert=!!modal;
  $('scene-content').inert=!!panel;$('inventory-peek').inert=!!panel;
- $('guide-root').hidden=!!frontPage||!!modal||mapOpen;
+ $('guide-root').hidden=!!frontPage||!!modal||mapOpen||!!game.s.combat;
 }
 function setMap(open){
  if(open&&game.s.combat){notify('斗法中不能移动','warn');return;}
@@ -6512,7 +6581,7 @@ function leaderboardBody(){
 function exportLeaderboard(){
  try{const envelope={format:'ShanyeAscensionLocalLeaderboard',schemaVersion:1,origin:'local_unverified',exportedAt:new Date().toISOString(),...slots.leaderboard()};
   const data=JSON.stringify(envelope,null,2),url=URL.createObjectURL(new Blob([data],{type:'application/json'})),link=document.createElement('a');
-  link.href=url;link.download='山野修仙记_V90.29_本机飞升资质榜.json';link.click();
+  link.href=url;link.download='山野修仙记_V90.30_本机飞升资质榜.json';link.click();
   setTimeout(()=>URL.revokeObjectURL(url),3000);notify('已导出本机排行榜，仅为可迁移备份、非云端认证','ok');
  }catch(e){notify('排行榜导出失败：'+e.message,'warn');}
 }
@@ -6529,7 +6598,7 @@ function settingsBody(){
   `<span class="cult-nav-main"><b>${title}</b><small>${sub}</small></span>`+
   `<span class="cult-nav-right">${state||''}<i>›</i></span></button>`;
  return `<div class="v909-set">
-<div class="v909-set-head"><span class="v909-set-id">V90.29 · ${game.character.name} · 档位 ${String(activeSlot).padStart(3,'0')}</span><span class="v909-set-save ${saveAvailable?'is-ok':'is-bad'}">${saveAvailable?'可本地保存':'存储受限'}</span></div>
+<div class="v909-set-head"><span class="v909-set-id">V90.30 · ${game.character.name} · 档位 ${String(activeSlot).padStart(3,'0')}</span><span class="v909-set-save ${saveAvailable?'is-ok':'is-bad'}">${saveAvailable?'可本地保存':'存储受限'}</span></div>
 <p class="v909-set-status">${esc(saveStatus)}</p>
 ${game.s.ascended?`<section class="v909-mod v909-mod-gold"><h3 class="v909-mod-title">飞升已成 · 轮回结算</h3><p class="v909-mod-hint">可在人间继续发育，或确认结束当前本世领取轮回玉；首次飞升资质成绩不随之后的岁月改变。</p><div class="v909-actions"><button class="btn primary v909-btn" data-a="ascension-retire">结束本世 · 结算轮回玉</button></div></section>`:''}
 <nav class="cult-nav" aria-label="设置分区">
@@ -6556,7 +6625,7 @@ function settingsChildBody(){
  if(sub==='visual')return `<div class="v909-set">
 <section class="v909-mod"><h3 class="v909-mod-title">视觉与体验</h3><div class="theme-picker v909-themes" role="group" aria-label="视觉主题"><button class="btn theme-choice" data-a="theme-set" data-theme="forest" aria-pressed="false">暖白松绿</button><button class="btn theme-choice" data-a="theme-set" data-theme="mono" aria-pressed="false">极简黑白</button><button class="btn theme-choice" data-a="theme-set" data-theme="immortal" aria-pressed="false">✦ 流光仙境</button></div><div class="v909-actions"><button class="btn v909-btn" data-a="motion">${game.s.settings.motion?'减少动效':'恢复动效'}</button></div><p class="v909-note">三种主题可自由切换。流光仙境包含灵光与粒子动效；「减少动效」会关闭过渡与动画，不影响任何操作与显示。</p></section></div>`;
  if(sub==='help')return `<div class="v909-set">
-<section class="v909-mod"><h3 class="v909-mod-title">帮助与记录</h3><div class="v909-actions"><button class="btn v909-btn" data-a="panel" data-name="log">行记</button><button class="btn v909-btn" data-a="panel" data-name="help">完整教程</button></div><p class="v909-note">当前版本 V90.29：设置、炼制、图鉴均按品类进入；洞府设施属于本体，就地展示；顶栏与背包的外部入口已收拢。</p></section></div>`;
+<section class="v909-mod"><h3 class="v909-mod-title">帮助与记录</h3><div class="v909-actions"><button class="btn v909-btn" data-a="panel" data-name="log">行记</button><button class="btn v909-btn" data-a="panel" data-name="help">完整教程</button></div><p class="v909-note">当前版本 V90.30：设置、炼制、图鉴均按品类进入；洞府设施属于本体，就地展示；顶栏与背包的外部入口已收拢。</p></section></div>`;
  return `<div class="v909-set">
 <section class="v909-mod v909-mod-danger"><h3 class="v909-mod-title">重新修行</h3><p class="v909-mod-hint">新开存档需要再次确认，不会删除旧版存档。当前档位的命格、寿元与背包会被新档取代。</p><div class="v909-actions"><button class="btn warn v909-btn" data-a="reset">新开存档</button></div></section></div>`;
 }
@@ -6646,7 +6715,7 @@ function renderModal(){const r=$('modal-root');syncLayers();if(!modal){r.innerHT
  requestAnimationFrame(()=>r.querySelector('button')?.focus({preventScroll:true}));
 }
 function render(){
- renderStatus();renderScene();renderMap();renderPeek();renderTravel();renderPanel();renderPromo();syncLayers();$('game-shell').classList.toggle('in-secret',!!game.s.secretRealm);
+ if(game.s.combat){mapOpen=false;travelOpen=false;panel=null;} renderStatus();renderScene();renderMap();renderPeek();renderTravel();renderPanel();renderPromo();syncCombat();syncLayers();$('game-shell').classList.toggle('in-secret',!!game.s.secretRealm);
  $('phone').classList.toggle('reduced',!game.s.settings.motion);
  if(guideRAF)cancelAnimationFrame(guideRAF);guideRAF=requestAnimationFrame(renderCoach);
 }
