@@ -48,6 +48,8 @@ jobs:
           node tests/syntax_check.cjs
           node tests/run_v908_regression.cjs
           node tests/v923_gear_drop.cjs
+          node tests/v926_realm_guide.cjs
+          node tests/v927_gear_economy.cjs
           node tests/v908-character-gear-layout.test.cjs
 
       - name: 安装 Playwright 与 Chromium
