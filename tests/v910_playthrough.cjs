@@ -208,8 +208,8 @@ function buildSteps() {
   add('[data-a="panel"][data-name="camp"]', '打开洞府（选址与建筑）', 1500);
   js('关闭洞府', `(function(){var c=document.querySelector('.panel-close');if(c)c.click();return 0;})(),0`, 800);
 
-  add('[data-a="panel"][data-name="book"]', '打开图鉴（按类别折叠）', 1500);
-  js('展开「灵物」分类', `(function(){var d=document.querySelector('.book-group');if(d){var s=d.querySelector('summary');if(s){var r=s.getBoundingClientRect();if(window.__REC)window.__REC.ripple(r.left+r.width/2,r.top+r.height/2);s.click();}}return 0;})(),0`, 1400);
+  add('[data-a="panel"][data-name="book"]', '打开图鉴（品类入口）', 1500);
+  js('进入「灵物」品类', `(function(){var b=document.querySelector('.book-cat-cell[data-cat="life"]');if(b){var r=b.getBoundingClientRect();if(window.__REC)window.__REC.ripple(r.left+r.width/2,r.top+r.height/2);b.click();}return 0;})(),0`, 1400);
   js('关闭图鉴', `(function(){var c=document.querySelector('.panel-close');if(c)c.click();return 0;})(),0`, 800);
 
   add('[data-a="panel"][data-name="character"]', '打开人物（装备与战力）', 1500);
