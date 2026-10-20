@@ -91,28 +91,28 @@ def main():
 
     # 路由
     text = rep(text, "panel==='craft'?craftBody():",
-               "panel==='craft'?craftBody():panel==='craft-cat'?craftListBody():", "路由：炼制子页")
+               "panel==='craft'?craftBody():panel==='craft-cat'?craftListBody():panel==='craft-tier'?craftListBody():", "路由：炼制子页")
 
 
     # 标题
-    text = rep(text, "craft:'炼制'", "craft:'炼制','craft-cat':'炼制 · 配方'", "标题：炼制子页")
+    text = rep(text, "craft:'炼制'", "craft:'炼制','craft-cat':'炼制 · 配方','craft-tier':'炼制 · 配方'", "标题：炼制子页")
 
 
     # 返回按钮
     old_back = "(panel==='warehouse'||panel==='cultivate')?'<button class=\"panel-back\" data-a=\"panel-back\" aria-label=\"返回洞府\">← 返回洞府</button>'"
-    new_back = ("panel==='craft-cat'?'<button class=\"panel-back\" data-a=\"panel-back\" aria-label=\"返回炼制\">← 返回炼制</button>':"
+    new_back = ("(panel==='craft-cat'||panel==='craft-tier')?'<button class=\"panel-back\" data-a=\"panel-back\" aria-label=\"返回炼制\">← 返回炼制</button>':"
                 + old_back)
     text = rep(text, old_back, new_back, "子页头部返回按钮")
 
     # panel-back 处理（子页回父页）
     pb_old = "if(isCultChild(panel)){panel='cultivate';render();"
-    pb_new = ("if(panel==='craft-cat'){panel='craft';render();"
+    pb_new = ("if(panel==='craft-tier'){craftTier=null;panel='craft-cat';render();if($('panel-body'))$('panel-body').scrollTop=0;return;}\nif(panel==='craft-cat'){craftTier=null;panel='craft';render();"
               "if($('panel-body'))$('panel-body').scrollTop=0;return;}" + pb_old)
     text = rep(text, pb_old, pb_new, "panel-back 支持炼制/洞府子页")
 
     # panel-step 动作
     ps_old = "   if(a==='cult-step'){panel=b.dataset.name;render();"
-    ps_new = ("   if(a==='panel-step'){if(b.dataset.cat)filter=b.dataset.cat;panel=b.dataset.name;render();"
+    ps_new = ("   if(a==='panel-step'){if(b.dataset.cat){filter=b.dataset.cat;craftTier=null;}if(b.dataset.tier)craftTier=Number(b.dataset.tier);panel=b.dataset.name;render();"
               "if($('panel-body'))$('panel-body').scrollTop=0;return;}\n" + ps_old)
     text = rep(text, ps_old, ps_new, "新增 panel-step 跳转子页")
 

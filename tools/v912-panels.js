@@ -2,6 +2,8 @@
    炼制 8.48 屏 → 父页（品类入口）+ 子页（配方列表）。
    洞府不做子页：设施属于洞府本体，改在页内压缩密度。 */
 
+let craftTier=null;
+
 const CRAFT_CATS_HELP=[
  {key:'all',name:'全部配方',sub:'按可炼制程度排序'},
  {key:'food',name:'丹药 · 食物',sub:'回血、灵机与补给'},
@@ -37,7 +39,21 @@ function craftBody(){
 }
 
 function craftListBody(){
- const rows=craftRowsFor(filter),counts=craftCounts(rows);
+ const all=craftRowsFor(filter);
+ const tiers=[...new Set(all.map(r=>Number(r.tier)||1))].sort((a,b)=>a-b);
+ if(craftTier===null&&all.length>6&&tiers.length>1){
+  const cat=CRAFT_CATS_HELP.find(c=>c.key===filter)||CRAFT_CATS_HELP[0];
+  const rowsHtml=tiers.map(t=>{
+   const list=all.filter(r=>(Number(r.tier)||1)===t),st=craftCounts(list);
+   return `<button type="button" class="cult-nav-row" data-a="panel-step" data-name="craft-tier" data-tier="${t}">`+
+    `<span class="cult-nav-main"><b>${t} 阶</b><small>${cat.name}</small></span>`+
+    `<span class="cult-nav-right">可炼 ${st.ok} / ${list.length}<i>›</i></span></button>`;
+  }).join('');
+  return `<div class="craft-summary"><span class="craft-ok">可炼制 ${craftCounts(all).ok}</span><span>共 ${all.length}</span></div>`+
+   `<p class="muted">按品阶进入；同一阶内按「可炼制 → 缺材料 → 未就绪」排序。</p>`+
+   `<nav class="cult-nav" aria-label="品阶段">${rowsHtml}</nav>`;
+ }
+ const rows=craftTier===null?all:all.filter(r=>(Number(r.tier)||1)===craftTier),counts=craftCounts(rows);
  const bar=`<div class="craft-summary"><span class="craft-ok">可炼制 ${counts.ok}</span><span>缺材料 ${counts.mat}</span><span>未就绪 ${counts.other}</span><span class="craft-total">共 ${rows.length}</span></div>`;
  const sorted=[...rows].sort((a,b)=>{const ra=craftStat(a),rb=craftStat(b);const ka=ra.ok?0:ra.wrong?2:1,kb=rb.ok?0:rb.wrong?2:1;return ka-kb;});
  if(!sorted.length)return bar+'<p class="muted">该类当前没有解锁的配方，提升境界或解锁新境域后会出现在这里。</p>';

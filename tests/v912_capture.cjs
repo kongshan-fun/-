@@ -101,6 +101,9 @@ async function run(dirName, tag, craftSteps, campSteps) {
   fs.mkdirSync(OUT, { recursive: true });
   await run('jindan-v911', 'before', [], []);
   await run('jindan-v912', 'after',
-    [{ sel: '[data-a="panel-step"][data-name="craft-cat"][data-cat="food"]', tag: 'craft-mat', wait: 1000 }],
+    [{ sel: '[data-a="panel-step"][data-name="craft-cat"][data-cat="food"]', tag: 'craft-mat', wait: 1000 },
+     { sel: '[data-a="panel-back"]', tag: 'craft-back', wait: 700 },
+     { sel: '[data-a="panel-step"][data-name="craft-cat"][data-cat="gear"]', tag: 'craft-gear', wait: 1000 },
+     { sel: '[data-a="panel-step"][data-name="craft-tier"]', tag: 'craft-tier1', wait: 1000 }],
     [{ sel: '[data-a="panel-step"][data-name="camp-build"]', tag: 'camp-build', wait: 1000 }]);
 })();

@@ -16,3 +16,14 @@
 #panel-root .building-card .building-footer{height:28px;margin-top:2px}
 #panel-root .building-card .building-footer span{font-size:8.5px}
 #panel-root .building-card .building-footer .btn{min-height:24px;padding:2px 8px;font-size:11px}
+
+/* 配方卡片密度：名称+成本+按钮一行，采集指路缩小保留 */
+#panel-root .recipe{padding:7px 9px;margin-bottom:5px}
+#panel-root .recipe .recipe-top{display:flex;align-items:baseline;gap:7px;margin:0}
+#panel-root .recipe .recipe-top b{font-size:12.5px}
+#panel-root .recipe .recipe-top small{font-size:9px;color:#888}
+#panel-root .recipe .recipe-cost{font-size:9.5px;line-height:1.5;margin:3px 0 0}
+#panel-root .recipe .recipe-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px}
+#panel-root .recipe .recipe-bottom span{font-size:9px;color:#888;line-height:1.4}
+#panel-root .recipe .recipe-bottom .btn{min-height:26px;padding:2px 10px;font-size:11px;flex:none}
+#panel-root .recipe .recipe-hint{font-size:8.5px;line-height:1.4;margin-top:2px}
