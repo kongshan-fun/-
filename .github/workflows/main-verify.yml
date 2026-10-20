@@ -22,7 +22,9 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    # 界面层要起 7 个 Chromium 会话（软件渲染），实测在 runner 上要 15 分钟以上，
+    # 再加引擎回归与两次 playwright 安装，25 分钟会被 cancel（6731672 就是这么挂的）。
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
 
