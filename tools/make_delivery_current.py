@@ -101,7 +101,7 @@ def main() -> None:
     for p in sorted((ROOT / "tools").glob("build_v9*_from_main.py")):
         put(p, R_BUILD / p.name)
     for name in (f"build_taptap_{_stage_tag}.py", "check_entry_consistency.py", "mk_taptap_zip.cjs",
-                 "mk_play_page.cjs", "audit_gear_sources.cjs"):
+                 "mk_play_page.cjs", "audit_gear_sources.cjs", "verify_delivery.py"):
         p = ROOT / "tools" / name
         if p.exists():
             put(p, R_BUILD / name)
