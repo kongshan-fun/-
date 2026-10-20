@@ -17,7 +17,7 @@ const { spawn, execFileSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
 const DIR = process.argv[2] || 'jindan-v931';
-const OUT = path.join(ROOT, 'visual', 'v931-combat');
+const OUT = path.join(ROOT, 'visual', 'v934-combat');
 const EDGE = require('./lib/browser').BROWSER;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 fs.mkdirSync(OUT, { recursive: true });
@@ -59,12 +59,33 @@ function serve(root) {
     const ev = async (e) => { const r = await send('Runtime.evaluate', { expression: e, returnByValue: true, awaitPromise: true, userGesture: true }); if (r.exceptionDetails) throw new Error(r.exceptionDetails.text); return r.result.value; };
     const click = (s) => ev(`(function(){var b=document.querySelector(${JSON.stringify(s)});if(!b)return false;b.click();return true;})()`);
     const shot = async (f) => { const r = await send('Page.captureScreenshot', { format: 'png' }); fs.writeFileSync(path.join(OUT, f), Buffer.from(r.data, 'base64')); };
+    const combatVisible = () => ev(`!document.getElementById('combat-root').hidden`);
+    const hasPanelBody = () => ev(`!!document.getElementById('panel-body')`);
     const enterBattle = async () => {
-      for (let i = 0; i < 5; i++) { const had = await ev(`(function(){var b=document.querySelector('[data-a="close-panel"]');if(!b)return false;b.click();return true;})()`); if (!had) break; await sleep(180); }
-      await click('[data-a="panel"][data-name="camp"]'); await sleep(500);
-      await click('[data-a="panel"][data-name="cultivate"]'); await sleep(600);
-      const hit = await click('[data-a="train"]'); await sleep(900);
-      return hit;
+      for (let attempt = 0; attempt < 4; attempt++) {
+        /* 收起任何已打开的面板 */
+        for (let i = 0; i < 4; i++) {
+          const had = await ev(`(function(){var b=document.querySelector('[data-a="close-panel"]');if(!b)return false;b.click();return true;})()`);
+          if (!had) break;
+          await sleep(300);
+        }
+        await click('[data-a="panel"][data-name="camp"]');
+        await sleep(800);
+        if (!(await hasPanelBody())) { await click('[data-a="panel"][data-name="camp"]'); await sleep(800); }
+        if (!(await hasPanelBody())) continue;
+        const cul = await ev(`!!document.querySelector('[data-a="panel"][data-name="cultivate"]')`);
+        if (!cul) continue;
+        await click('[data-a="panel"][data-name="cultivate"]');
+        await sleep(800);
+        for (let i = 0; i < 3; i++) {
+          if (await click('[data-a="train"]')) {
+            await sleep(900);
+            if (await combatVisible()) return true;
+          }
+          await sleep(400);
+        }
+      }
+      return false;
     };
 
     await send('Runtime.enable'); await send('Page.enable');
@@ -94,9 +115,8 @@ function serve(root) {
         foeName:(q('.cb-foe .cb-name')||{}).textContent||'',
         foeBarH:foeBar?Math.round(foeBar.getBoundingClientRect().height):0,
         selfBarH:selfBar?Math.round(selfBar.getBoundingClientRect().height):0,
-        logIsDetails:wrap?wrap.tagName==='DETAILS':false,
-        logOpen:wrap?wrap.open:null,
-        summary:(q('.cb-log-wrap>summary')||{}).textContent||'',
+        logAlwaysVisible:wrap?wrap.tagName==='DIV'&&!wrap.hidden:false,
+        logLines:r.querySelectorAll('.cb-log .cb-line').length,
         modes:[].map.call(r.querySelectorAll('.cb-actions button[data-mode]'),function(b){return b.dataset.mode;}),
         hasClose:!!r.querySelector('[data-a="combat-close"],[aria-label*="关闭"]'),
         order:{foe:box(q('.cb-foe')),log:box(wrap),skills:box(q('.cb-skills')),acts:box(q('.cb-actions')),self:box(q('.cb-self'))}
@@ -104,9 +124,8 @@ function serve(root) {
     })()`);
     ok(!!layout.foeName, '顶部显示敌方名称', layout.foeName);
     ok(layout.foeBarH >= 19 && layout.selfBarH >= 19, '双方血条明显（≥19px）', `敌 ${layout.foeBarH}px / 我 ${layout.selfBarH}px`);
-    ok(layout.logIsDetails, '日志是可折叠的 <details>');
-    ok(layout.logOpen === false, '日志默认收起');
-    ok(/战斗日志/.test(layout.summary) && layout.summary.length > 5, '收起时摘要里能看到最新一条', layout.summary.trim().slice(0, 40));
+    ok(layout.logAlwaysVisible, '战斗日志常显（不是折叠条）');
+    ok(layout.logLines >= 1, '日志里有内容', layout.logLines + ' 行');
     ok(layout.modes.length === 6, '六个基础动作', layout.modes.join(','));
     ok(!layout.hasClose, '没有关闭按钮（只能打赢或撤离）');
     const o = layout.order;
@@ -114,14 +133,19 @@ function serve(root) {
       '顺序：敌 → 日志 → 技能 → 我（技能在我方血条之上）', JSON.stringify({ foe: o.foe.y, log: o.log.y, skills: o.skills.y, acts: o.acts.y, self: o.self.y }));
     ok(o.acts.y > o.skills.y && o.acts.y < o.self.y, '动作按钮在技能与血条之间');
 
-    console.log('\n=== 3. 展开日志：点摘要 ===');
-    ok(await click('#combat-log-wrap>summary'), '点日志摘要'); await sleep(400);
-    const opened = await ev(`(function(){var w=document.getElementById('combat-log-wrap');var l=document.getElementById('combat-log');
-      return {open:w.open,lines:l.querySelectorAll('.cb-line').length,height:Math.round(l.getBoundingClientRect().height)};})()`);
-    ok(opened.open && opened.lines >= 1, '展开后能看到日志行', JSON.stringify(opened));
-    await shot('360x640-combat-logopen.png');
-    ok(await click('#combat-log-wrap>summary'), '再点收起'); await sleep(300);
-    ok(await ev(`document.getElementById('combat-log-wrap').open === false`), '可以再收起');
+    console.log('\n=== 3. 日志常显：可滚动、停在最新一行 ===');
+    for (let i = 0; i < 2; i++) { await click('#combat-root [data-mode="guard"]'); await sleep(700); }
+    const logState = await ev(`(function(){
+      var r=document.getElementById('combat-root');if(!r||r.hidden)return {over:true};
+      var log=document.getElementById('combat-log');
+      return {over:false,lines:log.querySelectorAll('.cb-line').length,
+        h:Math.round(log.getBoundingClientRect().height),
+        atBottom:Math.abs(log.scrollHeight-log.clientHeight-log.scrollTop)<=2,
+        lastText:(log.querySelector('.cb-line:last-child')||{}).textContent||''};
+    })()`);
+    ok(logState.over || (logState.lines >= 2 && logState.h >= 60), '日志占了中段且有多行', JSON.stringify({ lines: logState.lines, h: logState.h }));
+    ok(logState.over || logState.atBottom, '日志自动停在最新一行', logState.over ? '-' : (logState.lastText || '').slice(0, 30));
+    await shot('360x640-combat-log.png');
 
     console.log('\n=== 4. 模态：斗法中不能离开 ===');
     await click('[data-a="expand-map"]'); await sleep(400);
@@ -133,10 +157,9 @@ function serve(root) {
     console.log('\n=== 5. 打两回合：日志累积 ===');
     for (let i = 0; i < 2; i++) { await click('#combat-root [data-mode="guard"]'); await sleep(700); }
     const mid = await ev(`(function(){var r=document.getElementById('combat-root');if(!r||r.hidden)return{over:true};
-      var w=document.getElementById('combat-log-wrap');
-      return {over:false,summary:w.querySelector('summary').textContent.replace(/\\s+/g,' ').trim(),lines:w.querySelectorAll('.cb-line').length};})()`);
-    ok(mid.over || mid.lines >= 2, '日志累积（收起时摘要也跟着更新）', JSON.stringify(mid));
-    ok(mid.over || /战斗日志/.test(mid.summary), '摘要里仍是最新一条');
+      var log=document.getElementById('combat-log');
+      return {over:false,lines:log.querySelectorAll('.cb-line').length};})()`);
+    ok(mid.over || mid.lines >= 2, '日志持续累积', JSON.stringify(mid));
 
     console.log('\n=== 6. 撤离：战斗层消失，地图恢复 ===');
     if (await ev(`document.getElementById('combat-root').hidden`)) { await enterBattle(); await sleep(600); }
@@ -147,7 +170,7 @@ function serve(root) {
     await click('[data-a="collapse-map"]'); await sleep(400);
 
     console.log('\n=== 7. 三宽度截图 ===');
-    for (const [w, h] of [[320, 568], [390, 844]]) {
+    for (const [w, h] of [[320, 568], [390, 844], [390, 880]]) {
       await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 2, mobile: true });
       await sleep(400);
       if (!(await enterBattle())) { console.log(`  ${w}x${h} 打不开试剑，跳过`); continue; }

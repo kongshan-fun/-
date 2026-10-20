@@ -111,8 +111,17 @@ function serve(root) {
     await boot('noseed');
 
     console.log('\n=== 1. 面板覆盖整个界面 ===');
-    ok(await click('[data-a="panel"][data-name="character"]'), '打开「人物」');
-    await sleep(800);
+    const openCharacter = async () => {
+      for (let attempt = 0; attempt < 4; attempt++) {
+        await click('[data-a="panel"][data-name="character"]');
+        await sleep(800);
+        const okNow = await ev(`!!document.querySelector('#panel-root .panel-overlay')`);
+        if (okNow) return true;
+      }
+      return false;
+    };
+    ok(await openCharacter(), '打开「人物」');
+    await sleep(300);
     const cover = await ev(`(function(){
       var phone=document.getElementById('phone').getBoundingClientRect();
       var ov=document.querySelector('#panel-root .panel-overlay');
@@ -171,6 +180,7 @@ function serve(root) {
     for (const [w, h] of [[320, 568], [390, 844]]) {
       await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 2, mobile: true });
       await sleep(700);
+      if (!(await ev(`!!document.querySelector('#panel-root .panel-overlay')`))) await openCharacter();
       const c = await ev(`(function(){var p=document.getElementById('phone').getBoundingClientRect();
         var ov=document.querySelector('#panel-root .panel-overlay');var b=ov?ov.getBoundingClientRect():null;
         var over=[].filter.call(document.querySelectorAll('#panel-root .character-v92-item'),function(k){
