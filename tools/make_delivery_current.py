@@ -138,7 +138,7 @@ def main() -> None:
         ("syntax", ["node", "tests/syntax_check.cjs"],
          "02-语法与自包含.txt", "10 个 script 块语法 + 无外链"),
         ("full", ["node", "tests/run_full_regression.cjs", PLAY],
-         "03-全量回归.txt", "15 层全量回归"),
+         "03-全量回归.txt", "全量回归（16 层，含界面层）"),
         ("matrix", ["node", "tests/v915_widths_matrix.cjs", PLAY],
          "04-三宽度矩阵.txt", "8 面板 × 3 宽度（320 允许滚动只标注）"),
         ("browser", [sys.executable, "tests/browser_responsive.py"],
@@ -220,7 +220,7 @@ def main() -> None:
 ## 本次实跑结果
 
 {chr(10).join(f'- {c}  {d}' for c, d in zip(codes, [
-    "入口一致性", "可复现重建", "语法与自包含", "15 层全量回归", "三宽度矩阵", "浏览器 6 视口", "TapTap 包体自测"]))}
+    "入口一致性", "可复现重建", "语法与自包含", "全量回归（16 层）", "三宽度矩阵", "浏览器 6 视口", "TapTap 包体自测"]))}
 
 > 说明：三宽度矩阵会把 **320×568 标 `~`（规范允许滚动）**，只有 360 以上超 1.02 屏才判红；
 > 目前唯一红项是 360 档的洞府（{camp360} 屏，390 档已是 {camp390}），原因与三个可选方案见 `04-报告/04-三宽度矩阵.txt` 与仓库 `docs/交接文档.md §7.5`。
