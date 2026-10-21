@@ -44,6 +44,7 @@ const LAYERS = [
   ['战斗日志只显示本次斗法', 'node', ['tests/v937_battle_log.cjs', PLAY]],
   ['旧档字段级不丢失', 'node', ['tests/v937_save_preserved.cjs', PLAY]],
   ['寿元：随时续命 + 寿尽可救援', 'node', ['tests/v938_life_rescue.cjs', PLAY]],
+  ['境界前中后期分段', 'node', ['tests/v942_realm_stage.cjs']],
   ['八面板 × 三宽度矩阵', 'node', ['tests/v915_widths_matrix.cjs', PLAY]],
   ['file:// 双击直开', 'node', ['tests/v910_file_launch_check.cjs']],
   ['8 视口 Chromium 布局（含百档 20 格 / 洞府建筑）', 'python', ['tests/browser_responsive.py']],
