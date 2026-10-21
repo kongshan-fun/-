@@ -51,6 +51,7 @@ function stageState(z) {
 for (let z = 5; z < D.ZONES.length; z++) {
   const st = D.ASCENSION_STAGES[z - 5];
   const g = new Game(stageState(z));
+  g.s.hp = g.s.maxHp; /* V90.46：渡劫需满血，夹具补满 */
   ok(g.atCamp, `zone${z} 判定为在洞府（破境前置）`);
   eq(g.breakthroughReason ? null : null, null, ''); // 占位保持计数简单
   const before = g.s.major;

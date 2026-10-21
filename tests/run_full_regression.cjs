@@ -47,6 +47,7 @@ const LAYERS = [
   ['境界前中后期分段', 'node', ['tests/v942_realm_stage.cjs']],
   ['十二境36段映射表', 'node', ['tests/v943b_realm_table.cjs']],
   ['境界显示十二境表', 'node', ['tests/v945_realm_display.cjs']],
+  ['渡劫固定伤害', 'node', ['tests/v946_trib_damage.cjs']],
   ['旧档重置与阶梯补偿', 'node', ['tests/v943_reset_flow.cjs']],
   ['八面板 × 三宽度矩阵', 'node', ['tests/v915_widths_matrix.cjs', PLAY]],
   ['file:// 双击直开', 'node', ['tests/v910_file_launch_check.cjs']],
