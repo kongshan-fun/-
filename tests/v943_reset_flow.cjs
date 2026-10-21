@@ -79,7 +79,7 @@ function serve(root) {
       await sleep(900);
     };
     const findKey = `(function(){for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.indexOf('qinglan-wendao')===0&&/-slot-\\d+$/.test(k))return k;}return null;})()`;
-    const probe = (key) => ev(`(function(){var k=${JSON.stringify(key)};if(!k){return null;}var o=JSON.parse(localStorage.getItem(k));if(!o)return null;var led=localStorage.getItem(k.replace(/-slot-(\\d+)$/,'-legacy-$1'));return {v:o.version,r:o.rebuilt,led:led?JSON.parse(led).balance:null};})()`);
+    const probe = (key) => ev(`(function(){var k=${JSON.stringify(key)};if(!k)return null;var o=JSON.parse(localStorage.getItem(k));if(!o)return null;var led=localStorage.getItem(k+'-legacy-v1');return {v:o.version,r:o.rebuilt,led:led?JSON.parse(led).balance:null};})()`);
     const openSlot = async () => {
       /* 真实前沿页：种族/入口页 → view-slots → slot-open */
       if (await ev(`!!document.querySelector('[data-a="view-slots"]')`)) { await click('[data-a="view-slots"]'); await sleep(500); }
