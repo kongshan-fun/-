@@ -81,8 +81,12 @@ function serve(root) {
     const findKey = `(function(){for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.indexOf('qinglan-wendao')===0&&/-slot-\\d+$/.test(k))return k;}return null;})()`;
     const probe = (key) => ev(`(function(){var k=${JSON.stringify(key)};if(!k){return null;}var o=JSON.parse(localStorage.getItem(k));if(!o)return null;var led=localStorage.getItem(k.replace(/-slot-(\\d+)$/,'-legacy-$1'));return {v:o.version,r:o.rebuilt,led:led?JSON.parse(led).balance:null};})()`);
     const openSlot = async () => {
-      await click('[data-a="slot"][data-n="1"]'); await sleep(500);
-      if (!(await ev(`!!document.querySelector('[data-a="reset-confirm"]')`))) { await click('[data-a="slot"][data-slot="1"]'); await sleep(500); }
+      /* 真实前沿页：种族/入口页 → view-slots → slot-open */
+      if (await ev(`!!document.querySelector('[data-a="view-slots"]')`)) { await click('[data-a="view-slots"]'); await sleep(500); }
+      if (!(await ev(`!!document.querySelector('[data-a="slot-open"]')`))) { await click('[data-a="slot-page"]'); await sleep(400); }
+      const opened = await click('[data-a="slot-open"][data-n="1"]');
+      if (!opened) await click('[data-a="slot-open"]');
+      await sleep(700);
     };
 
     await send('Runtime.enable'); await send('Page.enable');

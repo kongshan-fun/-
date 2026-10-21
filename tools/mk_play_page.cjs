@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 /*
  * 生成「打开即在档」的本地试玩页：play/<dir>/index.html
  *
@@ -27,7 +27,9 @@ const SEED_END = '<div id="phone"';
 const i = src.indexOf(SEED_START);
 const j = src.indexOf(SEED_END, i);
 if (i < 0 || j < 0) throw new Error('源试玩页里找不到存档播种块');
-const seedBlock = src.slice(i, j);
+let seedBlock = src.slice(i, j);
+/* V90.43：seed 是测试夹具，不经过 fresh()，这里补上新版标记，避免被当成旧档 */
+if (!seedBlock.includes('"rebuilt"')) seedBlock = seedBlock.replace(/("version"\s*:\s*14)/, '$1, "rebuilt": 1');
 
 // ② 自动进入块
 const AUTO_MARK = '/* 轮询式自动进入';
