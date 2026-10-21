@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 /*
  * P0-4 动态境界指引复验：金丹 → 渡劫七境的「条件清单 / 材料来源 / 导航 / 动作」
  *
@@ -58,7 +58,8 @@ for (let z = 5; z < D.ZONES.length; z++) {
   ok(r && r.ok, `zone${z} ${D.ZONES[z].name} 破境成功：${JSON.stringify(r && r.msg || '')}`);
   eq(before, z - 4, `zone${z} 破境前 major=${z - 4}`);
   eq(g.s.major, z - 3, `zone${z} 破境后 major=${z - 3}`);
-  eq(g.realm, st.realm, `zone${z} 境界名 = ${st.realm}（实际 ${g.realm}）`);
+  /* V90.42 起后七境带前中后期后缀：破境后道行为 0 → 初期 */
+  ok(g.realm === st.realm || g.realm === st.realm + '初期', `zone${z} 境界名 = ${st.realm}（可带阶段后缀，实际 ${g.realm}）`);
 
   // 材料来源：该境地图上要能采到 primary / secondary
   const lands = new Set(D.ZONES[z].map.flat());
