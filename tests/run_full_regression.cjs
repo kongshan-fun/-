@@ -56,6 +56,7 @@ const LAYERS = [
   ['锻造熟练度与品质出率', 'node', ['tests/v952_forge_prof.cjs']],
   ['精炼经济闭环与战力境序', 'node', ['tests/v953_refine_rating.cjs']],
   ['赋灵词条与品阶出率', 'node', ['tests/v954_spirit_affix.cjs']],
+  ['36段修为轴与修为产出', 'node', ['tests/v955_realm_axis.cjs']],
   ['旧档重置与阶梯补偿', 'node', ['tests/v943_reset_flow.cjs']],
   ['八面板 × 三宽度矩阵', 'node', ['tests/v915_widths_matrix.cjs', PLAY]],
   ['file:// 双击直开', 'node', ['tests/v910_file_launch_check.cjs']],

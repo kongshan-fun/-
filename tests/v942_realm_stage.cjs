@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 /*
  * V90.42 境界前中后期验收
  *  A. 引擎：major=1..8 各档道行 10%/50%/80%/100% → 初期/中期/后期/圆满，前缀是该境名
@@ -178,7 +178,7 @@ function serve(root) {
     if (!opened2) opened2 = await click('[data-a="panel"][data-name="cultivate-trial"]');
     await sleep(700);
     const trialText = await ev(`(document.getElementById('panel-body')||{}).innerText||''`);
-    ok(/道行/.test(trialText), '破境条件页列出道行条件', (trialText.match(/[^\n]*道行[^\n]*/) || [''])[0].slice(0, 40));
+    ok(/修为|道行/.test(trialText), '破境条件页列出修为/道行条件', (trialText.match(/[^\n]*道行[^\n]*/) || [''])[0].slice(0, 40));
     ok(fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8').includes('需先修到本境后期圆满才能破境'), '破境指引文案已写入（道行未满时显示）');
     await shot(path.join(OUT, 'after', '03-trial.png'));
 

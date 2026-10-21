@@ -28,7 +28,7 @@ const eq = (a, b, msg) => { assert.equal(a, b, msg); checks++; };
 
 function fresh(zone = 0, major = 0) {
   const s = Game.fresh(20261025, 'human');
-  s.zone = zone; s.major = major; s.unlocked = Math.min(D.ZONES.length, zone + 1);
+  s.zone = zone; s.major = major; s.level = (function(m){return m<=1?(m===1?17:7):(Math.min(12,m+5)-1)*3+1;})(major); s.unlocked = Math.min(D.ZONES.length, zone + 1);
   s.hunger = 100; s.water = 100; s.hp = s.maxHp; s.spirit = s.maxSpirit;
   s.life.left = 200 * D.LIFE.yearMinutes;
   for (let i = 0; i <= zone; i++) { s.cleared[i] = true; s.ritual[i] = true; }

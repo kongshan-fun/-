@@ -32,7 +32,7 @@ const Game = ctx.QGame, D = ctx.QData;
 
 function state(zone, major) {
   const s = Game.fresh(20261023, 'human');
-  s.zone = zone; s.major = major; s.unlocked = Math.max(1, zone + 1);
+  s.zone = zone; s.major = major; s.level = (function(m){return m<=1?(m===1?17:7):(Math.min(12,m+5)-1)*3+1;})(major); s.unlocked = Math.max(1, zone + 1);
   s.hunger = 100; s.water = 100; s.hp = s.maxHp; s.spirit = s.maxSpirit;
   s.life.left = 200 * D.LIFE.yearMinutes;
   /* 存档校验：major ≤ 1 + 从第 5 境起连续通关数；所以 major=zone-3 时必须通关到本境 */

@@ -24,14 +24,14 @@ ok(same.zoneGap === 0, '同境 gap=0', String(same.zoneGap));
 ok(same.enemyBoost === 1 && same.playerDampen === 1, '同境：敌伤 ×1、我方 ×1');
 
 /* 越 1 境 */
-const up1 = mk(18, 2, 6); // 自身境7（元婴），zone6 → 境8（化神）
+const up1 = mk(21, 2, 6); // 自身境7（元婴，level21），zone6 → 境8（化神）
 console.log('  （调试）up1.zoneGap =', up1.zoneGap);
 ok(up1.zoneGap === 1, '越 1 境 gap=1', String(up1.zoneGap));
 ok(Math.abs(up1.enemyBoost - 1.10) < 1e-9, '越 1 境：敌伤 ×1.10', up1.enemyBoost.toFixed(2));
 ok(Math.abs(up1.playerDampen - 0.92) < 1e-9, '越 1 境：我方 ×0.92', up1.playerDampen.toFixed(2));
 
 /* 越 3 境 / 越 8 境 */
-const up3 = mk(18, 2, 8);
+const up3 = mk(21, 2, 8);
 ok(up3.zoneGap === 3, '越 3 境 gap=3', String(up3.zoneGap));
 ok(Math.abs(up3.enemyBoost - 1.30) < 1e-9, '越 3 境：敌伤 ×1.30');
 const far = mk(3, 0, 9);

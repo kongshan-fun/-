@@ -76,32 +76,31 @@ const gearAt = (g, quality, recipe) => { const r = recipe || WEAPON; g.s.gears.p
   const bad = [];
   for (const [pts, want] of cases) { g.s.prof.spirit = pts; if (g.spiritRank !== want) bad.push(pts + '→' + g.spiritRank); }
   ok(bad.length === 0, '熟练度 → 赋灵等级换算全对', bad.join(' '));
-  const low = mk({ level: 1, major: 0 }), mid = mk({ level: 18, major: 2 }), top = mk({ level: 36, major: 8 });
+  const low = mk({ level: 1, major: 0 }), mid = mk({ level: 19, major: 2 }), top = mk({ level: 34, major: 0 });
   ok(low.spiritGain === 5 && mid.spiritGain === 17 && top.spiritGain === 27,
     '每次赋灵 = 境序×2+3（境1=5 / 境7=17 / 境12=27）', [low.spiritGain, mid.spiritGain, top.spiritGain].join('/'));
 }
 
 /* ---------- 4. 消耗（灵石 + 修为） ---------- */
 {
-  const low = mk({ level: 1, major: 0 }), mid = mk({ level: 18, major: 1 }), top = mk({ level: 36, major: 8 });
+  const low = mk({ level: 1, major: 0 }), mid = mk({ level: 16, major: 0 }), top = mk({ level: 34, major: 0 });
   ok(low.weaponBase === 7 && mid.weaponBase === 49 && top.weaponBase === 492, '武器基准 W 按境序取（7/49/492）');
   const c1 = low.spiritCost({ id: 'x', spiritPity: 0 }, 0), c6 = mid.spiritCost({ id: 'x' }, 0), c12 = top.spiritCost({ id: 'x' }, 0);
   ok([c1.stone, c6.stone, c12.stone].join(',') === '15,40,70', '灵石 = 10+境序×5（15/40/70）', [c1.stone, c6.stone, c12.stone].join('/'));
   /* 修为成本按「本境实际修为池×0.05」：境1(60)→3、境6(285)→14、渡劫(150)→8 */
-  ok([c1.xp, c6.xp, c12.xp].join(',') === '3,14,8', '修为 = 本境修为池×0.05（3/14/8）', [c1.xp, c6.xp, c12.xp].join('/'));
+  ok([c1.xp, c6.xp, c12.xp].join(',') === '40,449,1145', '修为 = 境基础×0.05（40/449/1145）', [c1.xp, c6.xp, c12.xp].join('/'));
   ok(c6.lock === 1 && low.spiritCost({ id: 'x' }, 1).lock === 2, '有锁定槽时消耗 ×2');
   /* 关键平衡约束：一次赋灵的修为 < 本境破境需求的 20%（否则会把赋灵变成墙） */
-  const pools = [low, mid, top].map((g) => [g.realmPoolXp, g.spiritCost({ id: 'p' }, 0).xp]);
-  ok(pools.every(([pool, c]) => c <= Math.max(3, pool * 0.2)), '赋灵修为 ≤ 本境修为池的 20%',
-    pools.map(([p, c]) => c + '/' + p).join(' '));
-  /* 定稿字面值（境基础×0.05）在最贵的元婴/渡劫档位远超一次破境，故未采用——留住证据防回退 */
-  ok(top.realmBaseXp > top.realmPoolXp * 10, '确认「境基础」与「实收 needDao」量级差 10 倍以上（故按实际池计）',
-    top.realmBaseXp + ' vs ' + top.realmPoolXp);
+  /* 关键平衡约束：一次赋灵的修为 ≤ 本段需求的 10%（否则会把赋灵变成墙） */
+  const pools = [low, mid, top].map((g) => [g.required, g.spiritCost({ id: 'p' }, 0).xp]);
+  ok(pools.every(([need, c]) => c <= need * 0.1), '赋灵修为 ≤ 本段需求的 10%',
+    pools.map(([need, c]) => c + '/' + need).join(' '));
+  ok(!/realmPoolXp/.test(html), 'V90.54 的临时口径 realmPoolXp 已删除（36 段轴落地后回字面值）');
 }
 
 /* ---------- 5. 词条数值（固定值按 W 缩放，百分比不缩放） ---------- */
 {
-  const low = mk({ level: 1, major: 0 }), top = mk({ level: 36, major: 8 });
+  const low = mk({ level: 1, major: 0 }), top = mk({ level: 34, major: 0 });
   ok(low.spiritValue('crit', 0) === 4 && low.spiritValue('crit', 3) === 10, '会心 凡纹4% / 仙纹10%（百分比不跟境界）');
   ok(low.spiritValue('spell', 3) === 11 && low.spiritValue('leech', 2) === 4.5, '术威仙纹11% / 吸血玄纹4.5%');
   ok(top.spiritValue('pierce', 0) === Math.round(0.05 * 492), '破甲凡纹 = 0.050W（渡劫 W=492 → ' + Math.round(0.05 * 492) + '）');
@@ -112,7 +111,7 @@ const gearAt = (g, quality, recipe) => { const r = recipe || WEAPON; g.s.gears.p
 
 /* ---------- 6. 池与不重复 ---------- */
 {
-  const g = mk({ level: 18, major: 2 });
+  const g = mk({ level: 19, major: 2 });
   g.s.inv.stone = 9999; g.s.daoXp = 99999;
   const w = gearAt(g, 4);
   const res = g.spirit(w.id);
@@ -142,7 +141,7 @@ const gearAt = (g, quality, recipe) => { const r = recipe || WEAPON; g.s.gears.p
 
 /* ---------- 8. 记账、本档独立、存盘往返 ---------- */
 {
-  const g = mk({ level: 18, major: 2 });
+  const g = mk({ level: 19, major: 2 });
   g.s.daoXp = 99999;
   const w = gearAt(g, 4);
   const before = g.spiritPoints, beforeN = g.s.prof.spirited;
@@ -160,7 +159,7 @@ const gearAt = (g, quality, recipe) => { const r = recipe || WEAPON; g.s.gears.p
 
 /* ---------- 9. 修为不足时不动账 ---------- */
 {
-  const g = mk({ level: 18, major: 2 });
+  const g = mk({ level: 19, major: 2 });
   g.s.daoXp = 10;                        // 远不够 449
   const w = gearAt(g, 4);
   const stone = g.s.inv.stone, pts = g.spiritPoints;
@@ -172,7 +171,7 @@ const gearAt = (g, quality, recipe) => { const r = recipe || WEAPON; g.s.gears.p
 
 /* ---------- 10. 装备本身不再自带词条 ---------- */
 {
-  const g = mk({ level: 18, major: 2 });
+  const g = mk({ level: 19, major: 2 });
   g.s.inv = { wood: 99, stone: 99, fiber: 99, ore: 99, dust: 99 };
   for (let q = 0; q < 5; q++) {
     const gg = g.createGear(WEAPON.id, q, '测试');

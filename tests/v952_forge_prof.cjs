@@ -98,7 +98,7 @@ const rankCases = [[0, 0], [1, 0], [149, 0], [150, 1], [499, 1], [500, 2], [1199
 {
   const low = mk({ level: 1, major: 0 });
   ok(low.realmIndex === 1 && low.forgeGain === 8, '凡人（境序1）一件给 8 点', String(low.forgeGain));
-  const mid = mk({ level: 18, major: 2 });
+  const mid = mk({ level: 19, major: 2 });
   ok(mid.realmIndex === 7 && mid.forgeGain === 26, '元婴（境序7）一件给 26 点', String(mid.forgeGain));
   const top = mk({ level: 36, major: 8 });
   ok(top.realmIndex === 12 && top.forgeGain === 41, '渡劫（境序12）一件给 41 点', String(top.forgeGain));
