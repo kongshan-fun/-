@@ -5236,7 +5236,7 @@ class RaceSlots{
   }
   if(present)throw Error('此档数据损坏，已锁定防止覆盖');return null;
  }
- status(id,n=1){try{this.check(id);this.slot(n);if(this.dead(id,n))return {status:this.retired(id,n)?'retired':'dead',role:id,slot:n};const found=this.read(id,n);if(!found)return {status:'empty',role:id,slot:n};const g=found.game,s=g.s;
+ status(id,n=1){try{this.check(id);this.slot(n);if(this.dead(id,n))return {status:this.retired(id,n)?'retired':'dead',role:id,slot:n};const found=this.read(id,n);if(!found)return {status:'empty',role:id,slot:n};if(found.reset)return {status:'reset',role:id,slot:n,tier:found.reset.tier};const g=found.game,s=g.s;
   return {status:'ready',role:id,slot:n,name:s.birth.name,grade:B.gradeName(s.birth),realm:g.realm,day:g.day,years:g.lifeYears.toFixed(1),ascended:s.ascended,source:found.source};
  }catch(e){return {status:'invalid',role:id,slot:n,error:e.message};}}
  list(){return Object.keys(D.RACES).map(id=>this.status(id));}
@@ -5298,7 +5298,7 @@ function stats(c){return `<div class="entry-stat-grid">${[['气血',c.hp],[c.ene
 function races(selected,active){const c=B.RACES[selected];return header('01')+heading('择一族，入凡界','选择种族','同一片山河，两条修行之路。')+
  `<section class="entry-content entry-character-content"><div class="entry-character-grid"><nav class="entry-role-menu" aria-label="种族列表">${Object.values(B.RACES).map((r,i)=>`<button class="entry-role-option ${r.id===selected?'selected':''}" data-a="choose-role" data-role="${r.id}" aria-pressed="${r.id===selected}"><small>0${i+1} / ${r.id==='human'?'问道':'化形'}</small><strong>${r.name}</strong><span>${r.id==='human'?'灵根 · 悟性':'血脉 · 本相'}</span></button>`).join('')}</nav><article class="entry-role-detail"><div class="entry-classification">${selected==='human'?'引气入体 · 悟道长生':'山野启灵 · 血脉蜕变'}</div><h2>${c.name}</h2><p class="entry-description">${c.intro}</p>${stats(c)}<small class="race-base-note">基础值 · 开局叠加抽取天赋</small><h3>天赋与修行</h3><p class="entry-detail-text">${c.detail}</p><div class="realm-track" aria-label="修行路线">${c.realms.map((r,i)=>`<span>${r}</span>${i<9?'<i>›</i>':''}`).join('')}</div><p class="entry-detail-note">${c.lore}</p></article></div></section><footer class="entry-footer"><button class="entry-main-action" data-a="view-slots" data-role="${selected}">选择${c.name} · 查看档案<span>→</span></button><button class="entry-secondary-action" data-a="ranking-open">本机飞升资质榜 · 最快通关记录 →</button>${active?'<button class="entry-secondary-action" data-a="slot-back">返回当前修行</button>':'<p>两族各100档 · 各档天赋、寿元与世界独立</p>'}</footer>`;}
 function archives(id,all,page,active){const c=B.RACES[id],used=all.filter(x=>x.status==='ready').length,empty=all.filter(x=>x.status==='empty').length,dead=all.filter(x=>x.status==='dead').length;
- const cells=all.slice(page*20,page*20+20).map(v=>{let title='新建修行',detail='空白档案';if(v.status==='ready'){title=v.name;detail=v.realm;}if(v.status==='dead'){title='已陨落';detail='可重新轮回';}if(v.status==='retired'){title='飞升圆满';detail='已结算 · 可重新轮回';}if(v.status==='invalid'){title='档案损坏';detail='已锁定保护';}
+ const cells=all.slice(page*20,page*20+20).map(v=>{let title='新建修行',detail='空白档案';if(v.status==='ready'){title=v.name;detail=v.realm;}if(v.status==='dead'){title='已陨落';detail='可重新轮回';}if(v.status==='reset'){title='需要重构';detail='可领 '+(v.tier||300)+' 轮回玉重开';}if(v.status==='retired'){title='飞升圆满';detail='已结算 · 可重新轮回';}if(v.status==='invalid'){title='档案损坏';detail='已锁定保护';}
  return `<button class="entry-save-cell ${v.status}" data-a="slot-open" data-role="${id}" data-slot="${v.slot}" ${v.status==='invalid'?'disabled':''} aria-label="第${num(v.slot)}档，${esc(title)}，${esc(detail)}"><span class="entry-save-id">${num(v.slot)}</span><span class="entry-save-info"><b>${esc(title)}</b><small>${esc(detail)}</small></span>${v.status==='ready'?`<small class="save-life">寿 ${v.years}年</small>`:`<small class="save-life">${v.status==='empty'?'+':['dead','retired'].includes(v.status)?'↻':'—'}</small>`}</button>`;}).join('');
  return header('02','characters',c.name+' · 独立修行档案')+heading('第二步 · 选择一生',c.name+'档案','已建档可继续，空档先抽取天赋。')+`<div class="archive-count"><span><b>${used}</b> 在修</span><span><b>${empty}</b> 空档</span><span><b>${dead}</b> 陨落</span><span>共100档</span></div><section class="entry-content entry-save-content" aria-label="第${page+1}页档位"><div class="entry-save-grid">${cells}</div></section><footer class="entry-footer entry-save-footer"><nav class="entry-pagination" aria-label="存档分页"><button data-a="slot-page" data-d="-1" ${page===0?'disabled':''}>← 上页</button><strong>${page+1}<small> / 5</small></strong><button data-a="slot-page" data-d="1" ${page===4?'disabled':''}>下页 →</button></nav><div class="entry-footer-tools"><button data-a="characters">返回种族</button>${active?'<button data-a="slot-back">返回游戏</button>':''}</div><p>陨落不波及其他档位 · 不覆盖旧版存档</p></footer>`;
 }
@@ -5417,8 +5417,10 @@ function resetOldSlot(){const m=modal;if(!m||m.kind!=='rebuild-reset')return;
  try{
   const id=m.race,n=m.slot;
   localStorage.removeItem(slots.key(id,n));localStorage.removeItem(slots.backupKey(id,n));
-  const ledger=slots.legacy(id,n);ledger.balance=(ledger.balance||0)+m.tier;slots.putLegacy(id,n,ledger);
+  const before=slots.legacy(id,n);before.balance=(before.balance||0)+m.tier;slots.putLegacy(id,n,before);
   const next=slots.newGame(id,261014,n,null);
+  /* 兜底：若账本没加上（异常/键冲突），再写一次 */
+  try{const chk=slots.legacy(id,n);if((chk.balance||0)<m.tier){chk.balance=(chk.balance||0)+m.tier;slots.putLegacy(id,n,chk);}}catch(e){}
   game=next;activeRole=id;activeSlot=n;saveAvailable=true;
   saveStatus='旧档已重置 · 补偿 '+m.tier+' 轮回玉';deathBoot=false;panel=null;modal=null;frontPage=null;
   render();notify('旧档已重置，轮回玉 +'+m.tier,'ok');
@@ -7060,6 +7062,7 @@ function handle(a,b){
  if(a==='slot-open'&&frontPage?.kind==='slots'&&!modal){
   const id=b.dataset.role,n=Number(b.dataset.slot),state=slots.status(id,n);
   if(state.status==='ready')selectCharacter(id,'open',n);
+  else if(state.status==='reset'){showModal({kind:'rebuild-reset',race:id,slot:n,tier:state.tier||300});render();return;}
   else if(['empty','dead','retired'].includes(state.status))beginBirth(id,n);
   else notify('存档损坏，已锁定防止覆盖','warn');return;
  }

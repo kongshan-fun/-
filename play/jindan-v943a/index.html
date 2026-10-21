@@ -5812,8 +5812,10 @@ function resetOldSlot(){const m=modal;if(!m||m.kind!=='rebuild-reset')return;
  try{
   const id=m.race,n=m.slot;
   localStorage.removeItem(slots.key(id,n));localStorage.removeItem(slots.backupKey(id,n));
-  const ledger=slots.legacy(id,n);ledger.balance=(ledger.balance||0)+m.tier;slots.putLegacy(id,n,ledger);
+  const before=slots.legacy(id,n);before.balance=(before.balance||0)+m.tier;slots.putLegacy(id,n,before);
   const next=slots.newGame(id,261014,n,null);
+  /* 兜底：若账本没加上（异常/键冲突），再写一次 */
+  try{const chk=slots.legacy(id,n);if((chk.balance||0)<m.tier){chk.balance=(chk.balance||0)+m.tier;slots.putLegacy(id,n,chk);}}catch(e){}
   game=next;activeRole=id;activeSlot=n;saveAvailable=true;
   saveStatus='旧档已重置 · 补偿 '+m.tier+' 轮回玉';deathBoot=false;panel=null;modal=null;frontPage=null;
   render();notify('旧档已重置，轮回玉 +'+m.tier,'ok');

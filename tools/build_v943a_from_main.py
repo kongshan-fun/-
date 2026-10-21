@@ -85,8 +85,10 @@ NEW_LOAD = ("/* V90.43 旧档重置：删档 → 补轮回玉 → 开新档 */\n
             " try{\n"
             "  const id=m.race,n=m.slot;\n"
             "  localStorage.removeItem(slots.key(id,n));localStorage.removeItem(slots.backupKey(id,n));\n"
-            "  const ledger=slots.legacy(id,n);ledger.balance=(ledger.balance||0)+m.tier;slots.putLegacy(id,n,ledger);\n"
+            "  const before=slots.legacy(id,n);before.balance=(before.balance||0)+m.tier;slots.putLegacy(id,n,before);\n"
             "  const next=slots.newGame(id,261014,n,null);\n"
+            "  /* 兜底：若账本没加上（异常/键冲突），再写一次 */\n"
+            "  try{const chk=slots.legacy(id,n);if((chk.balance||0)<m.tier){chk.balance=(chk.balance||0)+m.tier;slots.putLegacy(id,n,chk);}}catch(e){}\n"
             "  game=next;activeRole=id;activeSlot=n;saveAvailable=true;\n"
             "  saveStatus='旧档已重置 · 补偿 '+m.tier+' 轮回玉';deathBoot=false;panel=null;modal=null;frontPage=null;\n"
             "  render();notify('旧档已重置，轮回玉 +'+m.tier,'ok');\n"
@@ -118,6 +120,22 @@ def main():
     text = rep(text, OLD_LOAD, NEW_LOAD, "resetOldSlot()")
     text = rep(text, OLD_ENTRY, NEW_ENTRY, "入口识别 reset")
 
+    # 档案页与入口也要认 reset（否则显示"档案损坏"）
+    text = rep(text,
+               "const found=this.read(id,n);if(!found)return {status:'empty',role:id,slot:n};",
+               "const found=this.read(id,n);if(!found)return {status:'empty',role:id,slot:n};"
+               "if(found.reset)return {status:'reset',role:id,slot:n,tier:found.reset.tier};",
+               "status() 识别 reset")
+    text = rep(text,
+               "if(v.status==='dead'){title='已陨落';detail='可重新轮回';}",
+               "if(v.status==='dead'){title='已陨落';detail='可重新轮回';}"
+               "if(v.status==='reset'){title='需要重构';detail='可领 '+(v.tier||300)+' 轮回玉重开';}",
+               "档案页显示需要重构")
+    text = rep(text,
+               "if(state.status==='ready')selectCharacter(id,'open',n);",
+               "if(state.status==='ready')selectCharacter(id,'open',n);\n"
+               "  else if(state.status==='reset'){showModal({kind:'rebuild-reset',race:id,slot:n,tier:state.tier||300});render();return;}",
+               "slot-open 弹重构提示")
     for needle, what in (("rebuilt:1", "新档标记"), ("tierOf(raw)", "阶梯"),
                          ("kind:'rebuild-reset'", "弹窗"), ("resetOldSlot()", "实现"),
                          ("found.reset", "入口")):
