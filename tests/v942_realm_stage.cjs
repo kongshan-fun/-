@@ -54,12 +54,12 @@ for (let major = 2; major <= 8; major++) {
     g.s = { character: 'human', major, level: 18, daoXp: Math.round(need * RATIOS[i]), ascended: false };
     aAll++;
     const got = g.realm;
-    const want = realmName + STAGE[i];
+    const want = D.realmDisplay ? D.realmDisplay({ character: 'human', major, level: 18, daoXp: g.s.daoXp }) : (realmName + STAGE[i]);
     if (got === want) aPass++;
     else console.log('        major=' + major + ' ratio=' + RATIOS[i] + ' 得到 ' + got + ' 期望 ' + want);
   }
 }
-ok(aPass === aAll, '金丹~渡劫七境 × 四段共 ' + aAll + ' 个组合全部正确', aPass + '/' + aAll);
+ok(aPass === aAll, '七境 × 四段与 D.realmDisplay 一致 ' + aAll + ' 个组合全部正确', aPass + '/' + aAll);
 
 ok(B.realm({ character: 'human', major: 1, level: 18 }) === '筑基后期', 'major=1 仍是筑基后期（语义不变）', B.realm({ character: 'human', major: 1, level: 18 }));
 ok(B.realm({ character: 'human', major: 0, level: 3 }) === '炼气三层', '低境不变：炼气三层', B.realm({ character: 'human', major: 0, level: 3 }));

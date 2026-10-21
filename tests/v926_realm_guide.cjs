@@ -59,7 +59,9 @@ for (let z = 5; z < D.ZONES.length; z++) {
   eq(before, z - 4, `zone${z} 破境前 major=${z - 4}`);
   eq(g.s.major, z - 3, `zone${z} 破境后 major=${z - 3}`);
   /* V90.42 起后七境带前中后期后缀：破境后道行为 0 → 初期 */
-  ok(g.realm === st.realm || g.realm === st.realm + '初期', `zone${z} 境界名 = ${st.realm}（可带阶段后缀，实际 ${g.realm}）`);
+  /* V90.45 起境界名按十二境表：丹霞(zone5) 破境后是元婴，不是金丹 */
+  const expectBase = D.REALM12.human[Math.min(12, g.s.major + 5) - 1];
+  ok(g.realm.startsWith(expectBase), `zone${z} 破境后境界 = ${expectBase}（实际 ${g.realm}）`);
 
   // 材料来源：该境地图上要能采到 primary / secondary
   const lands = new Set(D.ZONES[z].map.flat());
