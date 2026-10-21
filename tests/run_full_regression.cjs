@@ -42,6 +42,7 @@ const LAYERS = [
   ['突破指引 / 试炼按钮（不能出现无效操作）', 'node', ['tests/v936_tribulation_guide.cjs', PLAY]],
   ['存档兼容（旧档在新包继续玩）', 'node', ['tests/v936_save_compat.cjs', PLAY]],
   ['战斗日志只显示本次斗法', 'node', ['tests/v937_battle_log.cjs', PLAY]],
+  ['旧档字段级不丢失', 'node', ['tests/v937_save_preserved.cjs', PLAY]],
   ['八面板 × 三宽度矩阵', 'node', ['tests/v915_widths_matrix.cjs', PLAY]],
   ['file:// 双击直开', 'node', ['tests/v910_file_launch_check.cjs']],
   ['8 视口 Chromium 布局（含百档 20 格 / 洞府建筑）', 'python', ['tests/browser_responsive.py']],

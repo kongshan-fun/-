@@ -1,0 +1,62 @@
+[
+  {
+    "file": "01-camp.png",
+    "raw": {
+      "assetId": "522801",
+      "height": 1280,
+      "info": {
+        "format": "png",
+        "height": 1280,
+        "size": 99653,
+        "width": 720
+      },
+      "url": "https://img-tc.tapimg.com/market/images/c8f9ab49b81b1aca919f7f80b2d09c7d.png",
+      "width": 720
+    }
+  },
+  {
+    "file": "02-combat.png",
+    "raw": {
+      "assetId": "522802",
+      "height": 1280,
+      "info": {
+        "format": "png",
+        "height": 1280,
+        "size": 85424,
+        "width": 720
+      },
+      "url": "https://img-tc.tapimg.com/market/images/40b47b905b1f71011dc7f13d434391f4.png",
+      "width": 720
+    }
+  },
+  {
+    "file": "03-character.png",
+    "raw": {
+      "assetId": "522803",
+      "height": 1280,
+      "info": {
+        "format": "png",
+        "height": 1280,
+        "size": 84414,
+        "width": 720
+      },
+      "url": "https://img-tc.tapimg.com/market/images/5615ed2d2006ada93e34179bc110f881.png",
+      "width": 720
+    }
+  },
+  {
+    "file": "04-trial.png",
+    "raw": {
+      "assetId": "522804",
+      "height": 1280,
+      "info": {
+        "format": "png",
+        "height": 1280,
+        "size": 112138,
+        "width": 720
+      },
+      "url": "https://img-tc.tapimg.com/market/images/a7a45d3ef8a2dd66de94b6f49fa5a479.png",
+      "width": 720
+    }
+  }
+]
