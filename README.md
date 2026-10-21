@@ -1,6 +1,6 @@
-# 山野修仙记 · V90.36 突破指引修复
+# 山野修仙记 · V90.37 战斗日志分段
 
-原创竖屏 H5 文字修仙生存 RPG。**当前 GitHub `main` 最新游戏版本为 V90.36**，默认入口为 [`index.html`](index.html)，与 [V90.36 独立发布文件](releases/山野修仙记_V90.36_突破指引修复版.html) **字节一致**（由 `tools/check_entry_consistency.py` 在 CI 里强制校验）。
+原创竖屏 H5 文字修仙生存 RPG。**当前 GitHub `main` 最新游戏版本为 V90.37**，默认入口为 [`index.html`](index.html)，与 [V90.37 独立发布文件](releases/山野修仙记_V90.37_战斗日志分段版.html) **字节一致**（由 `tools/check_entry_consistency.py` 在 CI 里强制校验）。
 
 > **状态说明（2026-10-20）：** 仓库版本 ≠ 已上线。TapTap 上 **`V-20261019` 已审核通过并上线**（V90.16 的包）。V90.17~V90.28 仍是仓库版本；V90.29 候选包（h5VersionId `336192`）已上传但**未绑定主包位、未提交审核**。**不要据 GitHub 版本推断线上版本**，一律 `app list-app-versions` 实时回读。
 
@@ -32,7 +32,8 @@
 | V90.33 | 战斗界面长屏修正（敌方面板不再吞空白、底部安全区） |
 | V90.34 | 战斗日志不折叠：常显、占中段、自动停在最新一行 |
 | V90.35 | 洞府卡片去掉攻略式「升级后…」说明行，密度 360 1.47→1.24 |
-| **V90.36** | **修「渡劫按钮报无效操作」（panel 守卫错位 + codex-open 缺处理）** |
+| V90.36 | 修「渡劫按钮报无效操作」（panel 守卫错位 + codex-open 缺处理） |
+| **V90.37** | **战斗日志只显示本次斗法（加日志序号 + 开战锚点）** |
 
 历史版本（V83~V90.15）仍在 [`releases/`](releases/) 里冻结保留。
 
@@ -52,7 +53,7 @@
 ## 确定性构建及回归
 
 ```bash
-python3 tools/build_v936_from_main.py               # 从 V90.35 重建 V90.36（幂等）
+python3 tools/build_v937_from_main.py               # 从 V90.36 重建 V90.37（幂等）
 python3 tools/check_entry_consistency.py --rebuild   # 一致性 + 可复现
 node tests/run_full_regression.cjs                  # 16 层全量（发版前必跑）
 python3 tests/browser_responsive.py                 # 6 视口布局（需 playwright + chromium）
