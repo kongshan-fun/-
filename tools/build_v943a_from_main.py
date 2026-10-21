@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 V90.43 第 1a 步（可独立验收）：旧档识别 + 重构提示 + 阶梯补轮回玉 + 从零开始
@@ -16,7 +16,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 RELEASES = ROOT / "releases"
 BASE = RELEASES / "山野修仙记_V90.42_境界分段版.html"
-OUT_NAME = "山野修仙记_V90.43a_旧档重置.html"
+OUT_NAME = "山野修仙记_V90.43_旧档重置.html"
 BASE_SHA = "22C30063DB30DBED044E99F49FE1987BAF488F973A46FF2DBA060ACD776759FC"
 
 
@@ -120,6 +120,12 @@ def main():
     text = rep(text, OLD_LOAD, NEW_LOAD, "resetOldSlot()")
     text = rep(text, OLD_ENTRY, NEW_ENTRY, "入口识别 reset")
 
+    # 版本号统一（测试会校验"发布文件名版本 == 标题版本"）
+    text = rep(text, "<title>山野修仙记 V90.42 · 境界分段</title>",
+               "<title>山野修仙记 V90.43 · 旧档重置</title>", "标题版本号")
+    text = rep(text, "subtitle='人妖异途 · V90.42'", "subtitle='人妖异途 · V90.43'", "副标题版本号")
+    text = rep(text, "V90.42 · ${game.character.name}", "V90.43 · ${game.character.name}", "设置页版本号")
+    text = rep(text, "山野修仙记_V90.42_本机飞升资质榜.json", "山野修仙记_V90.43_本机飞升资质榜.json", "导出文件名")
     # 档案页与入口也要认 reset（否则显示"档案损坏"）
     text = rep(text,
                "const found=this.read(id,n);if(!found)return {status:'empty',role:id,slot:n};",
