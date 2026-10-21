@@ -16,7 +16,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 RELEASES = ROOT / "releases"
 BASE = RELEASES / "山野修仙记_V90.43_旧档重置.html"
-OUT_NAME = "山野修仙记_V90.43b_十二境表.html"
+OUT_NAME = "山野修仙记_V90.44_十二境表.html"
 BASE_SHA = "E57D9FAEC5AEEC0B9B475DD296889EEE4F0D889BADEEC65BCE59998A3F0D3D1A"
 
 BLOCK = '''
@@ -61,11 +61,11 @@ def main():
 
     # 版本号
     text = text.replace("<title>山野修仙记 V90.43 · 旧档重置</title>",
-                        "<title>山野修仙记 V90.43b · 十二境表</title>", 1)
-    text = text.replace("subtitle='人妖异途 · V90.43'", "subtitle='人妖异途 · V90.43b'", 1)
-    text = text.replace("V90.43 · ${game.character.name}", "V90.43b · ${game.character.name}", 1)
-    text = text.replace("山野修仙记_V90.43_本机飞升资质榜.json", "山野修仙记_V90.43b_本机飞升资质榜.json", 1)
-    ok("版本号 V90.43b")
+                        "<title>山野修仙记 V90.44 · 十二境表</title>", 1)
+    text = text.replace("subtitle='人妖异途 · V90.43'", "subtitle='人妖异途 · V90.44'", 1)
+    text = text.replace("V90.43 · ${game.character.name}", "V90.44 · ${game.character.name}", 1)
+    text = text.replace("山野修仙记_V90.43_本机飞升资质榜.json", "山野修仙记_V90.44_本机飞升资质榜.json", 1)
+    ok("版本号 V90.44")
 
     for needle in ("D.REALM12=", "D.realmOfLevel=function", "十二境"):
         if needle not in text:
