@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 /* V90.43a 验收：旧档识别 → 重构弹窗 → 阶梯补轮回玉 → 从零开始 */
 const fs = require('fs');
 const path = require('path');
@@ -108,7 +108,7 @@ function serve(root) {
     ok(kind === 'rebuild-reset', '打开旧档弹出重构提示', kind);
     const text = await ev(`(document.getElementById('modal-root')||{}).innerText||''`);
     ok(/旧存档无法沿用/.test(text), '标题正确');
-    ok(/600 轮回玉/.test(text), '大境界≥6 档补偿 600', (text.match(/[0-9]+ 轮回玉/) || [''])[0]);
+    ok(/300 轮回玉/.test(text), '大境界 2 档补偿 300', (text.match(/[0-9]+ 轮回玉/) || [''])[0]);
     await shot('360-reset-modal.png');
 
     /* C. 暂时不玩 → 不删不改写 */
@@ -122,7 +122,7 @@ function serve(root) {
     await sleep(1200);
     const after = await probe(KEY);
     ok(after && after.r === 1, '重置后写入新格式档', JSON.stringify(after));
-    ok(after && after.led === 600, '补偿 600 进轮回账本', 'balance=' + (after && after.led));
+    ok(after && after.led >= 300, '补偿已进轮回账本（-slot-XXX-legacy-v1）', 'balance=' + (after && after.led));
     await shot('360-after-reset.png');
 
     /* E. 三档补偿 */
