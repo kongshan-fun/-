@@ -1,4 +1,4 @@
-﻿'use strict';
+'use strict';
 /*
  * 全量回归入口（P1-3）
  *
@@ -53,6 +53,7 @@ const LAYERS = [
   ['怪物属性对齐', 'node', ['tests/v949_monsters.cjs']],
   ['前六境属性接入', 'node', ['tests/v950_early_stats.cjs']],
   ['越级压制', 'node', ['tests/v951_zone_gap.cjs']],
+  ['锻造熟练度与品质出率', 'node', ['tests/v952_forge_prof.cjs']],
   ['旧档重置与阶梯补偿', 'node', ['tests/v943_reset_flow.cjs']],
   ['八面板 × 三宽度矩阵', 'node', ['tests/v915_widths_matrix.cjs', PLAY]],
   ['file:// 双击直开', 'node', ['tests/v910_file_launch_check.cjs']],
