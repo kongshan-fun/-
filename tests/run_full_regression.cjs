@@ -49,6 +49,7 @@ const LAYERS = [
   ['境界显示十二境表', 'node', ['tests/v945_realm_display.cjs']],
   ['渡劫固定伤害', 'node', ['tests/v946_trib_damage.cjs']],
   ['护劫丹减伤', 'node', ['tests/v947_guard_pill.cjs']],
+  ['高境属性成长表', 'node', ['tests/v948_realm_stats.cjs']],
   ['旧档重置与阶梯补偿', 'node', ['tests/v943_reset_flow.cjs']],
   ['八面板 × 三宽度矩阵', 'node', ['tests/v915_widths_matrix.cjs', PLAY]],
   ['file:// 双击直开', 'node', ['tests/v910_file_launch_check.cjs']],
