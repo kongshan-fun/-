@@ -1,6 +1,6 @@
-# 山野修仙记 · V90.39 寿元文案对齐
+# 山野修仙记 · V90.40 文案清理
 
-原创竖屏 H5 文字修仙生存 RPG。**当前 GitHub `main` 最新游戏版本为 V90.39**，默认入口为 [`index.html`](index.html)，与 [V90.39 独立发布文件](releases/山野修仙记_V90.39_寿元文案对齐版.html) **字节一致**（由 `tools/check_entry_consistency.py` 在 CI 里强制校验）。
+原创竖屏 H5 文字修仙生存 RPG。**`main` 为 V90.39；本分支 `copy-cleanup-v9040` 为 V90.40**，默认入口为 [`index.html`](index.html)，与 [V90.40 独立发布文件](releases/山野修仙记_V90.40_文案清理版.html) **字节一致**（由 `tools/check_entry_consistency.py` 在 CI 里强制校验）。
 
 > **状态说明（2026-10-20）：** 仓库版本 ≠ 已上线。TapTap 上 **`V-20261019` 已审核通过并上线**（V90.16 的包）。V90.17~V90.28 仍是仓库版本；V90.29 候选包（h5VersionId `336192`）已上传但**未绑定主包位、未提交审核**。**不要据 GitHub 版本推断线上版本**，一律 `app list-app-versions` 实时回读。
 
@@ -35,7 +35,8 @@
 | V90.36 | 修「渡劫按钮报无效操作」（panel 守卫错位 + codex-open 缺处理） |
 | V90.37 | 战斗日志只显示本次斗法（加日志序号 + 开战锚点） |
 | V90.38 | 续命不再限最后 15 年；寿尽可看广告 +15 年（每世一次） |
-| **V90.39** | **设置页寿元文案与新规则对齐** |
+| V90.39 | 设置页寿元文案与新规则对齐 |
+| **V90.40** | **文案清理：去存档术语/内部 roadmap/AI 句式，删掉「模拟广告」死代码** |
 
 历史版本（V83~V90.15）仍在 [`releases/`](releases/) 里冻结保留。
 
@@ -55,7 +56,7 @@
 ## 确定性构建及回归
 
 ```bash
-python3 tools/build_v939_from_main.py               # 从 V90.38 重建 V90.39（幂等）
+python3 tools/build_v940_from_main.py               # 从 V90.39 重建 V90.40（幂等）
 python3 tools/check_entry_consistency.py --rebuild   # 一致性 + 可复现
 node tests/run_full_regression.cjs                  # 16 层全量（发版前必跑）
 python3 tests/browser_responsive.py                 # 6 视口布局（需 playwright + chromium）
