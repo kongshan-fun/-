@@ -217,10 +217,10 @@ ok(/品质随机 · 仙品'\+\s*game\.forgeWeights\[4\]\+'%'/.test(html) || /品
   '装备配方行显示当前仙品出率（锻造前可见）');
 ok(/return forgeStrip\(\)/.test(html), '炼制父页顶部嵌入熟练度条（不新增页面）');
 
-/* ---------- 版本 ---------- */
+/* ---------- 版本：只校验"纯数字版本号"这一约定，具体版本由 v908 发布文件一致性测试管 ---------- */
 const title = (html.match(/<title>([^<]+)<\/title>/) || [])[1] || '';
-ok(/V90\.52/.test(title), '标题版本 V90.52', title);
-ok(/V90\.52(?!\d)/.test(title) && !/V90\.52[a-zA-Z]/.test(title), '版本号纯数字（不带字母后缀）', title);
+ok(/V\d+\.\d+/.test(title), '标题里有版本号', title);
+ok(!/V\d+\.\d+[a-zA-Z]/.test(title), '版本号纯数字（不带字母后缀，否则发布文件名一致性会红）', title);
 
 console.log(`\n合计 ${pass + fail} 项：${pass} 通过 / ${fail} 失败`);
 process.exitCode = fail === 0 ? 0 : 1;
