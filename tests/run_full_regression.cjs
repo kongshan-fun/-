@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 /*
  * 全量回归入口（P1-3）
  *
@@ -39,6 +39,8 @@ const LAYERS = [
   ['存档往返（关闭重开 / 导出 / 旧档导入 / 备份）', 'node', ['tests/v929_save_roundtrip.cjs', PLAY]],
   ['战斗界面（全屏模态 / 参考图排布 / 折叠日志）', 'node', ['tests/v931_combat_layout.cjs', PLAY]],
   ['人物装备面板（全屏 / 卡片不裁）', 'node', ['tests/v932_character_cover.cjs', PLAY]],
+  ['突破指引 / 试炼按钮（不能出现无效操作）', 'node', ['tests/v936_tribulation_guide.cjs', PLAY]],
+  ['存档兼容（旧档在新包继续玩）', 'node', ['tests/v936_save_compat.cjs', PLAY]],
   ['八面板 × 三宽度矩阵', 'node', ['tests/v915_widths_matrix.cjs', PLAY]],
   ['file:// 双击直开', 'node', ['tests/v910_file_launch_check.cjs']],
   ['8 视口 Chromium 布局（含百档 20 格 / 洞府建筑）', 'python', ['tests/browser_responsive.py']],
