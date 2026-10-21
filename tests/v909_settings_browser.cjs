@@ -9,7 +9,7 @@
  *   2. 减少动效（transition 归零，再点恢复）
  *   3. 行记 / 教程 可进可返且非空
  *   4. 资质榜弹窗可开可关
- *   5. 续命机缘按钮状态与寿元一致
+ *   5. 续命机缘按钮：V90.38 起不再限制「最后 15 年」，寿元充足时也能领取
  *   6. 存档三键（导出 / 导入 / 恢复）都在
  *   7. 无运行期异常
  */
@@ -123,7 +123,9 @@ function serve(root) {
     await openSettings(); await openChild('set-life');
     const life = await ev(`(function(){var b=document.querySelector('#panel-body [data-a="ad-life"]');return b?{label:b.textContent.trim(),disabled:!!b.disabled}:null;})()`);
     ok(!!life, '续命按钮存在', life && life.label);
-    ok(life && (/寿元低于16年时可领/.test(life.label) ? life.disabled : /领取10年寿元/.test(life.label)), '按钮状态与寿元匹配（寿元 60 年时禁用）', JSON.stringify(life));
+    /* V90.38：门槛取消 —— 寿元 60 年时按钮依然可点，且文案不再是「低于16年」 */
+    ok(life && life.disabled === false, '寿元充足时续命按钮依然可用（旧版此时禁用）', JSON.stringify(life));
+    ok(life && !/低于16年/.test(life.label), '文案不再提「低于16年」', life && life.label);
 
     console.log('\n=== 6. 存档三键 ===');
     await openSettings(); await openChild('set-save');
