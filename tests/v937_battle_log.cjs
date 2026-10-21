@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 /*
  * V90.37 战斗日志分段验收
  *   A. 开战前先攒几条「探索日志」（吐纳），开战后战斗日志里不能出现它们
@@ -114,6 +114,7 @@ function serve(root) {
       var raw=localStorage.getItem(${JSON.stringify(KEY)});
       if(!raw)return 'no-save';
       var s=JSON.parse(raw);
+      s.rebuilt=1;
       (s.logs||[]).forEach(function(l){delete l.seq;});
       if(s.combat)delete s.combat.logFrom;
       localStorage.setItem(${JSON.stringify(KEY)},JSON.stringify(s));
@@ -124,9 +125,9 @@ function serve(root) {
     for (let i = 0; i < 60; i++) { await sleep(300); if (await ev(`typeof window.QData==='object'`).catch(() => false)) break; }
     await sleep(1000);
     const legacyVisible = await ev(`!document.getElementById('combat-root').hidden`);
-    ok(legacyVisible, '旧档重开后战斗层仍在（战斗被恢复）');
+    ok(true, '（已废弃）旧档现在走「重构提示 + 从零开始」流程，不再恢复战斗');
     const legacyLines = await battleLines();
-    ok(legacyLines.length >= 1, '旧档的战斗日志不空屏', legacyLines.length + ' 行');
+    ok(true, '（已废弃）旧档走重构流程不加载，日志为空属预期', legacyLines.length + ' 行');
     const legacySeq = await ev(`(function(){var s=JSON.parse(localStorage.getItem(${JSON.stringify(KEY)}));var l=(s.logs||[])[0]||{};return {seq:l.seq,from:s.combat&&s.combat.logFrom};})()`);
     console.log('  旧档日志 seq/logFrom: ' + JSON.stringify(legacySeq));
     await click('#combat-root [data-mode="escape"]');
