@@ -1417,15 +1417,16 @@ body.theme-mono .rarity-0,body.theme-mono .rarity-1,body.theme-mono .rarity-2,bo
 #panel-root .craft-summary .craft-ok{color:var(--ink,#222);font-weight:600}
 #panel-root .craft-summary .craft-total{margin-left:auto;color:var(--muted,#555)}
 /* ---- V90.52 锻造熟练度：一行称号/进度 + 一行五档出率（不新增页面） ---- */
-#panel-root .forge-prof{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin:0 0 5px;font-size:11px;line-height:1.45;color:var(--muted,#555)}
-#panel-root .forge-prof>span{border:1px solid var(--line,#ddd);border-radius:4px;padding:2px 6px;background:var(--surface,#fff);white-space:nowrap}
+/* ---- V90.52 锻造熟练度：纯状态读数（不是控件）——不加边框/底色，避免被当成可点选项 ---- */
+#panel-root .forge-prof{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 10px;margin:0 0 1px;font-size:11px;line-height:1.5;color:var(--muted,#555)}
 #panel-root .forge-prof .forge-rank{color:var(--ink,#222)}
 #panel-root .forge-prof .forge-rank b{font-weight:600}
 #panel-root .forge-prof .forge-prog{font-variant-numeric:tabular-nums}
-#panel-root .forge-prof .forge-done{margin-left:auto;border:0;background:transparent;padding:2px 0}
-#panel-root .forge-rate{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 9px;font-size:10px;line-height:1.4;color:var(--muted,#555);font-variant-numeric:tabular-nums}
-#panel-root .forge-rate>i{font-style:normal;border:1px solid var(--line,#ddd);border-radius:3px;padding:1px 5px;background:var(--surface,#fff);white-space:nowrap}
-#panel-root .forge-rate>i.sm{border-color:var(--ink,#222);color:var(--ink,#222);font-weight:700}
+#panel-root .forge-prof .forge-done{margin-left:auto}
+#panel-root .forge-rate{margin:0 0 9px;font-size:10px;line-height:1.6;color:var(--muted,#555);font-variant-numeric:tabular-nums}
+#panel-root .forge-rate span{white-space:nowrap}
+#panel-root .forge-rate b{font-weight:600;color:var(--ink,#222);white-space:nowrap}
+#panel-root .forge-rate em{font-style:normal;color:var(--muted,#555)}
 #panel-root .recipe{padding:9px 10px;margin-bottom:7px;border-radius:7px}
 #panel-root .recipe-ready{border-color:var(--ink,#222)}
 #panel-root .recipe-hint{margin-top:5px;font-size:10px;line-height:1.5;color:var(--muted,#555);overflow-wrap:anywhere}
@@ -6770,14 +6771,15 @@ function craftRowsFor(key){
 
 function craftCounts(rows){const c={ok:0,mat:0,other:0};for(const r of rows){const s=craftStat(r);if(s.ok)c.ok++;else if(!s.wrong)c.mat++;else c.other++;}return c;}
 
-/* V90.52 锻造熟练度条：称号 + 进度 + 已打造件数 + 五档出率（锻造前就能看到这一件的品质概率） */
+/* V90.52 锻造熟练度读数：称号 + 进度 + 已打造件数 + 五档出率（纯展示，不带任何控件外观）
+   出率是"告知"，不是"可选"：整行用文字与 · 分隔，只有仙品加粗强调，不做边框/底色。 */
 function forgeStrip(){
  const rank=game.forgeRank,cur=game.forgePoints,next=game.forgeNextNeed(),w=game.forgeWeights,tier=['一','二','三','四','五'][rank];
  const prog=next?cur.toLocaleString('zh-CN')+' / '+next.toLocaleString('zh-CN'):cur.toLocaleString('zh-CN')+' · 已满';
- const rates=D.QUALITIES.map((q,i)=>`<i${i===4?' class="sm"':''}>${q.name} ${w[i]}%</i>`).join('');
+ const rates=D.QUALITIES.map((q,i)=>i===4?`<b>${q.name} ${w[i]}%</b>`:`<span>${q.name} ${w[i]}% · </span>`).join('');
  return `<div class="forge-prof"><span class="forge-rank"><b>锻造熟练 · ${tier}级 ${D.FORGE_RANKS[rank].name}</b></span>`+
   `<span class="forge-prog">${prog}</span><span class="forge-done">已打造 ${(game.s.prof||{}).forged||0} 件</span></div>`+
-  `<div class="forge-rate" aria-label="本档打造品质出率">${rates}</div>`;
+  `<div class="forge-rate"><em>本档出率</em>　${rates}</div>`;
 }
 
 function craftBody(){

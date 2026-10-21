@@ -196,8 +196,22 @@ ok(/rollQuality\(z=this\.s\.zone\)\{return this\.rollQualityFrom\(D\.QUALITY_WEI
 ok(/function forgeStrip\(\)/.test(html), '炼制页有熟练度条渲染函数');
 ok(/forge-prof/.test(html) && /forge-rate/.test(html), '熟练度条 + 出率条样式与节点俱在');
 ok(/锻造熟练 · \$\{tier\}级/.test(html), '界面显示「锻造熟练 · N级 称号」');
-ok(/D\.QUALITIES\.map\(\(q,i\)=>`<i\$\{i===4\?' class="sm"':''\}>\$\{q\.name\} \$\{w\[i\]\}%<\/i>`\)/.test(html),
-  '出率条逐档渲染「品质 百分比」（仙品高亮）');
+ok(/D\.QUALITIES\.map\(\(q,i\)=>i===4\?`<b>\$\{q\.name\} \$\{w\[i\]\}%<\/b>`:`<span>\$\{q\.name\} \$\{w\[i\]\}% · <\/span>`\)\.join\(''\)/.test(html),
+  '出率是纯文字（档名+百分比不被拆行），只有仙品用 <b> 加粗');
+ok(/#panel-root \.forge-rate span\{white-space:nowrap\}/.test(html), '每档「品质 百分比」不跨行拆开');
+/* 出率只告知、不可选：不能出现按钮/动作，也不能长成带边框的 chip 组（V90.52 返工点） */
+{
+  const strip = (html.match(/function forgeStrip\(\)\{[\s\S]*?\n\}/) || [''])[0];
+  ok(strip.length > 0, '取到 forgeStrip 源码块', String(strip.length));
+  ok(!/<button|data-a=|role="button"|tabindex/.test(strip), '熟练度条里没有任何可点/可选控件');
+  ok(!/<i[ >]/.test(strip), '出率不再用 <i> 做 chip');
+  const rateCss = (html.match(/#panel-root \.forge-rate\{[^}]*\}/) || [''])[0];
+  ok(rateCss.length > 0, '取到 .forge-rate 样式', rateCss.slice(0, 40));
+  ok(!/border|background/.test(rateCss), '.forge-rate 不画边框/底色（读起来不像控件）');
+  const profCss = (html.match(/#panel-root \.forge-prof\{[^}]*\}/) || [''])[0];
+  ok(!/border|background/.test(profCss), '.forge-prof 不画边框/底色');
+  ok(!/#panel-root \.forge-rate>i/.test(html), '旧的 chip 样式已移除');
+}
 ok(/已打造 \$\{\(game\.s\.prof\|\|\{\}\)\.forged\|\|0\} 件/.test(html), '界面显示已打造件数');
 ok(/品质随机 · 仙品'\+\s*game\.forgeWeights\[4\]\+'%'/.test(html) || /品质随机 · 仙品/.test(html),
   '装备配方行显示当前仙品出率（锻造前可见）');
