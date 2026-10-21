@@ -1,4 +1,4 @@
-﻿'use strict';
+'use strict';
 /*
  * V90.42 境界前中后期验收
  *  A. 引擎：major=1..8 各档道行 10%/50%/80%/100% → 初期/中期/后期/圆满，前缀是该境名
@@ -118,6 +118,18 @@ function serve(root) {
       for (let i = 0; i < 60; i++) { await sleep(300); if (await ev(`typeof window.QData==='object'&&document.querySelectorAll('button').length>5`).catch(() => false)) break; }
       await sleep(900);
     };
+    /* 存档是「页面启动时注入 localStorage」再被自动进入流程读到的：
+       状态栏可能先按空档渲染一次，等档位载入后才会重绘。这里等到它真的反映存档再断言，
+       否则会随机读到「炼气一层 / 修 0/15」这种启动瞬间的旧值（V90.54 期间在干净工作树上也复现过）。 */
+    const waitStatusLoaded = async (ms = 10000) => {
+      const t0 = Date.now();
+      while (Date.now() - t0 < ms) {
+        const chip = await ev(`(document.querySelector('.v905-xp')||{}).textContent||''`).catch(() => '');
+        if (/道\s*\d+\s*\//.test(chip)) return chip;
+        await sleep(200);
+      }
+      return await ev(`(document.querySelector('.v905-xp')||{}).textContent||''`).catch(() => '');
+    };
 
     await send('Runtime.enable'); await send('Page.enable');
     await send('Emulation.setDeviceMetricsOverride', { width: 360, height: 640, deviceScaleFactor: 2, mobile: true });
@@ -134,6 +146,7 @@ function serve(root) {
     for (const [tag, label] of [['before', 'V90.41 改前'], ['after', 'V90.42 改后']]) {
       await send('Page.addScriptToEvaluateOnNewDocument', { source: `try{localStorage.setItem(${JSON.stringify(KEY)}, ${JSON.stringify(JSON.stringify(mod))});}catch(e){}` });
       await boot(tag, 'plain');
+      if (tag === 'after') await waitStatusLoaded();
       const statusText = await ev(`(document.querySelector('.v905-realm')||{}).textContent||''`);
       const chip = await ev(`(document.querySelector('.v905-xp')||{}).textContent||''`);
       const bars = await ev(`document.querySelectorAll('.dao-stage i.on').length`);
