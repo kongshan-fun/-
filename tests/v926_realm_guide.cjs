@@ -45,17 +45,18 @@ function readyState(level) {
 /* ---------- 1. 成功：后期修满 → 渡劫 → 进入下一境初期 ---------- */
 for (const level of [3, 18, 33]) {
   const g = readyState(level);
-  const before = { level: g.s.level, idx: g.realmIndex, dmg: g.tribDamage };
+  const before = { level: g.s.level, idx: g.realmIndex, dmg: g.tribDamage, hp: g.s.hp, early: g.realmIndex <= 4 };
   const r = g.breakthrough();
   ok(r && r.ok, `L${level} 渡劫成功：${JSON.stringify((r && r.msg) || '')}`);
   eq(g.s.level, before.level + 1, `L${level} 渡劫后 level+1`);
-  eq(g.s.xp, 0, '渡劫后修为归零');
+  eq(g.s.xp, 0, '本段修为扣清（盈余会保留，此处恰好为 0）');
   eq(g.s.pendingTribulation, 0, '渡劫后清掉待渡劫标记');
   eq(g.realmIndex, Math.min(12, before.idx + 1), '进入下一境');
   eq(g.stageIndex, 1, '落在下一境初期');
   const st = D.statsForLevel(g.s.level);
   eq(g.s.maxHp, st.hp, '气血上限按新段属性表落位');
-  eq(g.s.hp, Math.max(1, g.s.maxHp - before.dmg), '渡劫按固定伤害扣血（不清零）');
+  if(before.early)eq(g.s.hp, before.hp, '前四境晋升不掉血');
+  else eq(g.s.hp, Math.max(1, g.s.maxHp - before.dmg), '渡劫按固定伤害扣血（不清零）');
 }
 
 /* ---------- 2. 伤害口径：小于气血上限，护劫丹每颗减 15% ---------- */
@@ -91,9 +92,9 @@ expectFail('已在渡劫后期', (s) => { s.level = 36; s.xp = 0; }, '渡劫后�
   g.s.xp = 0;
   g.xp(g.required * 3);               // 远超本段需求
   eq(g.s.level, 18, '后期修满后不再自动升段');
-  eq(g.s.xp, g.required, '修为停在本段需求（等渡劫）');
+  ok(g.s.xp >= g.required, '修为达到并超过本段需求（V90.60 起允许超额累积）');
   eq(g.s.pendingTribulation, 18, '记下待渡劫');
-  ok(/本境已修至圆满/.test(html), '有「本境已修至圆满 · 可渡劫」提示');
+  ok(/本境(已修至圆满|后期已圆满)/.test(html), '有「后期圆满 · 可渡劫」提示');
 }
 
 /* ---------- 5. 旧选项式试炼不再卡破境（docs §十 明确不做） ---------- */
