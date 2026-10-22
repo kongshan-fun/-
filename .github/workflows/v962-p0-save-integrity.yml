@@ -1,0 +1,80 @@
+name: V90.62 Candidate Acceptance
+on:
+  push:
+    branches: [fix/v90.62-p0-acceptance-20261022, release/v90.62-integration-20261023]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v962-acceptance-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: P0 save and compensation integrity (65 assertions)
+        run: node tests/v962_p0_save_integrity.cjs
+      - name: Dual-race 200-slot fault matrix
+        run: node tests/v962_200slots_faults.cjs
+      - name: Engine, combat, progression, forging and old-save regression
+        run: |
+          node tests/syntax_check.cjs
+          node tests/run_v908_regression.cjs
+          node tests/v923_gear_drop.cjs
+          node tests/v927_gear_economy.cjs
+          node tests/v926_realm_guide.cjs
+          node tests/v955_realm_axis.cjs
+          node tests/v952_forge_prof.cjs
+          node tests/v953_refine_rating.cjs
+          node tests/v954_spirit_affix.cjs
+          node tests/v957_attr_pills.cjs
+          node tests/v958_old_save_flow.cjs
+          node tests/v959_combat_save.cjs
+          node tests/v960_breakthrough_split.cjs
+          node tests/v958_dual_growth_chain.cjs
+          node tests/v958_cross_realm_unlock.cjs
+      - name: Entry, release, and deterministic reconstruction
+        run: |
+          python3 tools/check_entry_consistency.py
+          python3 tools/check_entry_consistency.py --rebuild
+          python3 tests/v961_build_eol_regression.py
+          git diff --exit-code -- index.html releases/
+      - name: Install Chinese layout fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-noto-cjk fonts-wqy-zenhei
+      - name: Install browser runtime
+        run: |
+          python3 -m pip install --disable-pip-version-check playwright==1.56.0
+          python3 -m playwright install --with-deps chromium
+      - name: Real browser - old-save export, cancel, claim, retry, spent balance
+        run: python3 tests/v962_p0_browser.py
+      - name: Real browser - six mobile and desktop viewports
+        run: python3 tests/browser_responsive.py
+      - name: Upload real browser screenshots and metrics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v962-candidate-evidence-${{ github.run_id }}
+          path: |
+            artifacts/v962-p0-browser/
+            artifacts/browser-responsive/
+          retention-days: 14
+          if-no-files-found: warn
+      - name: Build and verify full local candidate ZIP
+        run: python3 tools/package_v962_candidate.py
+      - name: Upload complete local candidate package
+        uses: actions/upload-artifact@v4
+        with:
+          name: v962-full-local-candidate-${{ github.run_id }}
+          path: dist/山野修仙记_V90.62_完整本地候选包.zip
+          retention-days: 30
+          if-no-files-found: error

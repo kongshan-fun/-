@@ -65,7 +65,10 @@ def main():
             raise SystemExit(f"[ABORT] 产物缺少 {needle}")
     ok("产物标记", "沿用存档数值 已接入")
 
-    out = text.replace("\n", "\r\n").encode("utf-8")
+    # Preserve the frozen baseline newline format: Linux LF / Windows CRLF.
+    # Prior unconditional CRLF broke GitHub Actions reproducibility.
+    eol = "\r\n" if b"\r\n" in raw else "\n"
+    out = text.replace("\n", eol).encode("utf-8")
     (RELEASES / OUT_NAME).write_bytes(out)
     (ROOT / "index.html").write_bytes(out)
     ok("产物一致性", "index.html == release")
