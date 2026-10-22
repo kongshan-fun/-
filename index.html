@@ -5599,7 +5599,8 @@ class RaceSlots{
   this.check(id);this.slot(n);
   const found=this.read(id,n);
   if(!found||!found.reset)throw Error('只允许确认重置旧版存档');
-  const receipt=this.legacy(id,n),already=receipt.rebuildCompensation;
+  const receipt=this.legacy(id,n),priorMarker=this.readKey(this.key(id,n)+'-rebuild-compensated');
+  const already=receipt.rebuildCompensation||!!priorMarker;
   const tier=found.reset.tier;
   if(!already){
    receipt.balance+=tier;
@@ -5608,7 +5609,12 @@ class RaceSlots{
    this.putLegacy(id,n,receipt);
   }
   const updated=this.legacy(id,n);
-  if(!updated.rebuildCompensation)throw Error('补偿记录未落盘，旧档保持不变');
+  if(!updated.rebuildCompensation){
+   // Honor receipts from V90.58~V90.61 without granting any additional credit.
+   if(!priorMarker)throw Error('补偿记录未落盘，旧档保持不变');
+   updated.rebuildCompensation={tier:0,source:'legacy-marker',at:new Date().toISOString()};
+   this.putLegacy(id,n,updated);
+  }
   const g=new Game(null,261014,id),up=updated.upgrades||{};
   g.s.maxHp+=4*(up.vigor||0);g.s.hp+=4*(up.vigor||0);
   g.s.maxSpirit+=4*(up.spirit||0);g.s.spirit+=4*(up.spirit||0);g.s.attack+=up.attack||0;

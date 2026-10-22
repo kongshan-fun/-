@@ -66,4 +66,14 @@ for(const race of ['human','demon']){
  eq(g2.s.xp,234567,race+' slot save keeps XP at 36');
  eq(g2.s.xpCarry,.3,race+' slot save keeps fractional carry');
 }
+{
+ const db=storage(),s=new Slots(db),key=s.key('human',4);
+ const old=G.fresh(261014,'human');old.rebuilt=0;
+ db.setItem(key,JSON.stringify(old));
+ db.setItem(key+'-rebuild-compensated','1');
+ const result=s.resetRebuilt('human',4);
+ eq(result.paid,0,'historical receipt prevents second payout');
+ eq(s.legacy('human',4).balance,0,'historical receipt never tops up already spent jade');
+ ok(s.read('human',4).game,'historical marker migration still creates a playable slot');
+}
 console.log('V90.62 P0 targeted '+pass+' assertions PASS');
