@@ -68,3 +68,12 @@ jobs:
             artifacts/browser-responsive/
           retention-days: 14
           if-no-files-found: warn
+      - name: Build and verify full local candidate ZIP
+        run: python3 tools/package_v962_candidate.py
+      - name: Upload complete local candidate package
+        uses: actions/upload-artifact@v4
+        with:
+          name: v962-full-local-candidate-${{ github.run_id }}
+          path: dist/山野修仙记_V90.62_完整本地候选包.zip
+          retention-days: 30
+          if-no-files-found: error
