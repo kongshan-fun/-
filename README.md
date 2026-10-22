@@ -1,8 +1,8 @@
-# 山野修仙记 · V90.40 文案清理
+# 山野修仙记 · V90.62 存档可靠性收口（验收候选）
 
-原创竖屏 H5 文字修仙生存 RPG。**`main` 为 V90.39；本分支 `copy-cleanup-v9040` 为 V90.40**，默认入口为 [`index.html`](index.html)，与 [V90.40 独立发布文件](releases/山野修仙记_V90.40_文案清理版.html) **字节一致**（由 `tools/check_entry_consistency.py` 在 CI 里强制校验）。
+原创竖屏 H5 文字修仙生存 RPG。**`main` 目前为 V90.41；本候选分支 `fix/v90.62-p0-acceptance-20261022` 为 V90.62**。默认入口 [`index.html`](index.html) 与 [V90.62 独立发布文件](releases/山野修仙记_V90.62_存档可靠性收口.html) 字节一致，并由 [`tools/build_v962_from_main.py`](tools/build_v962_from_main.py) 从冻结 V90.61 基线确定性重建。
 
-> **状态说明（2026-10-20）：** 仓库版本 ≠ 已上线。TapTap 上 **`V-20261019` 已审核通过并上线**（V90.16 的包）。V90.17~V90.28 仍是仓库版本；V90.29 候选包（h5VersionId `336192`）已上传但**未绑定主包位、未提交审核**。**不要据 GitHub 版本推断线上版本**，一律 `app list-app-versions` 实时回读。
+> **状态说明（2026-10-22）：** V90.62 是 GitHub 开发候选，**未合并 main，亦未确认在 TapTap 上线**。此前 GitHub 交接记录显示 V90.35 已过审上线、V90.37 在审，后续还有候选包上传；这些不是当前 TapTap 实时状态的证明。发布前必须从 TapTap 开发者后台重新读取在线版本、完成真机与平台云存档/广告验收。
 
 ## 立即体验
 
@@ -37,6 +37,12 @@
 | V90.38 | 续命不再限最后 15 年；寿尽可看广告 +15 年（每世一次） |
 | V90.39 | 设置页寿元文案与新规则对齐 |
 | **V90.40** | **文案清理：去存档术语/内部 roadmap/AI 句式，删掉「模拟广告」死代码** |
+| V90.41 | 面板全屏与迷你资源条；360×640 的洞府面板收敛到一屏 |
+| V90.42–50 | 十二境、36 段成长轴数据层、属性/怪物表和渡劫基础 |
+| V90.51–54 | 越级压制、锻造熟练度、精炼经济与赋灵词条 |
+| V90.55–57 | 36 段修为及境界边界渡劫、属性丹 |
+| V90.58–61 | 破境即时解锁、旧档补偿、战斗存档、晋升分流与修为继承 |
+| **V90.62** | **旧档补偿防重复、修为存档精度、200 档故障注入、真实浏览器验收及确定性构建** |
 
 历史版本（V83~V90.15）仍在 [`releases/`](releases/) 里冻结保留。
 
@@ -56,14 +62,17 @@
 ## 确定性构建及回归
 
 ```bash
-python3 tools/build_v940_from_main.py               # 从 V90.39 重建 V90.40（幂等）
+python3 tools/build_v962_from_main.py               # 从冻结 V90.61 精确重建 V90.62
 python3 tools/check_entry_consistency.py --rebuild   # 一致性 + 可复现
-node tests/run_full_regression.cjs                  # 16 层全量（发版前必跑）
+node tests/run_full_regression.cjs                  # 完整历史本地测试（含旧 CDP，会受环境影响）
 python3 tests/browser_responsive.py                 # 6 视口布局（需 playwright + chromium）
-python3 tools/verify_delivery.py                    # 交付包自检（解包 → 校验和 → 与仓库比对）
+node tests/v962_200slots_faults.cjs                 # 200 档故障注入
+node tests/v962_p0_save_integrity.cjs               # 65 项存档专项
+python3 tests/v962_p0_browser.py                    # 真实浏览器旧档操作
+python3 tools/package_v962_candidate.py             # CI 通过后制作带证据的本地包
 ```
 
-CI 见 [`.github/workflows/main-verify.yml`](.github/workflows/main-verify.yml)：按当前版本反查发布文件与构建器，不再写死版本号；界面层跑 playwright 的 6 视口验收（手写 CDP 套件在 runner 上不稳定，故留在本地）。
+候选版 CI 见 [`.github/workflows/v962-p0-save-integrity.yml`](.github/workflows/v962-p0-save-integrity.yml)：65 项专项 + 双族 200 档故障注入 + 关键引擎回归 + 确定性构建 + 实际 Chromium 旧档流程 + 6 视口截图 + 完整本地候选 ZIP。历史手写 CDP 全量套件仍留在本地发布前复验，不用 GitHub runner 的替代覆盖冒充全量本地测试。主线校验仍为 [main-verify.yml](.github/workflows/main-verify.yml)。
 
 ## 发行与数据边界
 
