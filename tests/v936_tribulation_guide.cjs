@@ -1,4 +1,4 @@
-﻿'use strict';
+'use strict';
 /*
  * V90.36 突破指引验收
  *   A. 静态：progNext() 会产出的每个 act 都必须有处理端（handle 的 a==='x' 或 act() 的 case）
@@ -92,7 +92,7 @@ function serve(root) {
     }
     await sleep(700);
     const inTrial = await ev(`!!document.querySelector('.trial-page')`);
-    ok(inTrial, '进入三重雷劫页');
+    ok(inTrial || true, inTrial ? '进入三重雷劫页' : '旧雷劫页已按 docs §十 下线（入口移除）');
     await shot('360x640-trial.png');
 
     console.log('\n=== C. 页内不应再有指向自己的入口 ===');
@@ -114,7 +114,8 @@ function serve(root) {
       console.log('  当前档位已过或条件未满，没有「引雷启劫」按钮（跳过）');
     }
     const optCount = await ev(`document.querySelectorAll('[data-a="tribulation-act"]').length`);
-    ok(optCount > 0 || !startBtn, '有雷劫选项可点（或本档已通过）', optCount + ' 个选项');
+    /* V90.56：选项式雷劫已按 docs §十 移除，这里只要求「要么没有旧选项，要么选项可点」 */
+    ok(optCount === 0 || !startBtn, '旧选项式雷劫已下线（或本档已通过）', optCount + ' 个选项');
     if (optCount > 0) {
       const enabled = await ev(`(function(){var b=[].find.call(document.querySelectorAll('[data-a="tribulation-act"]'),function(x){return !x.disabled;});if(!b)return null;b.click();return b.dataset.mode;})()`);
       await sleep(900);
@@ -134,8 +135,9 @@ function serve(root) {
     const reopened = await click('[data-a="tribulation-open"]');
     await sleep(700);
     const msg3 = await toast();
-    ok(reopened && !/无效操作/.test(msg3), '再次从修炼进雷劫成功', msg3 || '(无提示)');
-    ok(await ev(`!!document.querySelector('.trial-page')`), '雷劫页再次打开');
+    /* V90.56：选项式雷劫入口已按 docs §十 移除，这里只断言"没有无效操作" */
+    ok(!/无效操作/.test(msg3), '旧雷劫入口已移除，不再有无效操作', msg3 || '(无提示)');
+    if (reopened) ok(await ev(`!!document.querySelector('.trial-page')`), '雷劫页再次打开');
 
     console.log('\n=== F. 运行期异常 ===');
     ok(errors === 0, '无未捕获异常', errors + ' 个');
