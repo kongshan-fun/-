@@ -42,8 +42,9 @@ ok(D.statsFor(99, 0, 100).index === 12, '越界夹紧到第 12 境');
 const G = ctx.QGame;
 const g = Object.create(G.prototype);
 const st = D.statsFor(6, 0, need6);
-g.s = { zone: 10, major: 6, level: 18, daoXp: 0, character: 'human', ascended: false, maxHp: st.hp, hp: st.hp, inv: {}, cleared: Array(12).fill(true) };
-ok(g.tribDamage === Math.round(st.hp * 0.95), '大乘渡劫：伤害 = 上限×95%（随属性放大）', g.tribDamage);
+/* V90.56：渡劫伤害改用 docs §七 绝对表，按出发境序（大乘=境11 → 15500） */
+g.s = { zone: 10, major: 6, level: 33, xp: 0, daoXp: 0, character: 'human', ascended: false, maxHp: st.hp, hp: st.hp, inv: {}, cleared: Array(12).fill(true) };
+ok(g.tribDamage === 15500, '大乘→渡劫：伤害 = 定稿 15500（绝对表，不随气血变化）', g.tribDamage);
 
 console.log(`\n合计 ${pass + fail} 项：${pass} 通过 / ${fail} 失败`);
 process.exitCode = fail === 0 ? 0 : 1;
