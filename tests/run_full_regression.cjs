@@ -57,6 +57,7 @@ const LAYERS = [
   ['跨境解锁（渡劫即开图）', 'node', ['tests/v958_cross_realm_unlock.cjs']],
   ['旧档导出与一次性补偿', 'node', ['tests/v958_old_save_flow.cjs']],
   ['双族十二境与飞升链', 'node', ['tests/v958_dual_growth_chain.cjs']],
+  ['战斗中存档不再失败', 'node', ['tests/v959_combat_save.cjs']],
   ['锻造熟练度与品质出率', 'node', ['tests/v952_forge_prof.cjs']],
   ['精炼经济闭环与战力境序', 'node', ['tests/v953_refine_rating.cjs']],
   ['赋灵词条与品阶出率', 'node', ['tests/v954_spirit_affix.cjs']],
