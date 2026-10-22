@@ -1,0 +1,33 @@
+name: V90.62 P0 Save Integrity
+on:
+  push:
+    branches: [fix/v90.62-p0-save-integrity]
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: P0 save and compensation integrity
+        run: node tests/v962_p0_save_integrity.cjs
+      - name: Prior combat and progression regressions
+        run: |
+          node tests/v959_combat_save.cjs
+          node tests/v960_breakthrough_split.cjs
+          node tests/v958_dual_growth_chain.cjs
+          node tests/v958_cross_realm_unlock.cjs
+      - name: Syntax, layout and source consistency
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          a=Path('index.html').read_bytes()
+          b=Path('releases/山野修仙记_V90.62_存档可靠性收口.html').read_bytes()
+          assert a==b
+          assert b'V90.62' in a
+          PY
