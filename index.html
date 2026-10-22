@@ -4475,8 +4475,9 @@ get character(){return B.profile(this.s.birth);}
  ascend(){
   if(this.s.ascended)return this.fail('已成功飞升，仙界篇章待更新');
   if(this.s.zone!==D.ZONES.length-1||this.land()!=='gate')return this.fail('请前往渡劫天门的飞升界碑');
-  if(this.s.major!==8||!this.s.cleared.every(Boolean))return this.fail('先达到渡劫境，平定凡界十二境');
-  if(this.s.daoXp<D.ASCENSION_RULE.dao)return this.fail('飞升道行不足：'+this.s.daoXp+'/'+D.ASCENSION_RULE.dao);
+  if(this.s.level<36||this.stageIndex!==3)return this.fail('需先修到渡劫后期圆满才能飞升');
+  if(!this.s.cleared.every(Boolean))return this.fail('平定凡界十二境后方可飞升');
+  if(this.s.xp<this.required)return this.fail('渡劫后期修为未满：'+this.s.xp+'/'+this.required);
   if(!this.enough(D.ASCENSION_RULE.cost))return this.fail(this.missing(D.ASCENSION_RULE.cost));
   if(!this.tick(180,4,4,8))return {ok:false};this.spend(D.ASCENSION_RULE.cost);
   this.s.major=9;this.s.ascended=true;this.s.flags.complete=true;

@@ -1,16 +1,11 @@
-﻿'use strict';
+'use strict';
 /*
- * P0-4 动态境界指引复验：金丹 → 渡劫七境的「条件清单 / 材料来源 / 导航 / 动作」
+ * V90.55/V90.56 验收：渡劫（境边界的那一次固定伤害结算）
  *
- * 断的是引擎真行为，不是文案：
- *   1. 每个高阶境（zone 5..11）在条件齐备时 breakthrough() 真的成功，
- *      且 major = zone-3、境界名与 ASCENSION_STAGES 一致
- *   2. 条件不齐时**每一条门槛都会给出可读的拒绝理由**（说明清单是活的，不是摆设）
- *       战斗中 / 未通关本境 / 已突破 / 未满 18 级 / 不在洞府 / 道行不足 / 缺材料 /
- *       金丹雷劫未渡 / 元婴问心未过
- *   3. 突破材料在该境地图上真的有来源（资源地标的 loot 命中）
- *   4. 该境地图像素里存在 boss 格，且 game.path() 能算出路线（导航可用）
- *   5. 修炼父子页用到的动作在 handle() 里都存在（按钮不会点了没反应）
+ * 语义变更（原 v926「七境突破指引」已不适用）：
+ *   旧：道行满 + 击败首领 + 三重雷考/问心 + 材料 → major+1
+ *   新：本境后期修满（xp≥required）→ 回洞府 → 气血≥固定伤害 → 渡劫 → level+1（进入下一境初期）
+ * 失败只重伤（collapse），不清档；不再有材料消耗与选项式前摇。
  */
 const fs = require('node:fs');
 const path = require('node:path');
@@ -20,7 +15,7 @@ const assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const blocks = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map((m) => m[1]);
-const ctx = vm.createContext({ console: { log() {} } });
+const ctx = vm.createContext({ console });
 ctx.globalThis = ctx;
 for (let i = 0; i <= 5; i++) vm.runInContext(blocks[i], ctx, { timeout: 10000 });
 const Game = ctx.QGame, D = ctx.QData;
@@ -29,82 +24,96 @@ let checks = 0;
 const ok = (v, msg) => { assert.ok(v, msg); checks++; };
 const eq = (a, b, msg) => { assert.equal(a, b, msg); checks++; };
 
-/* ---------- 1/3/4. 七境突破 + 材料来源 + 导航 ---------- */
-function stageState(z) {
-  const st = D.ASCENSION_STAGES[z - 5];
+/* 造一个「本境后期修满、在洞府、气血足」的档位 */
+function readyState(level) {
   const s = Game.fresh(20261025, 'human');
-  s.zone = z; s.major = z - 4; s.unlocked = Math.min(D.ZONES.length, z + 1);
-  s.level = 18; s.hunger = 100; s.water = 100;
-  s.hp = s.maxHp; s.spirit = s.maxSpirit;
+  s.level = level;
+  s.zone = 0;
+  s.hunger = 100; s.water = 100;
   s.life.left = 200 * D.LIFE.yearMinutes;
-  for (let i = 0; i <= z; i++) { s.cleared[i] = true; s.ritual[i] = true; }
-  s.daoXp = st.needDao;
-  s.inv[st.primary] = 10; s.inv[st.secondary] = 10;
-  s.flags.coreTribulation = { phase: 3, marks: 3, started: true, complete: true };
-  s.flags.heartTrial = { phase: 3, started: true, complete: true, choices: [] };
-  const campPos = { x: 1, y: 5 };
-  s.pos = { ...campPos }; s.last = { ...campPos };
-  s.settlements[z] = { pos: { ...campPos }, level: 3, buildings: { warehouse: 3, forge: 3, alchemy: 3, quiet: 3, farm: 3 }, stash: {}, storedGears: [], foundedAt: s.minutes, farmAt: s.minutes };
-  return s;
+  const p = { x: 1, y: 5 };
+  s.pos = { ...p }; s.last = { ...p };
+  s.settlements[0] = { pos: { ...p }, level: 3, buildings: { warehouse: 3, forge: 3, alchemy: 3, quiet: 3, farm: 3 },
+    stash: {}, storedGears: [], foundedAt: s.minutes, farmAt: s.minutes };
+  s.inv.guardPill = 0;
+  const g = new Game(s);
+  g.s.hp = g.s.maxHp;
+  g.s.xp = g.required;                                  // 后期修满
+  return g;
 }
 
-for (let z = 5; z < D.ZONES.length; z++) {
-  const st = D.ASCENSION_STAGES[z - 5];
-  const g = new Game(stageState(z));
-  g.s.hp = g.s.maxHp; /* V90.46：渡劫需满血，夹具补满 */
-  ok(g.atCamp, `zone${z} 判定为在洞府（破境前置）`);
-  eq(g.breakthroughReason ? null : null, null, ''); // 占位保持计数简单
-  const before = g.s.major;
+/* ---------- 1. 成功：后期修满 → 渡劫 → 进入下一境初期 ---------- */
+for (const level of [3, 18, 33]) {
+  const g = readyState(level);
+  const before = { level: g.s.level, idx: g.realmIndex, dmg: g.tribDamage };
   const r = g.breakthrough();
-  ok(r && r.ok, `zone${z} ${D.ZONES[z].name} 破境成功：${JSON.stringify(r && r.msg || '')}`);
-  eq(before, z - 4, `zone${z} 破境前 major=${z - 4}`);
-  eq(g.s.major, z - 3, `zone${z} 破境后 major=${z - 3}`);
-  /* V90.42 起后七境带前中后期后缀：破境后道行为 0 → 初期 */
-  /* V90.45 起境界名按十二境表：丹霞(zone5) 破境后是元婴，不是金丹 */
-  const expectBase = D.REALM12.human[Math.min(12, g.s.major + 5) - 1];
-  ok(g.realm.startsWith(expectBase), `zone${z} 破境后境界 = ${expectBase}（实际 ${g.realm}）`);
-
-  // 材料来源：该境地图上要能采到 primary / secondary
-  const lands = new Set(D.ZONES[z].map.flat());
-  for (const item of [st.primary, st.secondary]) {
-    const hasLand = [...lands].some((land) => (D.RESOURCE_LAYOUT[land] || []).some((k) => k && D.RES[k]?.loot?.[item]));
-    ok(hasLand, `zone${z} 地图上能产出 ${D.ITEMS[item]?.name || item}`);
-  }
-
-  // 导航：boss 格存在且 path 可用
-  const boss = [];
-  D.ZONES[z].map.forEach((row, y) => row.forEach((land, x) => { if (land === 'boss') boss.push({ x, y }); }));
-  ok(boss.length === 1, `zone${z} 地图恰好一个 boss 格`);
-  const g2 = new Game(stageState(z));
-  const route = g2.path(boss[0].x, boss[0].y);
-  ok(Array.isArray(route) && route.length > 0, `zone${z} 能算出通往 boss 的路线（${route.length} 步）`);
+  ok(r && r.ok, `L${level} 渡劫成功：${JSON.stringify((r && r.msg) || '')}`);
+  eq(g.s.level, before.level + 1, `L${level} 渡劫后 level+1`);
+  eq(g.s.xp, 0, '渡劫后修为归零');
+  eq(g.s.pendingTribulation, 0, '渡劫后清掉待渡劫标记');
+  eq(g.realmIndex, Math.min(12, before.idx + 1), '进入下一境');
+  eq(g.stageIndex, 1, '落在下一境初期');
+  const st = D.statsForLevel(g.s.level);
+  eq(g.s.maxHp, st.hp, '气血上限按新段属性表落位');
+  eq(g.s.hp, Math.max(1, g.s.maxHp - before.dmg), '渡劫按固定伤害扣血（不清零）');
 }
 
-/* ---------- 2. 每条门槛都要有可读拒绝理由 ---------- */
-const gates = [];
+/* ---------- 2. 伤害口径：小于气血上限，护劫丹每颗减 15% ---------- */
+{
+  const g = readyState(18);
+  const full = g.tribDamage;
+  ok(full > 0 && full < g.s.maxHp, '渡劫伤害小于气血上限（不会必死）', `${full}/${g.s.maxHp}`);
+  g.s.inv.guardPill = 2;
+  const reduced = g.tribDamage;
+  ok(reduced < full, '两颗护劫丹确实减伤', `${full} → ${reduced}`);
+  ok(Math.abs(reduced - Math.round(full * 0.7)) <= 1, '两颗护劫丹约减 30%', `${full}*0.7≈${Math.round(full * 0.7)} vs ${reduced}`);
+}
+
+/* ---------- 3. 门槛：逐个失败原因 ---------- */
 function expectFail(label, mutate, needle) {
-  /* 先建 Game 再改 g.s：normalize 会把伪造的 combat 之类直接清掉 */
-  const g = new Game(stageState(5));   // 丹霞 = 金丹，雷劫/问心条件都在这一境
-  mutate(g.s);
+  const g = readyState(18);
+  mutate(g.s, g);
+  let r;
+  try { r = g.breakthrough(); } catch (e) { r = { ok: false, msg: e.message }; }
+  const msg = String((r && r.msg) || '');
+  ok(r && r.ok !== true && new RegExp(needle).test(msg), `${label} → 被挡（${msg.slice(0, 24)}）`);
+}
+expectFail('战斗中', (s) => { s.combat = { type: 'river', hp: 1, maxHp: 1, atk: 1, armor: 0, turn: 1, intent: 'attack' }; }, '斗法中');
+expectFail('未到后期', (s) => { s.level = 17; }, '后期');
+expectFail('修为未满', (s) => { s.xp = 1; }, '修为未满');
+expectFail('不在洞府', (s, g) => { g.s.settlements[0].pos = { x: 6, y: 6 }; }, '洞府');
+expectFail('气血不足', (s) => { s.hp = 1; }, '气血');
+expectFail('已在渡劫后期', (s) => { s.level = 36; s.xp = 0; }, '渡劫后期');
+
+/* ---------- 4. 后期修满后不再自动跨境 ---------- */
+{
+  const g = readyState(18);
+  g.s.xp = 0;
+  g.xp(g.required * 3);               // 远超本段需求
+  eq(g.s.level, 18, '后期修满后不再自动升段');
+  eq(g.s.xp, g.required, '修为停在本段需求（等渡劫）');
+  eq(g.s.pendingTribulation, 18, '记下待渡劫');
+  ok(/本境已修至圆满/.test(html), '有「本境已修至圆满 · 可渡劫」提示');
+}
+
+/* ---------- 5. 旧选项式试炼不再卡破境（docs §十 明确不做） ---------- */
+{
+  const g = readyState(18);
+  g.s.flags.coreTribulation = { phase: 0, marks: 0, started: false, complete: false };
+  g.s.flags.heartTrial = { phase: 0, started: false, complete: false, choices: [] };
   const r = g.breakthrough();
-  ok(r && r.ok === false, `门槛「${label}」应当失败`);
-  const msg = String(r.msg || '');
-  ok(msg.includes(needle), `门槛「${label}」理由包含「${needle}」（实际：${msg}）`);
-  gates.push(label);
-}
-expectFail('战斗中', (s) => { s.combat = { enemy: 'river', hp: 1, maxHp: 1, atk: 1, armor: 0, turn: 1, intent: 'attack' }; }, '斗法中');
-expectFail('未通关本境', (s) => { s.cleared[5] = false; }, '首领');
-expectFail('已突破过', (s) => { s.major = 2; }, '已突破');
-expectFail('未满 18 级', (s) => { s.level = 12; }, '后期');
-expectFail('不在洞府', (s) => { s.settlements[5].pos = { x: 6, y: 6 }; }, '洞府');
-expectFail('道行不足', (s) => { s.daoXp = 0; }, '道行不足');
-expectFail('缺材料', (s) => { s.inv[D.ASCENSION_STAGES[0].primary] = 0; s.inv[D.ASCENSION_STAGES[0].secondary] = 0; }, '缺');
-expectFail('金丹雷劫未渡', (s) => { s.flags.coreTribulation = { phase: 0, marks: 0, started: false, complete: false }; }, '雷');
-expectFail('元婴问心未过', (s) => { s.zone = 6; s.major = 2; s.cleared[6] = true; s.settlements[6] = s.settlements[5]; s.pos = { x: 1, y: 5 }; s.daoXp = D.ASCENSION_STAGES[1].needDao; s.inv[D.ASCENSION_STAGES[1].primary] = 10; s.inv[D.ASCENSION_STAGES[1].secondary] = 10; s.flags.heartTrial = { phase: 0, started: false, complete: false, choices: [] }; }, '问心');
-
-/* ---------- 5. 修炼父子页的动作在 handle() 里都存在 ---------- */
-for (const act of ['cult-step', 'panel-step', 'train', 'tribulation-open', 'tribulation-start', 'tribulation-act', 'tribulation-return', 'heart-open', 'heart-start', 'heart-act', 'heart-return']) {
-  ok(html.includes(`a==='${act}'`) || html.includes(`data-a="${act}"`), `动作 ${act} 存在（按钮不会点了没反应）`);
+  ok(r && r.ok, '三重雷考/问心未做也能渡劫（不再作为门槛）', JSON.stringify((r && r.msg) || ''));
 }
 
-console.log(`REALM GUIDE PASS ${checks} checks（七境全部可突破；门槛 ${gates.length} 条都有理由；动作齐全）`);
+/* ---------- 6. 材料不再消耗 ---------- */
+{
+  const g = readyState(18);
+  const before = JSON.stringify(g.s.inv);
+  g.breakthrough();
+  eq(JSON.stringify(g.s.inv), before, '渡劫不消耗任何材料');
+}
+
+/* ---------- 7. 指引文案存在 ---------- */
+ok(/渡劫/.test(html) && /圆满/.test(html), '源码含渡劫/圆满文案');
+
+console.log(`REALM TRIBULATION PASS ${checks} checks（后期修满→渡劫→下一境；失败只重伤）`);

@@ -1,0 +1,65 @@
+{
+ "camp": {
+  "screens": 1,
+  "bodyTop": 74,
+  "visH": 516,
+  "mini": true,
+  "statusHidden": true
+ },
+ "craft": {
+  "screens": 1,
+  "bodyTop": 121,
+  "visH": 469,
+  "mini": true,
+  "statusHidden": true
+ },
+ "pack": {
+  "screens": 1,
+  "bodyTop": 74,
+  "visH": 516,
+  "mini": true,
+  "statusHidden": true
+ },
+ "book": {
+  "screens": 1,
+  "bodyTop": 121,
+  "visH": 469,
+  "mini": true,
+  "statusHidden": true
+ },
+ "quest": {
+  "screens": 1,
+  "bodyTop": 74,
+  "visH": 516,
+  "mini": true,
+  "statusHidden": true
+ },
+ "settings": {
+  "screens": 1,
+  "bodyTop": 74,
+  "visH": 516,
+  "mini": true,
+  "statusHidden": true
+ },
+ "cultivate": {
+  "screens": 1,
+  "bodyTop": 74,
+  "visH": 516,
+  "mini": true,
+  "statusHidden": true
+ },
+ "camp320": {
+  "screens": 1.19,
+  "bodyTop": 73,
+  "visH": 448,
+  "mini": true,
+  "statusHidden": true
+ },
+ "camp390": {
+  "screens": 1,
+  "bodyTop": 74,
+  "visH": 716,
+  "mini": true,
+  "statusHidden": true
+ }
+}

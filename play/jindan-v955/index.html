@@ -4083,6 +4083,12 @@ get character(){return B.profile(this.s.birth);}
   let broke=0;
   while(this.s.level<36&&this.s.xp>=this.required){
    const need=this.required,cross=this.stageIndex===3;
+   /* docs §七：本境后期修满就停住，等「渡劫」结算后才进入下一境（不再自动跨境） */
+   if(cross){
+    this.s.xp=need;this.s.pendingTribulation=this.s.level;
+    this.log('本境已修至圆满 · 可渡劫','good');
+    break;
+   }
    this.s.xp-=need;this.s.level++;broke++;
    this.syncMajor();
    const st=D.statsForLevel(this.s.level);
@@ -4092,12 +4098,11 @@ get character(){return B.profile(this.s.birth);}
     this.s.hp=Math.min(this.s.maxHp,Math.max(1,Math.round(this.s.maxHp*hpRatio)));
     this.s.spirit=Math.min(this.s.maxSpirit,this.s.spirit);
    }
-   if(cross)this.s.pendingTribulation=this.s.level;   // 跨境：渡劫由 V90.56 接管
    const years=D.LIFE.breakthroughYears[this.s.level]||0;
    if(years){this.s.life.left+=years*D.LIFE.yearMinutes;this.log('突破增寿 '+years+'年','good');}
    this.log('突破 · '+this.realm,'good');
   }
-  if(this.s.level>=36)this.s.xp=0;
+  if(this.s.level>=36)this.s.xp=Math.min(this.s.xp,this.required);
   this.s.daoXp=0;
   return broke;
  }
@@ -4746,34 +4751,28 @@ get character(){return B.profile(this.s.birth);}
    '你将旧仙路的残书归封于碑，留待真正看清灾变的后来者开启；遗府没有给你新的境界，却留下了一次不随意泄露古禁的承诺。':
    '你把残书见证拓为一份可核对的史页，允许后来者知道仙路曾断、封禁曾损；遗府没有赐予仙器，而是让真相重新有了见证。';
  }
+ /* V90.56 渡劫 = 境边界的那一次结算（docs §七）：本境后期修满才可发起，固定伤害判定，
+    失败只是重伤（collapse），不清档；不再有三重雷考/问心等选项式前摇。 */
  breakthrough(){
-  if(this.s.combat)return this.fail('斗法中无法破境');
+  if(this.s.combat)return this.fail('斗法中无法渡劫');
   if(this.s.ascended)return this.fail('飞升已成，仙界待后续版本开启');
-  if(this.s.zone<5)return this.fail('请先完成天阙后续的凝丹试炼');
-  if(!this.s.cleared[this.s.zone])return this.fail('先修复道坛并击败本境首领');
-  const t=D.ASCENSION_STAGES[this.s.zone-5];
-  if(!t||this.s.major!==this.s.zone-4)return this.fail('此境已突破，继续向下一境修行');
-  if(this.s.level<18)return this.fail(this.character.second+'后期方可参悟大道，继续积累修为');
-  if(!this.atCamp)return this.fail('需回本境洞府静修破境');
-  if(this.s.daoXp<t.needDao)return this.fail('道行不足：'+this.s.daoXp+'/'+t.needDao);
-  const cost={[t.primary]:2,[t.secondary]:1};if(!this.enough(cost))return this.fail(this.missing(cost));
-  if(this.s.zone===5&&!this.coreTrial.complete)return this.fail('必须先在修炼→凝丹雷劫中渡过三重雷考');
-  if(this.s.zone===6&&this.s.major===2&&!this.heartTrial.complete)return this.fail('必须先在修炼→元婴问心中完成三重问心');
-    const dmg=this.tribDamage;
+  if(this.s.level>=36)return this.fail('已在渡劫后期，飞升天门将在大劫中开启');
+  if(this.stageIndex!==3)return this.fail('需先修到本境后期圆满才能渡劫');
+  if(this.s.xp<this.required)return this.fail('本段修为未满：'+this.s.xp+'/'+this.required);
+  if(!this.atCamp)return this.fail('需回本境洞府静修渡劫');
+  const dmg=this.tribDamage;
   if(this.s.hp<dmg)return this.fail('渡劫需气血 '+dmg+'，当前 '+this.s.hp+' —— 先回洞府补血再来');
-  if(!this.tick(240,5,5,10))return {ok:false};
   const usedPills=this.tribPills;
-  this.spend(cost);this.s.daoXp=0;this.s.major=this.s.zone-3;
+  if(!this.tick(240,5,5,0))return {ok:false};
   if(usedPills>0)this.s.inv.guardPill=Math.max(0,(this.s.inv.guardPill||0)-usedPills);
-  {const _st=D.statsFor(this.s.major,0,(D.ASCENSION_STAGES[this.s.major-1]||{}).needDao||D.ASCENSION_RULE.dao);
-   if(_st){this.s.maxHp=_st.hp;this.s.maxSpirit=_st.spirit;this.s.attack=_st.atk;}
-   else{this.s.attack+=t.atk;this.s.maxHp+=t.hp;this.s.maxSpirit+=t.spirit;}}
+  this.s.level++;this.syncMajor();this.s.xp=0;this.s.pendingTribulation=0;
+  const _st=D.statsForLevel(this.s.level);
+  if(_st){this.s.maxHp=_st.hp;this.s.maxSpirit=_st.spirit;this.s.attack=_st.atk;}
   this.s.hp=Math.max(1,this.s.maxHp-dmg);this.s.spirit=this.s.maxSpirit;
-  this.s.life.left+=t.life*D.LIFE.yearMinutes;
-  this.log('破境成功 · '+this.realm+'，延寿'+t.life+'年','good');
-  if(this.s.zone===11)return this.note('渡劫境已成 · 前往天门完成飞升大劫','ok','unlock');
-  this.s.unlocked=Math.max(this.s.unlocked,Math.min(D.ZONES.length,this.s.zone+2));
-  return this.note('突破'+this.realm+' · 开放'+D.ZONES[this.s.zone+1].name,'ok','unlock');
+  this.s.life.left+=3*D.LIFE.yearMinutes;
+  this.log('渡劫成功 · '+this.realm+'，延寿3年','good');
+  void this.s.daoXp;
+  return this.note('渡过'+this.realm+' · 气血剩余 '+this.s.hp+'/'+this.s.maxHp,'ok','unlock');
  }
 
  // P10: optional final thunder ordeal beside the ORIGINAL ascension interface.
@@ -4884,8 +4883,9 @@ get character(){return B.profile(this.s.birth);}
  ascend(){
   if(this.s.ascended)return this.fail('已成功飞升，仙界篇章待更新');
   if(this.s.zone!==D.ZONES.length-1||this.land()!=='gate')return this.fail('请前往渡劫天门的飞升界碑');
-  if(this.s.major!==8||!this.s.cleared.every(Boolean))return this.fail('先达到渡劫境，平定凡界十二境');
-  if(this.s.daoXp<D.ASCENSION_RULE.dao)return this.fail('飞升道行不足：'+this.s.daoXp+'/'+D.ASCENSION_RULE.dao);
+  if(this.s.level<36||this.stageIndex!==3)return this.fail('需先修到渡劫后期圆满才能飞升');
+  if(!this.s.cleared.every(Boolean))return this.fail('平定凡界十二境后方可飞升');
+  if(this.s.xp<this.required)return this.fail('渡劫后期修为未满：'+this.s.xp+'/'+this.required);
   if(!this.enough(D.ASCENSION_RULE.cost))return this.fail(this.missing(D.ASCENSION_RULE.cost));
   if(!this.tick(180,4,4,8))return {ok:false};this.spend(D.ASCENSION_RULE.cost);
   this.s.major=9;this.s.ascended=true;this.s.flags.complete=true;

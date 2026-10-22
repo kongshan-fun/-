@@ -13,7 +13,7 @@ const slots=new Slots(disk);
 function ready(race,slot,seed){
  const g=slots.newGame(race,seed,slot);g.xp(10000);
  g.s.zone=11;g.s.unlocked=12;g.s.ritual=Array(12).fill(true);g.s.cleared=Array(12).fill(true);
- g.s.major=8;g.s.daoXp=D.ASCENSION_RULE.dao+200;
+ g.s.level=36;g.s.xp=g.required;g.s.major=8;
  g.s.pos={x:7,y:5};g.s.last={x:6,y:5};g.s.spirit=g.s.maxSpirit;g.s.hp=g.s.maxHp;g.s.hunger=g.s.water=100;
  g.s.minutes=420+5760*(20+slot)+(race==='demon'?1440:0);
  g.s.life.left=300*D.LIFE.yearMinutes;

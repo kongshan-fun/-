@@ -14,6 +14,8 @@ function eq(a,b,msg){assert.equal(a,b,msg);checks++}
 function baseState(zone=0,major=0,unlocked=1,forge=3){
  const s=Game.fresh(20261018,'human');
  s.zone=zone;s.major=major;s.unlocked=unlocked;
+ /* V90.55 level 才是真源：按 major 反推一个对应 level（major 0→1、1→17、2..8→(major+4)*3+1） */
+ s.level=major<=0?1:major===1?17:(Math.min(12,major+5)-1)*3+1;
  s.hunger=100;s.water=100;s.hp=s.maxHp;s.spirit=s.maxSpirit;
  s.life.left=200*D.LIFE.yearMinutes;
  s.pos=zone===0?{x:1,y:5}:{x:0,y:5};s.last={...s.pos};

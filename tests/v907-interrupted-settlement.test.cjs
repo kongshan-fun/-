@@ -5,8 +5,8 @@ const ctx=vm.createContext({console});ctx.globalThis=ctx;for(let i=0;i<6;i++)vm.
 const {QGame:G,QData:D,QCharacterSlots:Slots}=ctx;
 let tombstoneBlocked=false;const data=new Map();const storage={getItem:k=>data.get(k)||null,setItem(k,v){if(k.endsWith('-death')&&tombstoneBlocked)throw Error('test simulated quota failure');data.set(k,String(v))},removeItem:k=>data.delete(k)};
 const slots=new Slots(storage),g=slots.newGame('human',8765432,3);g.xp(20000);
-g.s.zone=11;g.s.unlocked=12;g.s.major=8;g.s.cleared=Array(12).fill(true);g.s.ritual=Array(12).fill(true);g.s.pos={x:7,y:5};g.s.last={x:6,y:5};
-g.s.daoXp=D.ASCENSION_RULE.dao+5;g.s.spirit=g.s.maxSpirit;g.s.hunger=g.s.water=100;for(const [k,n] of Object.entries(D.ASCENSION_RULE.cost))g.s.inv[k]=n+1;
+g.s.zone=11;g.s.unlocked=12;g.s.level=36;g.s.xp=g.required;g.s.major=8;g.s.cleared=Array(12).fill(true);g.s.ritual=Array(12).fill(true);g.s.pos={x:7,y:5};g.s.last={x:6,y:5};
+g.s.spirit=g.s.maxSpirit;g.s.hunger=g.s.water=100;for(const [k,n] of Object.entries(D.ASCENSION_RULE.cost))g.s.inv[k]=n+1;
 assert.equal(g.act('ascend').ok,true);slots.save('human',g,3);slots.recordAscension('human',3,g);
 tombstoneBlocked=true;assert.throws(()=>slots.retireAscended('human',3,g),/quota/);
 const first=slots.legacy('human',3);assert(first.balance>=1000);
