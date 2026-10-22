@@ -28,7 +28,9 @@ def open_slot(page):
     if not page.locator('[data-a="slot-open"]').count():
         p=page.locator('[data-a="slot-page"]')
         if p.count():p.first.click()
-    page.locator('[data-a="slot-open"][data-n="1"]').first.click()
+    one=page.locator('[data-a="slot-open"][data-n="1"]')
+    if one.count():one.first.click()
+    else:page.locator('[data-a="slot-open"]').first.click()
 def fetch(page):
     return page.evaluate('''() => {
       const k='qinglan-wendao-v14-human-slot-001';
