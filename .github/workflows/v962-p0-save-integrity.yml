@@ -1,7 +1,7 @@
 name: V90.62 P0 Save Integrity
 on:
   push:
-    branches: [fix/v90.62-p0-save-integrity]
+    branches: [fix/v90.62-p0-save-integrity, fix/v90.62-p0-acceptance-20261022]
   workflow_dispatch:
 jobs:
   verify:
@@ -22,6 +22,12 @@ jobs:
           node tests/v960_breakthrough_split.cjs
           node tests/v958_dual_growth_chain.cjs
           node tests/v958_cross_realm_unlock.cjs
+      - name: Install Chromium for real old-save workflow
+        run: |
+          python -m pip install playwright==1.56.0
+          python -m playwright install --with-deps chromium
+      - name: Real old-save browser workflow (export / cancel / claim / repeated spent balance)
+        run: python3 tests/v962_p0_browser.py
       - name: Syntax, layout and source consistency
         run: |
           python - <<'PY'
@@ -31,3 +37,4 @@ jobs:
           assert a==b
           assert b'V90.62' in a
           PY
+
