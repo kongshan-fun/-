@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 /*
  * 全量回归入口（P1-3）
  *
@@ -53,6 +53,7 @@ const LAYERS = [
   ['怪物属性对齐', 'node', ['tests/v949_monsters.cjs']],
   ['前六境属性接入', 'node', ['tests/v950_early_stats.cjs']],
   ['越级压制', 'node', ['tests/v951_zone_gap.cjs']],
+  ['属性丹（培元/淬体）', 'node', ['tests/v957_attr_pills.cjs']],
   ['锻造熟练度与品质出率', 'node', ['tests/v952_forge_prof.cjs']],
   ['精炼经济闭环与战力境序', 'node', ['tests/v953_refine_rating.cjs']],
   ['赋灵词条与品阶出率', 'node', ['tests/v954_spirit_affix.cjs']],
