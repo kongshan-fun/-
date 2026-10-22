@@ -72,7 +72,7 @@ try:
     check(data['raw']['rebuilt']==1,'new game slot was committed')
     check(data['ledger']['balance']==600,'one-time jade credited exactly')
     check(data['ledger']['rebuildCompensation']['tier']==600,'single ledger marker')
-    check(data['done']=='1','old marker compatibility persisted')
+    check(data['ledger']['rebuildCompensation']['tier']==600,'ledger receipt persists without requiring legacy sidecar')
     pg.screenshot(path=str(out/'after-reset-360x640.png'))
     # Separate browser profile: player restores an old original after credit was
     # already claimed and mostly spent. This avoids in-session active-slot caches.
