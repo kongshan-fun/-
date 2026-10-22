@@ -38,12 +38,12 @@ const s8 = D.statsFor(8, 0, D.ASCENSION_RULE.dao);
 ok(s8.hp === Math.round(28500 * 0.70), '渡劫初期 = 28500×0.70', s8.hp);
 ok(D.statsFor(99, 0, 100).index === 12, '越界夹紧到第 12 境');
 
-/* 与渡劫扣血联动：气血上限变大 → 伤害同步变大 */
+/* 36段新规：高阶境渡劫按固定伤害表，不随最大气血缩放 */
 const G = ctx.QGame;
 const g = Object.create(G.prototype);
 const st = D.statsFor(6, 0, need6);
-g.s = { zone: 10, major: 6, level: 18, daoXp: 0, character: 'human', ascended: false, maxHp: st.hp, hp: st.hp, inv: {}, cleared: Array(12).fill(true) };
-ok(g.tribDamage === Math.round(st.hp * 0.95), '大乘渡劫：伤害 = 上限×95%（随属性放大）', g.tribDamage);
+g.s = { zone: 10, major: 6, level: 33, daoXp: 0, character: 'human', ascended: false, maxHp: st.hp, hp: st.hp, inv: {}, cleared: Array(12).fill(true) };
+ok(g.tribDamage === 15500, '大乘→渡劫：固定伤害15500（与装备和气血上限无关）', g.tribDamage);
 
 console.log(`\n合计 ${pass + fail} 项：${pass} 通过 / ${fail} 失败`);
 process.exitCode = fail === 0 ? 0 : 1;

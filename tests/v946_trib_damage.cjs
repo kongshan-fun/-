@@ -16,32 +16,29 @@ vm.createContext(ctx);
 for (const b of blocks.slice(0, 6)) vm.runInContext(b, ctx);
 
 const G = ctx.QGame;
-const make = (zone, maxHp, hp) => {
-  const g = Object.create(G.prototype);
-  g.s = { zone, maxHp, hp, major: zone - 4, level: 18, daoXp: 0, character: 'human', ascended: false, cleared: Array(12).fill(true) };
-  return g;
-};
 
-/* 系数表：zone5=.70 … zone11=1.00 */
-const CASES = [[5, 0.70], [6, 0.75], [7, 0.80], [8, 0.85], [9, 0.90], [10, 0.95], [11, 1.00]];
-let bad = [];
-for (const [z, r] of CASES) {
-  const g = make(z, 1000, 1000);
-  const want = Math.round(1000 * r);
-  if (g.tribDamage !== want) bad.push('zone' + z + ' ' + g.tribDamage + '≠' + want);
+const D=ctx.QData;
+const fixed=[150,260,410,650,1020,1620,2550,4000,6300,9900,15500,24200];
+function atRealm(n) {
+ const s=G.fresh(20261030,'human');s.level=n*3;
+ s.hunger=100;s.water=100;s.life.left=200*D.LIFE.yearMinutes;
+ const p={x:1,y:5};s.pos={...p};s.last={...p};
+ s.settlements[0]={pos:{...p},level:3,buildings:{warehouse:3,forge:3,alchemy:3,quiet:3,farm:3},stash:{},storedGears:[],foundedAt:s.minutes,farmAt:s.minutes};
+ s.inv.guardPill=0;const g=new G(s);g.s.hp=g.s.maxHp;return g;
 }
-ok(bad.length === 0, '七境渡劫伤害 = 气血上限 × 系数', bad.join(' / ') || '70%~100%');
-
-ok(make(5, 640, 640).tribDamage === 448, '金丹→元婴：640 血上限 → 伤 448', make(5, 640, 640).tribDamage);
-ok(make(11, 640, 640).tribDamage === 640, '渡劫境：扣满 100%', make(11, 640, 640).tribDamage);
-ok(make(5, 1, 1).tribDamage >= 1, '最小不会出现 0 伤害', make(5, 1, 1).tribDamage);
-ok(make(0, 500, 500).tribDamage === 350, '前五境取默认 70%', make(0, 500, 500).tribDamage);
-
-/* 源码级校验：破境前有气血判定、破境后按 上限−伤害 结算 */
-const src = html;
-ok(src.includes('if(this.s.hp<dmg)return this.fail('), '破境前校验：气血 < 伤害则拒绝（相等可险过）');
-ok(/this\.s\.hp=Math\.max\(1,this\.s\.maxHp-dmg\)/.test(src), '破境后：气血 = 上限 − 伤害（不再满血）');
-ok((src.match(/this\.s\.hp=Math\.max\(1,this\.s\.maxHp-dmg\)/g) || []).length === 1, "破境扣血只出现一次（飞升/休整的满血回复不受影响）");
-
-console.log(`\n合计 ${pass + fail} 项：${pass} 通过 / ${fail} 失败`);
-process.exitCode = fail === 0 ? 0 : 1;
+const incorrect=[];
+for(let i=1;i<=12;i++){const got=atRealm(i).tribDamage;if(got!==fixed[i-1])incorrect.push(i+':'+got+'/'+fixed[i-1]);}
+ok(incorrect.length===0,'12 absolute tribulation amounts align with 36-stage design',incorrect.join(','));
+ok(D.TRIB_DAMAGE.join(',')===fixed.join(','),'definitive data table preserved');
+const g=atRealm(6),actual=g.tribDamage;g.s.maxHp*=3;
+ok(g.tribDamage===actual,'fixed tribulation independent of maximum HP');
+g.s.inv.guardPill=1;ok(g.tribDamage===Math.round(actual*.85),'one pill reduces damage by 15%');
+g.s.inv.guardPill=2;ok(g.tribDamage===Math.round(actual*.70),'two pills reduce damage by 30%');
+g.s.inv.guardPill=9;ok(g.tribDamage===Math.round(actual*.70),'pill cap is two');
+const expectedPct=[17,13,15,14,15,15,15,15,15,15,15,15],outliers=[];
+for(let n=1;n<=12;n++){const game=atRealm(n),pct=Math.round(Math.max(0,game.s.maxHp-game.tribDamage)/game.s.maxHp*100);
+ if(Math.abs(pct-expectedPct[n-1])>3)outliers.push(n+':'+pct+'%');}
+ok(outliers.length===0,'bare late-stage remaining HP percent within 3% of design',outliers.join(','));
+ok(/本次伤害/.test(html)&&/你的气血上限/.test(html)&&/渡劫后剩余/.test(html),'trial UI shows actual fixed damage, HP and remaining percent');
+console.log('V90.58 ABSOLUTE TRIBULATION REGRESSION',pass,'PASS',fail,'FAIL');
+process.exitCode=fail?1:0;
