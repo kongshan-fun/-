@@ -1,5 +1,5 @@
 'use strict';
-/* V90.58 regression: two guard pills reduce fixed damage by 15% per pill. */
+/* V90.47 验收：护劫丹（渡劫减伤） */
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
@@ -25,7 +25,8 @@ const make = (pills) => {
   return g;
 };
 
-ok(make(0).tribDamage === 1620, '无丹：境6 固定伤害 1620', make(0).tribDamage);
+/* V90.56：伤害改为 docs §七 绝对表（境6 金丹→元婴 = 1620），不再是气血百分比 */
+ok(make(0).tribDamage === 1620, '无丹：境6 定稿伤害 1620', make(0).tribDamage);
 ok(make(1).tribDamage === 1377, '1 颗：1620×0.85 = 1377', make(1).tribDamage);
 ok(make(2).tribDamage === 1134, '2 颗：1620×0.70 = 1134', make(2).tribDamage);
 ok(make(5).tribDamage === 1134, '5 颗只按 2 颗算（上限）', make(5).tribDamage);
@@ -33,13 +34,13 @@ ok(make(2).tribPills === 2 && make(5).tribPills === 2, 'tribPills 夹紧到 2');
 ok(Math.abs(make(1).tribReduce - 0.15) < 1e-9, 'tribReduce = 0.15');
 
 /* 源码级：成功后消耗实际生效的丹药 */
-ok(/const usedPills=this\.tribPills;/.test(html), '破境取用生效颗数');
-ok(/this\.s\.inv\.guardPill=Math\.max\(0,\(this\.s\.inv\.guardPill\|\|0\)-usedPills\)/.test(html), '成功后扣减护劫丹');
+ok(/usedPills=this\.tribPills;/.test(html), '渡劫取用生效颗数');
+ok(/this\.s\.inv\.guardPill=Math\.max\(0,\(this\.s\.inv\.guardPill\|\|0\)-usedPills\)/.test(html), '高境渡劫成功后扣减护劫丹');
 /* 破境条件页展示 */
-ok(/本次伤害/.test(html) && /护劫丹 /.test(html) && /每颗减伤15%/.test(html), '新版界面展示实际固定伤害及护劫丹减伤');
+ok(/本次伤害/.test(html) && /护劫丹 /.test(html) && /每颗减伤15%/.test(html), '新版渡劫条件页显示预估绝对伤害和护劫丹减伤');
 
-/* 固定伤害先按数据表，再按护劫丹折算 */
-ok(make(2).tribDamage === Math.round(1620 * 0.70), '每颗减伤建立在固定1620基数之上');
+/* V90.56：伤害来自定稿绝对表（境6 = 1620），与 zone 无关；丹药在此基数上按 15%/颗叠加 */
+ok(make(2).tribDamage === Math.round(1620 * 0.70), '丹药减伤在定稿基数上叠加正确', make(2).tribDamage);
 
 console.log(`\n合计 ${pass + fail} 项：${pass} 通过 / ${fail} 失败`);
 process.exitCode = fail === 0 ? 0 : 1;

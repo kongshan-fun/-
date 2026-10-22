@@ -1,0 +1,21 @@
+PASS: syntax_check.cjs: 自包含检查: 通过（无外链、无远程资源）
+PASS: v907-ascension-lifecycle.test.cjs: V90.7 ASCENSION LIFECYCLE PASS 31 assertions; payout 1550 recorded years 21.03
+PASS: v923_gear_drop.cjs: V90.23 GEAR DROP REBALANCE PASS 24 checks
+PASS: v927_gear_economy.cjs: GEAR ECONOMY PASS 27 checks（战斗不出成品 / 首领给料精确 / 秘境给灵材 / 奇遇一次性 / 炼出即穿）
+PASS: v943b_realm_table.cjs: 合计 14 项：14 通过 / 0 失败
+PASS: v945_realm_display.cjs: 合计 24 项：24 通过 / 0 失败
+PASS: v946_trib_damage.cjs: 合计 8 项：8 通过 / 0 失败
+PASS: v947_guard_pill.cjs: 合计 12 项：12 通过 / 0 失败
+PASS: v948_realm_stats.cjs: 合计 12 项：12 通过 / 0 失败
+PASS: v949_monsters.cjs: 合计 6 项：6 通过 / 0 失败
+PASS: v950_early_stats.cjs: 合计 13 项：13 通过 / 0 失败
+PASS: v951_zone_gap.cjs: 合计 12 项：12 通过 / 0 失败
+PASS: v952_forge_prof.cjs: 合计 59 项：59 通过 / 0 失败
+PASS: v953_refine_rating.cjs: 合计 28 项：28 通过 / 0 失败
+PASS: v954_spirit_affix.cjs: 合计 53 项：53 通过 / 0 失败
+PASS: v955_realm_axis.cjs: 合计 34 项：34 通过 / 0 失败
+PASS: v958_tribulation_regression.cjs: V90.58 TRIBULATION REGRESSION PASS 259 checks
+PASS: v958_p0_closure.cjs: V90.58 P0 CROSS-ZONE & OLD-SAVE REBUILD PASS 142 assertions
+PASS: v958_dual_race_12zones.cjs: V90.58 DUAL-RACE 12-ZONE ACCELERATED ENGINE CHAIN PASS 579 assertions, human/demon ascended, not naturally ground
+PASS: v959_rules_regression.cjs: V90.59 RULES PASS 1331 assertions; 2 races x 11 boundaries, overcap, combat x 88 saves, gap unchanged
+PASS: v959_200slots_integration.cjs: V90.59 200 SLOT ACCELERATED TEST 200/200 SUCCESS failures 0 secs 29.138

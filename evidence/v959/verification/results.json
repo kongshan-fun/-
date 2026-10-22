@@ -1,0 +1,155 @@
+{
+  "version": "V90.59",
+  "total": 21,
+  "passed": 21,
+  "tests": [
+    {
+      "name": "syntax_check.cjs",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.067,
+      "summary": "script 块 10 个 / 共 479909 字符 / 语法错误 0 个\n自包含检查: 通过（无外链、无远程资源）"
+    },
+    {
+      "name": "v907-ascension-lifecycle.test.cjs",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.119,
+      "summary": "V90.7 ASCENSION LIFECYCLE PASS 31 assertions; payout 1550 recorded years 21.03"
+    },
+    {
+      "name": "v923_gear_drop.cjs",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.116,
+      "summary": "V90.23 GEAR DROP REBALANCE PASS 24 checks"
+    },
+    {
+      "name": "v927_gear_economy.cjs",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.115,
+      "summary": "GEAR ECONOMY PASS 27 checks（战斗不出成品 / 首领给料精确 / 秘境给灵材 / 奇遇一次性 / 炼出即穿）"
+    },
+    {
+      "name": "v943b_realm_table.cjs",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.065,
+      "summary": "PASS  引擎加载\n  PASS  REALM12 表存在\n  PASS  两族各 12 境  — 12/12\n  PASS  人族 12 境顺序正确\n  PASS  妖族首尾正确  — 凡妖→开识→启灵→通脉→妖丹→化形→妖王→妖皇→妖尊→妖圣→妖帝→渡劫\n  PASS  人族 36 段映射全部正确\n  PASS  妖族 36 段命名合法\n  PASS  L1 = 凡人初期  — 凡人初期\n  PASS  L36 = 渡劫后期  — 渡劫后期\n  PASS  越界向上夹紧  — 渡劫后期\n  PASS  越界向下夹紧  — 凡人初期\n  PASS  L18 = 金丹后期（旧 level 上限落点）  — 金丹后期\n  PASS  旧显示未受影响（炼气三层）\n  PASS  旧显示未受影响（筑基中期）\n\n合计 14 项：14 通过 / 0 失败"
+    },
+    {
+      "name": "v945_realm_display.cjs",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.065,
+      "summary": "= 感气后期  — 感气后期\n  PASS  L9 = 引气后期  — 引气后期\n  PASS  L12 = 炼气后期  — 炼气后期\n  PASS  L15 = 筑基后期  — 筑基后期\n  PASS  L18 = 金丹后期  — 金丹后期\n  PASS  L19 = 元婴初期  — 元婴初期\n  PASS  L20 = 元婴中期  — 元婴中期\n  PASS  L21 = 元婴后期  — 元婴后期\n  PASS  L22 = 化神初期  — 化神初期\n  PASS  L25 = 炼虚初期  — 炼虚初期\n  PASS  L28 = 合体初期  — 合体初期\n  PASS  L31 = 大乘初期  — 大乘初期\n  PASS  L34 = 渡劫初期  — 渡劫初期\n  PASS  L36 = 渡劫后期  — 渡劫后期\n  PASS  未修满仍是后期\n  PASS  修满 → 元婴圆满  — need=26558\n  PASS  中期修满也不叫圆满\n  PASS  妖族 L1 = 凡妖初期\n  PASS  妖族 L19 = 妖王初期（对应人族元婴）\n  PASS  十二境全部可达  — 凡人→感气→引气→炼气→筑基→金丹→元婴→化神→炼虚→合体→大乘→渡劫\n  PASS  game.realm 走新表（L9 = 引气后期）  — 引气后期\n\n合计 24 项：24 通过 / 0 失败"
+    },
+    {
+      "name": "v946_trib_damage.cjs",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.116,
+      "summary": "PASS  12 次渡劫伤害 = docs §七 绝对表（150 … 24200）\n  PASS  D.TRIB_DAMAGE 就是定稿表  — 150,260,410,650,1020,1620,2550,4000,6300,9900,15500,24200\n  PASS  伤害不随气血上限变化（绝对表，不是百分比）  — 1620 → 1620\n  PASS  1 颗减伤 15%  — 1620 → 1377\n  PASS  2 颗减伤 30%  — 1620 → 1134\n  PASS  超过 2 颗不再叠加（每境最多 2 颗）  — 9 颗 = 1134\n  PASS  裸装后期渡劫后剩余 ≈ 定稿「无装备剩余」（±3%）\n  PASS  渡劫页三行：本次伤害 / 气血上限 / 剩余百分比\n\n合计 8 项：8 通过 / 0 失败"
+    },
+    {
+      "name": "v947_guard_pill.cjs",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.119,
+      "summary": "PASS  护劫丹物品存在  — 护劫丹\n  PASS  护劫丹有配方  — 护劫丹\n  PASS  无丹：境6 定稿伤害 1620  — 1620\n  PASS  1 颗：1620×0.85 = 1377  — 1377\n  PASS  2 颗：1620×0.70 = 1134  — 1134\n  PASS  5 颗只按 2 颗算（上限）  — 1134\n  PASS  tribPills 夹紧到 2\n  PASS  tribReduce = 0.15\n  PASS  渡劫取用生效颗数\n  PASS  高境渡劫成功后扣减护劫丹\n  PASS  新版渡劫条件页显示预估绝对伤害和护劫丹减伤\n  PASS  丹药减伤在定稿基数上叠加正确  — 1134\n\n合计 12 项：12 通过 / 0 失败"
+    },
+    {
+      "name": "v948_realm_stats.cjs",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.065,
+      "summary": "PASS  12 条属性基准  — 12\n  PASS  首尾气血 180 → 28,500  — 180 → 28500\n  PASS  渡劫攻击 410 / 灵力 2300\n  PASS  major0（凡人~炼气）不套表\n  PASS  major1（筑基/金丹）不套表\n  PASS  major6 → 第 11 境（大乘）  — 11\n  PASS  大乘初期 = 18200×0.70  — 12740\n  PASS  大乘中期 = ×0.85  — 15470\n  PASS  大乘后期 = ×1.00  — 18200\n  PASS  渡劫初期 = 28500×0.70  — 19950\n  PASS  越界夹紧到第 12 境\n  PASS  大乘→渡劫：伤害 = 定稿 15500（绝对表，不随气血变化）  — 15500\n\n合计 12 项：12 通过 / 0 失败"
+    },
+    {
+      "name": "v949_monsters.cjs",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.115,
+      "summary": "PASS  七境野怪/首领数值全部对上  — 7/7 境\n  PASS  元婴野怪血 792（旧 85）  — 792\n  PASS  渡劫境首领血 19,844（旧 3,820）  — 19844\n  PASS  首领伤害约玩家渡劫气血的 9%  — 9%\n  PASS  前五境首领未被本版覆盖（仍是低数值）  — 119\n  PASS  野怪气血/攻击比合理  — 3.38\n\n合计 6 项：6 通过 / 0 失败"
+    },
+    {
+      "name": "v950_early_stats.cjs",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.215,
+      "summary": "PASS  statsForLevel 存在\n  PASS  L1 凡人初期 = 180×0.70  — 126\n  PASS  L3 凡人后期 = 180  — 180\n  PASS  L6 感气后期 = 300  — 300\n  PASS  L9 引气后期 = 480  — 480\n  PASS  L12 炼气后期 = 760  — 760\n  PASS  L15 筑基后期 = 1200  — 1200\n  PASS  L18 金丹后期 = 1900/41  — 1900/41\n  PASS  L4 感气初期 = 300×0.70  — 210\n  PASS  越界夹紧到第 12 境\n  PASS  攻击 4 → 41\n  PASS  新建档 maxHp 走表  — 126 vs 126\n  PASS  灵力不超过上限  — 63/63\n\n合计 13 项：13 通过 / 0 失败"
+    },
+    {
+      "name": "v951_zone_gap.cjs",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.065,
+      "summary": "PASS  同境 gap=0  — 0\n  PASS  同境：敌伤 ×1、我方 ×1\n  （调试）up1.zoneGap = 1\n  PASS  越 1 境 gap=1  — 1\n  PASS  越 1 境：敌伤 ×1.10  — 1.10\n  PASS  越 1 境：我方 ×0.92  — 0.92\n  PASS  越 3 境 gap=3  — 3\n  PASS  越 3 境：敌伤 ×1.30\n  PASS  低境去高图 gap>5  — 10\n  PASS  压制下限 0.20（我方输出不归零）  — 0.20\n  PASS  凡人打青岚：zoneRealm=2 → gap=1\n  PASS  开局对手攻击 × enemyBoost\n  PASS  开局对手气血 ÷ playerDampen\n\n合计 12 项：12 通过 / 0 失败"
+    },
+    {
+      "name": "v952_forge_prof.cjs",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.165,
+      "summary": "Quality 仍按所在区域品质表\n  PASS  炼制页有熟练度条渲染函数\n  PASS  熟练度条 + 出率条样式与节点俱在\n  PASS  界面显示「锻造熟练 · N级 称号」\n  PASS  出率是纯文字（档名+百分比不被拆行），只有仙品用 <b> 加粗\n  PASS  每档「品质 百分比」不跨行拆开\n  PASS  取到 forgeStrip 源码块  — 689\n  PASS  熟练度条里没有任何可点/可选控件\n  PASS  出率不再用 <i> 做 chip\n  PASS  取到 .forge-rate 样式  — #panel-root .forge-rate{margin:0 0 9px;f\n  PASS  .forge-rate 不画边框/底色（读起来不像控件）\n  PASS  .forge-prof 不画边框/底色\n  PASS  旧的 chip 样式已移除\n  PASS  界面显示已打造件数\n  PASS  装备配方行显示当前仙品出率（锻造前可见）\n  PASS  炼制父页顶部嵌入熟练度条（不新增页面）\n  PASS  标题里有版本号  — 山野修仙记 V90.59 · 存档晋升与修为继承\n  PASS  版本号纯数字（不带字母后缀，否则发布文件名一致性会红）  — 山野修仙记 V90.59 · 存档晋升与修为继承\n\n合计 59 项：59 通过 / 0 失败"
+    },
+    {
+      "name": "v953_refine_rating.cjs",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.115,
+      "summary": "7\n  PASS  精炼 +5 = ×1.30（每阶 +6%）  — 7 → 9\n  PASS  精炼步长 6%  — 0.06\n  PASS  旧的 +8% 已从代码里消失\n  PASS  分解 = 境序×(1+品质)×(1+精炼×0.5) + 返还30%\n  PASS  境序6 普通裸装分解 6 灵尘（随境界放大）  — 6\n  PASS  精炼到顶再分解仍亏（沉没成本保留）  — 投入 270 / 回收 186\n  PASS  在炼器室精炼一次成功  — \"精炼+1 · 属性已更新\"\n  PASS  精炼等级 +1  — 1\n  PASS  扣掉 境序6×3×1 = 18 灵尘  — 18\n  PASS  属性 +1 阶 = 基础值 ×1.06（四舍五入）  — 7 → 7（期望 7）\n  PASS  高境武器（基准 480）精炼 +5 明显放大  — 480 → 624\n  PASS  图鉴不再写「每阶 8%」\n  PASS  帮助页不再写固定「4/8/12 灵尘」\n  PASS  图鉴已改为「每阶 6%」\n  PASS  帮助页写明「境序×3×n」\n  PASS  装备卡与人物面板的精炼按钮都用 refineCost\n  PASS  两处按钮都走 refineCost()\n  PASS  排行榜注明战力算法分界（旧成绩仅供参考）\n\n合计 28 项：28 通过 / 0 失败"
+    },
+    {
+      "name": "v954_spirit_affix.cjs",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.115,
+      "summary": "（境序7×2+3）  — 17\n  PASS  已赋灵次数 +1\n  PASS  另一个档位的赋灵熟练度是 0（不跨档继承）\n  PASS  旧档缺 prof.spirit → 载入为 0（无需迁移）\n  PASS  存盘往返保留赋灵熟练度（1234/56）  — {\"forge\":10,\"forged\":2,\"spirit\":1234,\"spirited\":56}\n  PASS  修为不足时赋灵失败  — 修为不足（需1084）\n  PASS  失败不扣灵石、不加熟练度\n  PASS  失败不会留下半成品词条\n  PASS  createGear 不再自带词条（五种品质全空槽）\n  PASS  源码注明「靠赋灵刻入」\n  PASS  赋灵子页渲染函数存在\n  PASS  子页注册进面板标题表\n  PASS  panel 分发已接上 craft-spirit\n  PASS  炼制父页有进入赋灵的入口\n  PASS  （炼制父页仍带锻造读数）\n  PASS  取到 spiritStrip 源码  — 695\n  PASS  赋灵读数里没有可点控件（纯读数）\n  PASS  出率不用 <i> chip\n  PASS  界面显示「纹阶出率」\n  PASS  界面写明保底规则\n  PASS  有赋灵与锁定两个动作\n  PASS  界面显示重抽倍率\n\n合计 53 项：53 通过 / 0 失败"
+    },
+    {
+      "name": "v955_realm_axis.cjs",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.115,
+      "summary": "S  到顶后再加修为不会溢出等级  — 36\n  PASS  major 由 level 派生且与旧语义对齐\n  PASS  未修满 → 后期  — 元婴后期\n  PASS  修满 → 圆满  — 元婴圆满\n  PASS  中期修满不叫圆满  — 元婴中期\n  PASS  野怪 = 境基础÷20（40 / 449 / 1145）\n  PASS  首领 = 境基础÷4.5  — 178\n  PASS  采集÷40 / 主线÷8（20 / 100）\n  PASS  境1初期 800 ÷ 40 = 20 只野怪（与 §六 一致）\n  PASS  赋灵修为 = 境基础×0.05（40 / 449 / 1145）\n  PASS  V90.54 的临时口径 realmPoolXp 已删除\n  PASS  赋灵成本 ≤ 本段需求的 10%（不会变成墙）  — 1145/22908\n  PASS  三段刻度按阶序点亮\n  PASS  状态栏不再用「道 daoXp」口径\n  PASS  渡劫门槛 = 本段需求\n  PASS  level 超上限被夹到 36  — 36\n  PASS  存档里的 daoXp 载入即归零  — 0\n  PASS  载入后 major 与 level 一致  — 8\n  PASS  载入后属性按 36 段表落位  — 28500\n\n合计 34 项：34 通过 / 0 失败"
+    },
+    {
+      "name": "v958_tribulation_regression.cjs",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.165,
+      "summary": "V90.58 TRIBULATION REGRESSION PASS 259 checks"
+    },
+    {
+      "name": "v958_p0_closure.cjs",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.115,
+      "summary": "V90.58 P0 CROSS-ZONE & OLD-SAVE REBUILD PASS 142 assertions"
+    },
+    {
+      "name": "v958_dual_race_12zones.cjs",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.417,
+      "summary": "V90.58 DUAL-RACE 12-ZONE ACCELERATED ENGINE CHAIN PASS 579 assertions, human/demon ascended, not naturally ground"
+    },
+    {
+      "name": "v959_rules_regression.cjs",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.221,
+      "summary": "V90.59 RULES PASS 1331 assertions; 2 races x 11 boundaries, overcap, combat x 88 saves, gap unchanged"
+    },
+    {
+      "name": "v959_200slots_integration.cjs",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 29.256,
+      "summary": "PROGRESS human 20 / 100 elapsedSec 3\nPROGRESS human 40 / 100 elapsedSec 6\nPROGRESS human 60 / 100 elapsedSec 9\nPROGRESS human 80 / 100 elapsedSec 12\nPROGRESS human 100 / 100 elapsedSec 15\nPROGRESS demon 20 / 100 elapsedSec 17\nPROGRESS demon 40 / 100 elapsedSec 20\nPROGRESS demon 60 / 100 elapsedSec 24\nPROGRESS demon 80 / 100 elapsedSec 26\nPROGRESS demon 100 / 100 elapsedSec 29\nV90.59 200 SLOT ACCELERATED TEST 200/200 SUCCESS failures 0 secs 29.138"
+    }
+  ],
+  "note": "Accelerated 200 slots: resource/XP/combat boosts. NOT natural-play ascension probability."
+}

@@ -24,16 +24,24 @@ function state(realm=5,role='human'){
 for(const race of ['human','demon']){
  for(let realm=1;realm<=11;realm++){
   const g=state(realm,race),snapshot=JSON.stringify(g.state());
-  const forecast=g.tribPreview(false);
-  ok(forecast.safe,`${race} realm${realm} full hp is enough to cross`);
-  eq(JSON.stringify(g.state()),snapshot,`${race} realm${realm} preview is read-only`);
-  const hpBefore=g.s.hp,dmg=forecast.damage;
-  const res=g.breakthrough();ok(res&&res.ok!==false,`${race} realm${realm} breakthrough succeeds`);
+  const early=realm<=4;
+  const forecast=early?null:g.tribPreview(false);
+  if(!early){ok(forecast.safe,`${race} realm${realm} full hp enough for tribulation`);
+   eq(JSON.stringify(g.state()),snapshot,`${race} realm${realm} forecast read-only`);}
+  const hpBefore=g.s.hp,oldPills=g.s.inv.guardPill||0;
+  const res=g.breakthrough();ok(res&&res.ok!==false,`${race} realm${realm} cross succeeds`);
   eq(g.s.level,realm*3+1,`${race} realm${realm} enters next realm`);
-  eq(g.s.hp,forecast.hpAfter,`${race} realm${realm} actual remaining HP equals preview`);
-  eq(g.s.maxHp,forecast.maxAfter,`${race} realm${realm} next cap equals preview`);
-  eq(Math.round(g.s.hp/g.s.maxHp*100),forecast.percent,`${race} realm${realm} UI percentage equals settlement`);
-  eq(g.s.hp,hpBefore-dmg,`${race} realm${realm} actual absolute damage deducted from previous HP`);
+  if(early){
+   eq(g.s.hp,hpBefore,`${race} realm${realm} promotes without HP loss`);
+   eq(g.s.inv.guardPill||0,oldPills,`${race} realm${realm} doesn't use guard pills`);
+   eq(g.s.minutes,420,`${race} realm${realm} doesn't use long thunder tick`);
+   eq(g.s.maxHp,D.statsForLevel(realm*3+1).hp,`${race} realm${realm} next HP cap`);
+  }else{
+   eq(g.s.hp,forecast.hpAfter,`${race} realm${realm} actual HP equals forecast`);
+   eq(g.s.maxHp,forecast.maxAfter,`${race} realm${realm} next cap equals forecast`);
+   eq(Math.round(g.s.hp/g.s.maxHp*100),forecast.percent,`${race} realm${realm} percentage equals result`);
+   eq(g.s.hp,hpBefore-forecast.damage,`${race} realm${realm} real fixed damage deducted`);
+  }
  }
 }
 {
@@ -98,6 +106,6 @@ for(const race of ['human','demon']){
 }
 // UI and helpers must follow the real rules. Keep DOM metadata tests separate.
 ok(!/data-name="cultivate-trial"[^>]*>旧版三重/.test(source),'no obsolete trine trial entry');
-ok(source.includes('V90.58 · 跨境与旧档补偿闭环'),'new title is present');
+ok(source.includes('V90.59 · 存档晋升与修为继承'),'new title is present');
 ok(source.includes('第十二重飞升终劫'),'final 12th ordeal exists');
 console.log('V90.58 TRIBULATION REGRESSION PASS',checks,'checks');

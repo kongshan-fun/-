@@ -1,0 +1,46 @@
+[
+  {
+    "viewport": "320x568",
+    "earlyUpgrade": "PASS",
+    "tribulation": "PASS",
+    "combatReload": "not_run",
+    "errors": [],
+    "width": {
+      "clientWidth": 304,
+      "scrollWidth": 304
+    }
+  },
+  {
+    "viewport": "360x640",
+    "earlyUpgrade": "PASS",
+    "tribulation": "PASS",
+    "combatReload": "not_run",
+    "errors": [],
+    "width": {
+      "clientWidth": 344,
+      "scrollWidth": 344
+    }
+  },
+  {
+    "viewport": "390x844",
+    "earlyUpgrade": "PASS",
+    "tribulation": "PASS",
+    "combatReload": "PASS",
+    "errors": [],
+    "width": {
+      "clientWidth": 0,
+      "scrollWidth": 0
+    }
+  },
+  {
+    "viewport": "412x915",
+    "earlyUpgrade": "PASS",
+    "tribulation": "PASS",
+    "combatReload": "not_run",
+    "errors": [],
+    "width": {
+      "clientWidth": 384,
+      "scrollWidth": 384
+    }
+  }
+]

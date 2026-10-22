@@ -1,0 +1,11 @@
+PROGRESS human 20 / 100 elapsedSec 3
+PROGRESS human 40 / 100 elapsedSec 6
+PROGRESS human 60 / 100 elapsedSec 8
+PROGRESS human 80 / 100 elapsedSec 11
+PROGRESS human 100 / 100 elapsedSec 13
+PROGRESS demon 20 / 100 elapsedSec 16
+PROGRESS demon 40 / 100 elapsedSec 18
+PROGRESS demon 60 / 100 elapsedSec 21
+PROGRESS demon 80 / 100 elapsedSec 23
+PROGRESS demon 100 / 100 elapsedSec 26
+V90.59 200 SLOT ACCELERATED TEST 200/200 SUCCESS failures 0 secs 25.652
