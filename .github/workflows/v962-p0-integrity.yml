@@ -33,3 +33,17 @@ jobs:
           node tests/v951_zone_gap.cjs
       - name: Core 200-slot engine regression
         run: node tests/run_v908_regression.cjs
+      - name: Install Chromium for V90.62 UI smoke
+        run: |
+          python3 -m pip install --disable-pip-version-check playwright==1.56.0
+          python3 -m playwright install --with-deps chromium
+      - name: Verify real old-save export, cancel, reset and repeat
+        run: python3 tests/v962_p0_browser.py
+      - name: Attach browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v962-p0-browser-${{ github.run_id }}
+          path: artifacts/v962-p0-browser/
+          if-no-files-found: warn
+          retention-days: 14
