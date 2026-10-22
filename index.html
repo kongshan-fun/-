@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f8f7f2">
 <meta name="description" content="山野修仙记，十二境文字修仙生存游戏。离线单机，完整入门引导。">
-<title>山野修仙记 V90.55 · 三十六段</title>
+<title>山野修仙记 V90.57 · 渡劫主线与终劫闭环</title>
 <style>
 :root{color-scheme:light;--page:#ffffff;--surface:#ffffff;--raised:#ffffff;--line:#dddddd;--muted:#222222;--ink:#222222;--gold:#222222;--danger:#222222;--map-size:296px}
 *{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden;overscroll-behavior:none}body{background:#ffffff;color:var(--ink);font:13px/1.5 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft Yahei","Noto Sans CJK SC",sans-serif;display:grid;place-items:center}button,input,select{font:inherit}button{color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}button:disabled{opacity:.42;cursor:default}button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}button:active:not(:disabled){filter:brightness(1.15)}[hidden]{display:none!important}input,select{min-width:0;border-radius:5px;background:#ffffff;color:var(--ink);border:1px solid #dddddd;padding:7px;font-size:13px}.phone{position:relative;width:min(400px,100vw);height:min(872px,100dvh);background:var(--page);border:1px solid #dddddd;border-radius:12px;box-shadow:0 20px 70px #00000010;overflow:hidden;isolation:isolate}.game-shell{height:100%;display:flex;flex-direction:column;min-height:0;position:relative;padding-top:env(safe-area-inset-top)}.topbar{flex:none;height:40px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-bottom:1px solid var(--line)}.wordmark{color:#222222;font:700 18px/1.2 "Noto Serif CJK SC","Songti SC","SimSun",serif;letter-spacing:.1em}.wordmark span{font:500 10px/1 sans-serif;color:var(--muted);letter-spacing:0;margin-left:2px}.top-buttons{display:flex;gap:6px}.top-buttons button{height:29px;background:transparent;border:1px solid #dddddd;border-radius:4px;padding:0 9px;color:#222222;font-size:11px}#status{flex:none;height:65px;padding:7px 11px;background:#ffffff;border-bottom:1px solid var(--line)}.status-line{height:21px;display:flex;justify-content:space-between;align-items:center;white-space:nowrap;gap:4px;font-size:10px;font-variant-numeric:tabular-nums}.status-line b{font-size:12px;color:var(--gold)}.status-line .xp{margin-left:7px;color:var(--muted);font-weight:400;font-size:10px}.status-line>span{color:var(--muted)}.bars{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.bar-label{display:flex;justify-content:space-between;font-size:10px;line-height:15px;gap:2px;color:#222222;white-space:nowrap;font-variant-numeric:tabular-nums}.bar-label b{color:#222222;font-weight:500}.track{height:3px;background:#dddddd;border-radius:2px;margin-top:3px;overflow:hidden}.fill{height:100%;background:#222222}.fill.hp{background:#777777}.fill.spirit{background:#222222}.fill.hunger{background:#222222}.fill.water{background:#222222}.fill.low{background:#777777}.travel-row{flex:none;height:39px;display:flex;gap:7px;padding:4px 10px;background:#ffffff;border-bottom:1px solid var(--line)}.travel-row button{min-height:29px;border:1px solid #dddddd;border-radius:4px;background:#ffffff;white-space:nowrap}.travel-row>button:first-child{flex:1;display:flex;align-items:center;gap:10px;padding:0 9px;text-align:left}.travel-row>button:first-child>span{font-size:11px;color:#222222}.travel-row strong{flex:1;font-size:12px;font-weight:550;color:#222222}.travel-row>button:last-child{flex:none;width:52px;font-size:12px;color:#222222}.quest{flex:none;height:33px;border:0;border-bottom:1px solid #dddddd;display:flex;align-items:center;gap:9px;padding:0 11px;background:#ffffff;text-align:left;white-space:nowrap}.quest b{font-size:11px;color:var(--gold);flex:none}.quest span{font-size:11px;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1;color:#222222}.quest em{font-size:10px;font-style:normal;color:#222222}.scene{position:relative;min-height:0;flex:1;overflow:hidden;background:#ffffff;padding:7px}#scene-content{height:100%;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:#dddddd transparent;overscroll-behavior:contain;scrollbar-gutter:stable}.scene-card{height:100%;min-height:178px;border:1px solid #dddddd;border-radius:7px;padding:9px;background:#ffffff;display:flex;flex-direction:column}.location-head{height:28px;flex:none;display:flex;align-items:center;justify-content:space-between;gap:5px}.location-head h1{font:650 19px/1.25 "Noto Serif CJK SC","Songti SC","SimSun",serif;margin:0;color:#222222;letter-spacing:.04em}.risk{font-size:10px;border:1px solid #dddddd;color:#222222;background:#ffffff;padding:1px 6px;border-radius:3px;white-space:nowrap}.risk.danger{color:#222222;border-color:#dddddd;background:#ffffff}.location-tools{height:32px;flex:none;display:flex;justify-content:space-between;align-items:center;color:#222222;font-size:11px;margin-bottom:5px}.location-actions{display:flex;gap:5px}.location-actions button{height:28px;background:#ffffff;border:1px solid #dddddd;border-radius:4px;padding:0 9px;font-size:11px}.location-actions .important{background:#dddddd;color:#222222;border-color:#777777}.resources{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:5px;min-height:94px;flex:1;max-height:156px}.resource{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;position:relative;min-width:0;min-height:0;background:#ffffff;color:#222222;border:1px solid #dddddd;border-radius:5px;line-height:1.1;padding:1px}.resource b{font:650 23px/1.15 "Noto Serif CJK SC","Songti SC","SimSun",serif}.resource small{font-size:10px;color:#222222}.resource i{position:absolute;right:3px;top:3px;font-size:9px;font-style:normal;padding:1px 2px;border:1px solid #777777;border-radius:2px;background:#ffffff;color:#222222}.resource.player{background:#222222;border-color:#222222;color:#ffffff}.resource.player b{font-size:25px}.resource.empty{border-style:dashed;background:transparent;color:#dddddd}.resource.exhausted{background:#ffffff;border-style:dashed;color:#777777;opacity:.6}.resource.exhausted small{color:#777777}.resource.mineral{color:#222222;background:#ffffff}.resource.aqua{color:#222222;background:#ffffff}.resource.fire{color:#222222;background:#ffffff}.resource.yin{color:#222222;background:#ffffff}.resource.star{color:#222222;background:#ffffff}.quick-nav{flex:none;height:43px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));border-top:1px solid #dddddd;border-bottom:1px solid #dddddd;background:#ffffff}.quick-nav button{padding:0;border:0;border-right:1px solid #dddddd;background:transparent;font-size:12px;color:#222222;white-space:nowrap}.quick-nav button.active{background:#dddddd;color:#222222}.quick-nav small{font-size:10px;color:#222222;margin-left:2px;font-variant-numeric:tabular-nums}.map-dock{flex:none;padding:5px 10px calc(8px + env(safe-area-inset-bottom));background:#ffffff;border-top:1px solid #ffffff}.map-heading{width:min(var(--map-size),100%);height:23px;margin:0 auto 3px;display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:10px;color:#222222;white-space:nowrap;font-variant-numeric:tabular-nums}.map-heading button{width:29px;height:21px;flex:none;border:1px solid #dddddd;background:#ffffff;color:#222222;padding:0;border-radius:3px;font-size:11px}.map-grid{display:grid;width:min(var(--map-size),100%);margin:0 auto;grid-template-columns:repeat(8,minmax(0,1fr));gap:3px}.tile{min-width:0;aspect-ratio:1.08/1;display:grid;place-items:center;padding:0;border:1px solid #dddddd;background:#ffffff;border-radius:4px;color:#222222;font-size:13px;font-weight:650;line-height:1;position:relative}.tile.fog{background:#ffffff;border:1px dashed #dddddd;color:#777777}.tile.seen{background:#ffffff}.tile.visited{border-color:#dddddd}.tile.water{background:#ffffff;color:#222222}.tile.rock{background:#ffffff;color:#222222}.tile.yin{background:#ffffff;color:#222222}.tile.star{background:#ffffff;color:#222222}.tile.landmark{background:#dddddd;color:#222222}.tile.boss{background:#ffffff;color:#222222}.tile.route{border-color:#222222;box-shadow:inset 0 0 0 1px #77777730}.tile.current{background:#222222;color:#ffffff;border-color:#222222;font-weight:800}.travel-menu{position:absolute;top:141px;left:10px;right:10px;z-index:40;background:#ffffff;border:1px solid #777777;border-radius:6px;box-shadow:0 10px 35px #00000010;padding:5px;max-height:calc(100% - 145px);overflow-y:auto}.travel-option{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;border:0;border-bottom:1px solid #dddddd;background:transparent;border-radius:3px;padding:10px 8px;min-height:45px}.travel-option strong{display:block;font-size:13px}.travel-option small{display:block;font-size:10px;color:#222222}.travel-option.current{background:#ffffff;color:#222222}.travel-option.locked{color:#777777}.travel-option.locked small{color:#777777}.travel-option span:last-child{font-size:10px;white-space:nowrap;color:#222222}.panel-overlay{position:absolute;inset:0;z-index:10;padding:8px;background:var(--page);display:flex;flex-direction:column;overflow:hidden}.panel-overlay::before{content:'';position:absolute;inset:0;background:var(--page);opacity:.98;pointer-events:none}.panel{position:relative;inset:auto;z-index:1;display:flex;flex-direction:column;flex:1;min-width:0;min-height:0;overflow:hidden;border:1px solid var(--line-strong,#777777);background:var(--panel-bg,#ffffff);border-radius:10px;box-shadow:0 18px 40px #00000018}.panel::after{content:'';position:absolute;inset:0;border-radius:10px;box-shadow:inset 0 0 0 1px #ffffff10;pointer-events:none}.panel-head{height:54px;flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid var(--line,#dddddd);padding:0 14px;background:var(--panel-bg,#ffffff)}.panel-head strong{font:650 18px/1.2 "Noto Serif CJK SC","Songti SC",serif;color:var(--ink,#222222);letter-spacing:.04em}.panel-head span{font-size:10px;color:var(--muted,#666666);margin-left:6px}.panel-close{width:36px;height:36px;padding:0;line-height:1;border:1px solid var(--line-strong,#777777);border-radius:8px;background:var(--panel-bg,#ffffff);color:var(--ink,#222222);font-size:22px;display:grid;place-items:center}.panel-toolbar{flex:none;display:flex;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line,#dddddd);min-height:46px;background:var(--panel-subtle,#fafafa)}.panel-toolbar input{width:100%;min-height:30px;height:30px;padding:5px 8px}.panel-toolbar select{width:88px;flex:none;height:30px;padding:3px 6px;font-size:11px}.panel-body{flex:1;min-height:0;padding:12px;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#777777 #ffffff;scrollbar-gutter:stable;background:var(--panel-bg,#ffffff)}.panel-body h3{font-size:13px;color:var(--ink,#222222);font-weight:600;margin:14px 0 8px}.panel-body h3:first-child{margin-top:0}.panel-body p{margin:5px 0 9px;line-height:1.7;font-size:12px;overflow-wrap:anywhere}.muted{color:#222222;font-size:11px}.micro{font-size:10px;color:#222222}.accent{color:#222222}.danger-text{color:#222222}.line{padding:6px 0;border-bottom:1px solid #dddddd}.empty{padding:13px 5px;color:#222222;font-size:12px}.inline-buttons{display:flex;flex-wrap:wrap;gap:5px}.btn{padding:6px 9px;min-height:31px;border:1px solid #777777;border-radius:4px;background:#ffffff;color:#222222;font-size:11px;white-space:nowrap}.btn.primary{border-color:#777777;background:#ffffff;color:#222222}.btn.warn{border-color:#777777;color:#222222;background:#ffffff}.recipe,.gear-card{border:1px solid #dddddd;border-radius:5px;background:#ffffff;padding:8px;margin-bottom:6px;overflow:hidden}.recipe-top,.gear-head{display:flex;align-items:center;justify-content:space-between;gap:5px;font-size:12px}.recipe-top small,.gear-head small{font-size:10px;color:#222222}.recipe-cost{font-size:10px;color:#222222;line-height:1.8;margin:3px 0;overflow-wrap:anywhere}.recipe-cost .missing{color:#222222}.recipe-bottom{display:flex;align-items:center;justify-content:space-between;gap:5px}.recipe-bottom span{font-size:10px;color:#222222}.item-row{display:flex;justify-content:space-between;align-items:center;gap:5px;min-height:40px;border-bottom:1px solid #dddddd;padding:6px 1px}.item-row .item-name{flex:1;min-width:0;font-size:12px;overflow-wrap:anywhere}.item-row small{color:#222222;font-variant-numeric:tabular-nums}.item-row .btn{padding:4px 7px;min-height:27px;font-size:10px}.gear-attrs{font-size:11px;color:#222222;margin:4px 0 6px}.rarity-0{color:#222222}.rarity-1{color:#222222}.rarity-2{color:#222222}.rarity-3{color:#222222}.rarity-4{color:#222222}.gear-card .inline-buttons{gap:4px}.gear-card .btn{min-height:28px;padding:4px 7px;font-size:10px}.stat-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}.stat-chips span{background:#ffffff;border:1px solid #dddddd;border-radius:4px;padding:3px 6px;font-size:10px;color:#222222}.book-rewards{border:1px solid #dddddd;background:#ffffff;border-radius:5px;padding:7px;margin-bottom:8px}.reward-line{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 0;font-size:11px}.reward-line .btn{min-height:25px;font-size:10px;padding:2px 8px}.book-entry{border:1px solid #dddddd;border-radius:4px;margin-bottom:5px;background:#ffffff}.book-entry summary{display:flex;align-items:center;gap:7px;cursor:pointer;padding:8px;list-style:none;font-size:12px;min-height:38px}.book-entry summary::-webkit-details-marker{display:none}.book-entry summary b{font:650 18px "Songti SC","SimSun",serif;color:#222222;display:inline-flex;justify-content:center;width:25px;flex:none}.book-entry summary span{flex:1;min-width:0}.book-entry summary small{color:#222222;font-size:10px;white-space:nowrap}.book-entry[open] summary{border-bottom:1px solid #dddddd}.book-content{padding:8px;font-size:11px;line-height:1.7;color:#222222}.book-entry.unknown{opacity:.76}.help-chapter{border-bottom:1px solid #dddddd;padding:5px 1px}.help-chapter summary{font-size:13px;cursor:pointer;color:#222222;padding:7px 0;line-height:1.4}.help-chapter p{font-size:12px;line-height:1.85;color:#222222}.help-intro{border:1px solid #777777;border-radius:4px;padding:8px;background:#ffffff;margin-bottom:6px}.help-intro p{font-size:11px;margin:0 0 6px}.history{font-size:11px;padding:6px 0;border-bottom:1px solid #dddddd;line-height:1.7;overflow-wrap:anywhere}.history time{color:#222222;font-size:10px;margin-right:6px}.history.good{color:#222222}.history.bad{color:#222222}.task-stage{display:flex;gap:7px;border-bottom:1px solid #dddddd;padding:8px 0;font-size:12px}.task-stage b{color:#222222}.combat-card{height:100%;min-height:184px;background:#ffffff;border:1px solid #dddddd;border-radius:6px;padding:8px;display:flex;flex-direction:column;overflow:hidden}.combat-title{height:27px;flex:none;display:flex;align-items:center;justify-content:space-between;gap:5px}.combat-title h2{margin:0;color:#222222;font:650 17px "Noto Serif CJK SC","Songti SC",serif}.combat-title small{font-size:10px;color:#222222}.enemy-hp{height:23px;flex:none;font-size:10px;font-variant-numeric:tabular-nums;color:#222222}.enemy-track{height:3px;margin-top:3px;border-radius:3px;background:#dddddd;overflow:hidden}.enemy-track div{height:100%;background:#222222}.intent{height:28px;min-height:28px;line-height:26px;margin:4px 0;background:#ffffff;border:1px solid #dddddd;border-radius:4px;color:#222222;font-size:11px;padding:0 7px;white-space:nowrap}.fight-log{flex:1;min-height:17px;font-size:10px;color:#222222;line-height:17px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.combat-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;flex:none}.combat-actions button{min-width:0;height:38px;border:1px solid #dddddd;border-radius:4px;background:#ffffff;font-size:12px;line-height:1.2;padding:2px 0}.combat-actions small{display:block;font-size:9px;color:#222222;margin-top:2px}.combat-actions .spell{border-color:#777777;background:#dddddd}.toast{position:absolute;z-index:65;left:50%;top:30%;max-width:calc(100% - 24px);width:max-content;transform:translate(-50%,-5px);opacity:0;visibility:hidden;pointer-events:none;display:flex;align-items:center;gap:7px;border:1px solid #777777;border-radius:6px;padding:9px 12px;background:#ffffff;color:#222222;font-size:12px;line-height:1.5;box-shadow:0 8px 25px #00000010;transition:opacity .15s,transform .15s;overflow-wrap:anywhere}.toast.show{visibility:visible;opacity:1;transform:translate(-50%,0)}.toast.warn{border-color:#777777;background:#ffffff;color:#222222}.toast .toast-link{pointer-events:auto;flex:none;background:#dddddd;border:1px solid #777777;color:#222222;border-radius:3px;padding:4px 6px;font-size:10px;white-space:nowrap}.guide-root{position:absolute;inset:0;pointer-events:none;z-index:50}.guide-card{position:absolute;border:1px solid #222222;border-radius:6px;background:#ffffff;color:#222222;box-shadow:0 7px 24px #00000010;pointer-events:auto;padding:9px 10px;font-size:11px;line-height:1.65}.guide-card .guide-title{display:flex;justify-content:space-between;gap:5px;align-items:center;margin-bottom:3px}.guide-card strong{color:#222222;font-size:12px}.guide-card p{margin:0;font-size:11px;line-height:1.65}.guide-card button{border:0;background:transparent;color:#222222;padding:0 2px;font-size:10px;text-decoration:underline}.guide-card .guide-tip{margin-top:3px;color:#222222;font-size:10px}.guide-target{outline:2px solid #222222!important;outline-offset:-2px!important;box-shadow:inset 0 0 0 1px #222222!important}.guide-pin{position:absolute;right:8px;top:174px;border:1px solid #777777;border-radius:4px;background:#dddddd;color:#222222;padding:4px 8px;font-size:10px;pointer-events:auto}.modal-backdrop{position:absolute;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:17px;background:#00000010}.modal{width:100%;max-height:92%;overflow-y:auto;overscroll-behavior:contain;background:#ffffff;border:1px solid #777777;border-radius:8px;padding:18px;box-shadow:0 15px 40px #00000010}.modal .kicker{color:#222222;font-size:10px;letter-spacing:.17em}.modal h2{font:650 23px/1.45 "Noto Serif CJK SC","Songti SC",serif;color:#222222;margin:7px 0 10px}.modal p{color:#222222;font-size:13px;line-height:1.85;margin:7px 0}.modal .steps{font-size:12px;line-height:1.9;color:#222222;background:#ffffff;border-left:2px solid #222222;padding:9px;margin:12px 0}.modal .inline-buttons{margin-top:14px}.modal .btn{min-height:36px;font-size:12px;padding:7px 11px}.modal small{color:#222222;font-size:10px}.event-choice{display:block;width:100%;text-align:left;margin-top:8px;border:1px solid #777777;border-radius:5px;background:#ffffff;color:#222222;padding:10px;min-height:44px}.event-choice small{display:block;color:#222222;margin-top:3px}.event-choice.unavailable{opacity:.65}
@@ -2086,7 +2086,7 @@ root.QCombatRating={birth,live,percentile,gearDelta};
   "id": "roots",
   "title": "人族命格：灵根、悟性、根骨、气运",
   "paragraphs": [
-   "灵根品阶抽取：杂灵根30%、三灵根30%、双灵根23%、天灵根12%、异灵根5%。修为与道行获取分别增加0%、4%、8%、12%、15%。普通天赋没有修行上限。",
+   "灵根品阶抽取：杂灵根30%、三灵根30%、双灵根23%、天灵根12%、异灵根5%。当前修为获取加成依次为0%、4%、8%、12%、15%。道行已退役。",
    "灵根同时带有五行；首属性为当前偏性：金攻击+1，木采止血草有15%机会额外得1份，水灵力上限+10，火攻势+4%，土气血上限+12。异灵根的雷、冰或风标签当前仅为风味描述，效果仍按显示的五行偏性结算。",
    "悟性40–90，每高于40点的5点增加1%修为收益；根骨40–90，每高于40点的1点增加0.4初始气血，向下取整。所有气血和修为收益都会实际结算。",
    "气运1–100，对装备品质随机判定增加0–8。只改善当前地区已有品质表，不保证必出稀有装备、不绕过地区/建筑门槛，也不增加固定任务材料。"
@@ -2108,9 +2108,9 @@ root.QCombatRating={birth,live,percentile,gearDelta};
   "paragraphs": [
    "人族：炼气→筑基→金丹→元婴→化神→炼虚→合体→大乘→渡劫→飞升。",
    "妖族：启灵→通脉→妖丹→化形→妖王→妖皇→妖尊→妖圣→渡劫→飞升。这是本作采用的妖修命名体系，不宣称所有修仙作品具有同一标准。",
-   "初期九层之后进入第二大境界，累计18级达到第二大境界后期。此后每一境都分初期、中期、后期三段：道行修到三分之一为中期、三分之二为后期，修满即后期圆满——只有圆满之后，才能在洞府里破境或渡劫。",
-   "后七境必须在当地自建洞府、已击败本境首领，消耗道行和两类道材才能破境。两族使用相同前置条件，天赋只影响效率与战斗，不跳过主线。",
-   "最后达到渡劫，平定十二境，携带劫雷晶3、天门符2并积累150道行，在渡劫天门的界碑点击飞升。飞升保留进度，仙界暂未开放。"
+   "现在每一大境分初期、中期、后期三段，共十二境三十六段。每一段修满后，初/中期自动升阶，后期圆满则须在本境洞府主动渡劫。旧的道行刻度已取消，实际进度见修炼页的修为数字。",
+   "境界渡劫需要后期圆满、本境洞府及足够气血。首领与仪式属于地图通关任务；突破本身不再消耗道行或原两类突破道材。两族采用相同渡劫规则。",
+   "修满渡劫后期（36段）、平定十二境，随身携带劫雷晶×3、天门符×2，在渡劫天门的界碑通过第十二次固定伤害终劫后飞升。护劫丹减伤规则不变；不再要求150道行。"
   ]
  },
  {
@@ -2192,7 +2192,7 @@ root.QCombatRating={birth,live,percentile,gearDelta};
   "paragraphs": [
    "人族初始56年、妖族64年；每4游戏日约折寿1年。关闭网页不会自然推进游戏时间。",
    "战败额外折寿16年，回营疗伤还经过半个游戏日。寿元尚余则保留建筑和装备，遗失约一半随身普通材料。",
-   "境界突破按配置增寿，三阶丹房可制延寿丹。初始天赋不保证不死，稀有血脉也不能越过寿元终结规则。",
+   "成功渡劫按当前规则延寿3年，三阶丹房可制延寿丹。初始天赋不保证不死，稀有血脉也不能越过寿元终结规则。",
    "寿元归零时本世便走到尽头，但还有一次逆命续年的机会：看完一段激励视频，寿元回到 15 年、气血回到三成有余，本世进度全部保留。选择“接受轮回”才会结算并清除该角色该编号的主档与备份，其他档位不受影响；外部导出的 JSON 无法由网页删除。"
   ]
  },
@@ -2590,6 +2590,8 @@ const SPIRIT_BASE=[
 ];
 /* docs §五 装备基准：第 1..12 境的武器基准（词条固定值的分母） */
 const WEAPON_BASE=[7,11,16,23,34,49,72,106,156,228,336,492];
+/* docs §七 渡劫固定伤害（绝对表，按「从哪个境出发」：凡人→感气 … 渡劫→飞升） */
+const TRIB_DAMAGE=[150,260,410,650,1020,1620,2550,4000,6300,9900,15500,24200];
 /* ===== V90.55 36 段修为轴（docs §三）：一段一级，level 1..36 是唯一真源 =====
    境基础 = round(800 × 境序^1.35)；三阶系数 [1.0, 1.6, 2.4]；daoXp 退役并入 xp */
 const REALM_BASE=[800,2039,3525,5198,7026,8987,11066,13251,15535,17910,20369,22908];
@@ -2627,7 +2629,7 @@ const HELP=[
  '秘境入口随机出现在场景中。秘境为5×5的迷雾小地图，外圈不能走，中央3×3可探索。秘境有专属守卫、遗材与装备；秘藏可能需要先击败守卫。可提前撤离，出入与奖励遵循原战斗、背包和存档规则。',
  '图鉴按工具、丹药、材料、法器、妖兽、建筑、十二境域和秘境查阅。未发现的内容可能只显示线索；查看所需物品来源后，按当前地图、工具和建筑条件规划行动。',
  '设置可切换暖白松绿、极简黑白与流光仙境三种主题；只改视觉偏好，不改角色数值。更换HTML文件、浏览器或设备前，先在设置中导出JSON备份，再在目标环境导入。',
- '第六境起，高阶突破需要本境洞府、道行、突破道材、仪式与首领记录。满足条件后必须主动在洞府执行破境；到渡劫天门还要准备最终材料并完成飞升。'
+ '修行采用十二境三十六段，初中期修满自动升段，后期圆满在本境洞府承受一次固定伤害渡劫；不再需要道行、突破道材、三重雷考或问心。最终飞升需要渡劫后期圆满、十二境平定、劫雷晶×3与天门符×2，到界碑承受第十二重终劫。'
  ]},
  {
   "id": "start",
@@ -2724,7 +2726,7 @@ const HELP=[
   "id": "quiet",
   "title": "静室、灵田与修为",
   "paragraphs": [
-   "采集和实战得修为，达到10＋当前层数×5后自动突破。每层基础攻击+1、气血上限+9、灵力上限+2、负重上限+3，最高18层。基础行囊负重46。",
+   "采集和实战可获得本段修为。十二境共36段，初/中期修满自动升段；后期修满须在本境洞府主动承受固定伤害渡劫。气血、攻击与灵力上限采用当前36段定稿表，不再使用旧版18层成长公式。",
    "未建静室时，在自己的草庐也能吐纳，每次花灵石1和60分钟，得8修为、12灵力。静室一至三阶分别提升为12/16/22修为与24/28/36灵力。所有洞府共用每日3次吐纳，不因换地图重置。",
    "一阶灵田在建成24游戏小时后可收止血草2、灵果2；二阶收止血草3、灵果3、水灵草1。必须回到自己的田收获，满包部分落在当前府格。只积累一批，不会离线刷出多批。",
    "灵田收获后重新计时，升级后从升级完成时重新计时，迁居保留原有计时。新建灵田不能立即领取，反复点击、存读档和重进地图也不能提前领取。静室与灵田是便利选项，不是第一境必造前置。"
@@ -2968,10 +2970,10 @@ ASCENSION_STAGES.forEach((t,i)=>{
 for(let z=5;z<QUALITY_WEIGHTS.length;z++){let v=QUALITY_WEIGHTS[z],sum=v.reduce((a,b)=>a+b,0);QUALITY_WEIGHTS[z]=v.map((n,i)=>i===0?0:Math.round(n/sum*100));QUALITY_WEIGHTS[z][0]=100-QUALITY_WEIGHTS[z].slice(1).reduce((a,b)=>a+b,0);}
 BOOK_REWARDS.push({id:'b80',name:'万物初识',need:80,loot:{stone:10,water:6}},{id:'b110',name:'九天见闻',need:110,loot:{star:6,thunder:3}});
 HELP.push({id:'ascension',title:'凡界九境与飞升试炼',paragraphs:[
- '境界顺序：炼气、筑基、金丹、元婴、化神、炼虚、合体、大乘、渡劫，最后飞升。飞升只是凡界终章，仙界内容将在后续版本开放。炼气共九层，筑基包括初中后期；旧版本的等级与筑基境界保持不变。',
+ '凡界十二境依次为凡人、感气、引气、炼气、筑基、金丹、元婴、化神、炼虚、合体、大乘、渡劫，每境有初期、中期、后期三段，共36段。后期修满后渡劫，渡劫后期圆满可挑战飞升终劫；仙界暂未开放。',
  '原五图维持从青岚至天阙的入门与筑基故事，随后有七张独立8×8地图：丹霞雷渊、婴灵古墟、化神云海、炼虚裂隙、合体仙城、大乘古道、渡劫天门。每张有两种核心材料、独立封印和首领、高阶法器配方。',
- '每张新区域先采集两种道材，在中心问道坛交付4份主材和2份副材，击败本境首领。随后前往本境自建洞府的修炼面板，点击“破境”，满足修为积累和道材条件后进入下一境界。不能只靠刷经验自动跳过主境界。',
- '筑基后期（炼气起累计等级18）转为积累“道行”。每完成一次大境界突破，道行重新结算为0；当境界符合才开放下一图。角色差异、跨境仓储隔离和寿元归零永久死亡继续生效。',
+ '地图的祭坛与首领仍有独立任务：采集仪式材料、修复祭坛、击败首领；它们用于地图通关，不再是渡劫扣费清单。人物按本段修为升段；到后期圆满时返回本境洞府，通过一次固定伤害判定渡劫。',
+ '现在以36段等级和本段修为为唯一进度；不再积累“道行”。后期修满主动渡劫，气血不足先养成与补给。角色差异、跨境仓储隔离和寿元归零规则照旧。',
  '晋升大境界会增加气血、灵力、攻击上限和寿元，帮助挑战逐步加强的敌人。高阶道剑与法衣必须采集对应地图的道材，使用三阶炼器室，不存在绕过建筑的虚假制作入口。',
  '渡劫天门首领击败且完成最后“飞升”突破后，记录成功飞升、保留角色与存档。仙界大地图与飞升后的战斗尚未开放；飞升结算与存档保留照常。'
 ]});
@@ -3036,7 +3038,7 @@ HELP.push({id:'combat-balance-v905',title:'斗法进阶：预警与防守',parag
 // V90.6: storage artifacts are permanent, weightless ownership records, not physical inventory stacks.
 const STORAGE_BAGS=[{"id":"bag01","name":"一阶储物袋","tier":1,"zone":0,"bonus":32,"cost":{"wood":7,"fiber":6,"stone":5,"rune":2},"forgeTier":1},{"id":"bag02","name":"二阶储物袋","tier":2,"zone":1,"bonus":55,"cost":{"blossom":6,"dew":6,"hide":3,"ore":4},"forgeTier":1},{"id":"bag03","name":"三阶储物袋","tier":3,"zone":2,"bonus":80,"cost":{"copper":7,"cinder":5,"ore":6,"hide":3},"forgeTier":2},{"id":"bag04","name":"四阶储物袋","tier":4,"zone":3,"bonus":110,"cost":{"moss":8,"soul":6,"hide":4,"rune":4},"forgeTier":2},{"id":"bag05","name":"五阶储物袋","tier":5,"zone":4,"bonus":145,"cost":{"star":9,"thunder":6,"ancient":2,"rune":5},"forgeTier":3},{"id":"bag06","name":"六阶储物袋","tier":6,"zone":5,"bonus":185,"cost":{"coreOre":8,"coreHerb":5,"dust":4},"forgeTier":3},{"id":"bag07","name":"七阶储物袋","tier":7,"zone":6,"bonus":235,"cost":{"soulJade":10,"soulDew":6,"dust":6},"forgeTier":3},{"id":"bag08","name":"八阶储物袋","tier":8,"zone":7,"bonus":290,"cost":{"godSilk":12,"godFruit":7,"dust":8},"forgeTier":3},{"id":"bag09","name":"九阶储物袋","tier":9,"zone":8,"bonus":355,"cost":{"voidStone":14,"riftEssence":8,"dust":10},"forgeTier":3},{"id":"bag10","name":"十阶储物袋","tier":10,"zone":9,"bonus":430,"cost":{"unionGold":16,"unionBark":9,"dust":12},"forgeTier":3},{"id":"bag11","name":"十一阶储物袋","tier":11,"zone":10,"bonus":520,"cost":{"mahayaRune":18,"mahayaJade":10,"dust":14},"forgeTier":3},{"id":"bag12","name":"十二阶储物袋","tier":12,"zone":11,"bonus":630,"cost":{"tribulationCrystal":20,"ascendToken":11,"dust":16},"forgeTier":3},{"id":"bagSlayer","name":"杀神储物袋","bonus":780,"source":"击败100只妖兽自动获得","kills":100},{"id":"bagVoid","name":"虚空储物袋","bonus":1250,"source":"秘境内成功完成节点时独立1%判定","chance":0.01}];
 for(const bag of STORAGE_BAGS){if(!bag.tier)continue;bag.forgeTier=bag.tier>=10?5:bag.tier>=6?4:bag.forgeTier;RECIPES.push({id:bag.id,name:bag.name,type:'储物袋',cost:bag.cost,zone:bag.zone,room:'forge',tier:bag.forgeTier,storageBag:bag.id});}
-const D={STORAGE_BAGS,COMBAT_BALANCE,SECRETS,HIGH_TRAITS,HIGH_EVENTS,HEAVEN_LAYERS,ESTATE_TRIALS,DAO_PATHS,MIRROR_SCROLLS,BIRTH:B,RACES:B.RACES,LEGACY_CHARACTERS,ASCENSION_RULE,REALMS,ASCENSION_STAGES,CHARACTERS,SLOT_PREFIX:'qinglan-wendao-v14-',MIGRATION_KEY:'qinglan-wendao-v11-legacy-used',ACTIVE_KEY:'qinglan-wendao-v14-current',VERSION:14,SAVE:'qinglan-wendao-v10',DEATH_KEY:'qinglan-wendao-v10-permadeath',LIFE,LEGACY:['qinglan-wendao-v9','qinglan-wendao-v8','qinglan-wendao-v7','qinglan-cultivation-five-v5','qinglan-cultivation-demo-v2','qinglan-cultivation-demo-v1'],ZONES,LAND,ITEMS,RECIPES,ENEMIES,NAMED,EVENTS,RES,RESOURCE_LAYOUT,SITES,QUALITIES,QUALITY_WEIGHTS,FORGE_RANKS,FORGE_WEIGHTS,SPIRIT_RANKS,SPIRIT_TIERS,SPIRIT_TIER_MULT,SPIRIT_WEIGHTS,SPIRIT_BASE,WEAPON_BASE,REALM_BASE,STAGE_MULT,XP_RATE,AFFIXES,BOOK_REWARDS,GUIDE,HELP,BUILDINGS,CAMP_LANDS,SETTLE_COST,MOVE_CAMP_COST,FARM_LOOT};
+const D={STORAGE_BAGS,COMBAT_BALANCE,SECRETS,HIGH_TRAITS,HIGH_EVENTS,HEAVEN_LAYERS,ESTATE_TRIALS,DAO_PATHS,MIRROR_SCROLLS,BIRTH:B,RACES:B.RACES,LEGACY_CHARACTERS,ASCENSION_RULE,REALMS,ASCENSION_STAGES,CHARACTERS,SLOT_PREFIX:'qinglan-wendao-v14-',MIGRATION_KEY:'qinglan-wendao-v11-legacy-used',ACTIVE_KEY:'qinglan-wendao-v14-current',VERSION:14,SAVE:'qinglan-wendao-v10',DEATH_KEY:'qinglan-wendao-v10-permadeath',LIFE,LEGACY:['qinglan-wendao-v9','qinglan-wendao-v8','qinglan-wendao-v7','qinglan-cultivation-five-v5','qinglan-cultivation-demo-v2','qinglan-cultivation-demo-v1'],ZONES,LAND,ITEMS,RECIPES,ENEMIES,NAMED,EVENTS,RES,RESOURCE_LAYOUT,SITES,QUALITIES,QUALITY_WEIGHTS,FORGE_RANKS,FORGE_WEIGHTS,SPIRIT_RANKS,SPIRIT_TIERS,SPIRIT_TIER_MULT,SPIRIT_WEIGHTS,SPIRIT_BASE,WEAPON_BASE,TRIB_DAMAGE,REALM_BASE,STAGE_MULT,XP_RATE,AFFIXES,BOOK_REWARDS,GUIDE,HELP,BUILDINGS,CAMP_LANDS,SETTLE_COST,MOVE_CAMP_COST,FARM_LOOT};
 const currentHelp=root.QHelp||(typeof require==='function'?require('./help.js'):null);
 HELP.splice(0,HELP.length,...currentHelp);
 HELP.push({id:'building-progression-v908',title:'洞府五阶与高阶炼制',paragraphs:[
@@ -3062,7 +3064,7 @@ HELP.push({id:'secrets',title:'十二境迷雾秘境与独门遗器',paragraphs:
  '秘境里有普通灵物、伴生妖兽、机关、守卫和秘藏。中央秘藏由守卫封印，先击败守卫才能开启；也可以提前撤离，不要求清空。',
  '秘境遗材可在原有洞府炼制相应的独门武器或护甲，装备占原来的武器/衣甲槽，不增加新背包；首领掉落不会混入秘境专属装备。',
  '探索耗费游戏时间、灵力与补给；落败按原来的折寿规则处理。秘境中不能跨境旅行、建造洞府或在外部场景采集，退出后回到原位置。',
- '已探索地块、战斗进度和获得的材料与原版存档体系兼容。旧版本没有秘境时仍按无秘境存档加载。'
+ '旧格式存档采用 V90.43 起的重置与阶梯补偿方案，不提供无损原地升级。更换旧版前请导出 JSON 并保留原游戏；新版存档各自保存地图和秘境进度。'
 ]});
 HELP.push({id:'blood-v54',title:'双族修行：功法与血脉',paragraphs:['人族通过秘境、首领与宗门获取功法，回洞府用灵石参悟，配置战诀、护体与心法。','妖族不再使用人族的参悟循环：击败普通妖兽获取精血1，首领获取精血4；回本境洞府吞噬精血，觉醒本命神通。','妖族可配置杀伐、护体、吐纳三个神通位；神通依然走原有战斗结算与冷却。妖躯境界决定可觉醒的神通等级。','旧版妖族存档保留既有装备、境界与原有功法记录；新血脉从空白独立开始，所有进度只属于当前种族与存档。']});
 HELP.push({id:'rift-v84',title:'炼虚裂隙：探查、定向与撤离',paragraphs:[
@@ -3103,10 +3105,10 @@ HELP.push({id:'immortal-estate-v88',title:'仙人遗府三重试炼（P9）',par
 ]});
 
 HELP.push({id:'heaven-v89',title:'九霄终劫与凡界十卷终章（P10）',paragraphs:[
- '第十二图渡劫天门的飞升界碑，在达到渡劫境并平定十二境后，除原有“飞升”外新增可选“九霄终劫”。该扩展只是可选挑战：原有飞升路径、旧档进度，以及飞升所需的150道行／劫雷晶3／天门符2，都不受影响。',
- '九霄终劫是可选的深度应劫体验：启劫后经过问命天雷、因果照魂、九霄破界三重考验。每重可选择护元承雷、纳雷淬身或以躯硬抗。可在当前页面查看所耗时间、灵力和气血损伤，再确认选择。',
- '每重完成后自动存档。途中可返回地图调息，失利按原规则重伤折寿，已完成的层次仍会保存。应劫不生成仙器、不额外提升永久伤害，完成三重后才会记录九霄已渡。',
- '无论是否渡过额外九霄试炼，飞升操作仍按原本规则在天门界碑结算一次，道行与材料不能重复扣取。直接飞升也合法，结局会如实注明未另行挑战三重。',
+ '第十二图渡劫天门的飞升界碑需要等级36后期圆满、十二境平定、劫雷晶×3与天门符×2，并承受第十二次固定伤害终劫。旧版三重问答已从正式修炼入口下线。',
+ '旧版九霄三重选项属于历史玩法记录，现已不再是可进入的正式飞升步骤。新版在天门界碑执行第十二次固定伤害终劫，护劫丹至多两颗、每颗减伤15%，预告与结算使用同一计算。',
+ '现在没有必须连续完成的三重终劫。修满渡劫后期、平定十二境并准备飞升材料后，在界碑一次结算固定伤害；不足时先休整补给，成功才扣材料与护劫丹。',
+ '新版终劫只结算一次固定伤害；成功后仅扣取飞升灵材一次，不再重复领取或扣取已退役的道行。',
  '凡界终章将依据本世实际留下的青岚断碑、丹痕前庭、云海镜台、炼虚裂隙、合体因果、大乘道誓与仙府终试记录作回应。旧剧情没有经历就不会被伪造成既定往事；仙界场景暂未开放。'
 ]});
 HELP.push({id:'p11-high-realm',title:'高境异能与异兆调查',paragraphs:[
@@ -3614,8 +3616,20 @@ class Game{
  get playerDampen(){return Math.max(0.20,1-0.08*this.zoneGap);}
  get tribPills(){return Math.min(2,Math.max(0,Math.round(Number((this.s.inv||{}).guardPill)||0)));}
  get tribReduce(){return this.tribPills*.15;}
- get tribDamage(){const r={5:.70,6:.75,7:.80,8:.85,9:.90,10:.95,11:1.00}[this.s.zone]||.70;
-  return Math.max(1,Math.round(this.s.maxHp*r*(1-this.tribReduce)));}
+ /* V90.56 渡劫伤害改用 docs §七 的**绝对表**（按「从哪个境出发」取，境序 1..12）；
+    不再用「气血上限 × 0.70~1.00」的旧口径——那是 V90.46 的临时实现，与定稿表量级/索引都不一致。 */
+ get tribDamage(){const base=D.TRIB_DAMAGE[Math.min(11,Math.max(0,this.realmIndex-1))]||150;
+  return Math.max(1,Math.round(base*(1-this.tribReduce)));}
+/* The SAME read-only forecast drives labels, readiness and execution. */
+ tribPreview(final=false){
+  const travel=final?{minutes:180,hunger:4,water:4,spirit:8}:{minutes:240,hunger:5,water:5,spirit:0};
+  const survival=this.survivalForecast(travel.minutes,travel.hunger,travel.water,travel.spirit);
+  const damage=this.tribDamage, maxAfter=final?this.s.maxHp:(D.statsForLevel(this.s.level+1)?.hp||this.s.maxHp);
+  const left=this.s.hp-damage-survival.damage;
+  const hpAfter=Math.max(0,Math.min(maxAfter,left));
+  return {damage,pills:this.tribPills,survivalDamage:survival.damage,hpAfter,maxAfter,
+   percent:Math.round(hpAfter/maxAfter*100),safe:left>0,minutes:travel.minutes};
+ }
 get character(){return B.profile(this.s.birth);}
  get birthEffects(){return B.effects(this.s.birth);}
  realmAt(m){return D.CHARACTERS[this.s.character].realms[m];}
@@ -4352,18 +4366,20 @@ get character(){return B.profile(this.s.birth);}
   if(this.stageIndex!==3)return this.fail('需先修到本境后期圆满才能渡劫');
   if(this.s.xp<this.required)return this.fail('本段修为未满：'+this.s.xp+'/'+this.required);
   if(!this.atCamp)return this.fail('需回本境洞府静修渡劫');
-  const dmg=this.tribDamage;
-  if(this.s.hp<dmg)return this.fail('渡劫需气血 '+dmg+'，当前 '+this.s.hp+' —— 先回洞府补血再来');
+  const preview=this.tribPreview(false),dmg=preview.damage;
+  if(!preview.safe)return this.fail('渡劫需气血至少 '+(dmg+preview.survivalDamage+1)+'（含额外生存损耗 '+preview.survivalDamage+'），当前 '+this.s.hp+'；先休整再来');
   const usedPills=this.tribPills;
   if(!this.tick(240,5,5,0))return {ok:false};
+  /* Deduct absolute damage from actual CURRENT HP before increasing the realm cap. */
+  this.s.hp-=dmg;
+  if(this.s.hp<=0){this.collapse();return this.note('渡劫失利 · 重伤折寿','warn');}
   if(usedPills>0)this.s.inv.guardPill=Math.max(0,(this.s.inv.guardPill||0)-usedPills);
   this.s.level++;this.syncMajor();this.s.xp=0;this.s.pendingTribulation=0;
   const _st=D.statsForLevel(this.s.level);
   if(_st){this.s.maxHp=_st.hp;this.s.maxSpirit=_st.spirit;this.s.attack=_st.atk;}
-  this.s.hp=Math.max(1,this.s.maxHp-dmg);this.s.spirit=this.s.maxSpirit;
+  this.s.hp=Math.min(this.s.maxHp,this.s.hp);this.s.spirit=this.s.maxSpirit;
   this.s.life.left+=3*D.LIFE.yearMinutes;
-  this.log('渡劫成功 · '+this.realm+'，延寿3年','good');
-  void this.s.daoXp;
+  this.log('渡劫成功 · 固定伤害−'+dmg+'，气血剩余 '+this.s.hp+'/'+this.s.maxHp+'，延寿3年','good');
   return this.note('渡过'+this.realm+' · 气血剩余 '+this.s.hp+'/'+this.s.maxHp,'ok','unlock');
  }
 
@@ -4475,10 +4491,18 @@ get character(){return B.profile(this.s.birth);}
  ascend(){
   if(this.s.ascended)return this.fail('已成功飞升，仙界篇章待更新');
   if(this.s.zone!==D.ZONES.length-1||this.land()!=='gate')return this.fail('请前往渡劫天门的飞升界碑');
-  if(this.s.major!==8||!this.s.cleared.every(Boolean))return this.fail('先达到渡劫境，平定凡界十二境');
-  if(this.s.daoXp<D.ASCENSION_RULE.dao)return this.fail('飞升道行不足：'+this.s.daoXp+'/'+D.ASCENSION_RULE.dao);
+  if(this.s.level<36||this.stageIndex!==3)return this.fail('需先修到渡劫后期圆满才能飞升');
+  if(!this.s.cleared.every(Boolean))return this.fail('平定凡界十二境后方可飞升');
+  if(this.s.xp<this.required)return this.fail('渡劫后期修为未满：'+this.s.xp+'/'+this.required);
   if(!this.enough(D.ASCENSION_RULE.cost))return this.fail(this.missing(D.ASCENSION_RULE.cost));
-  if(!this.tick(180,4,4,8))return {ok:false};this.spend(D.ASCENSION_RULE.cost);
+  const preview=this.tribPreview(true),dmg=preview.damage,usedPills=this.tribPills;
+  if(!preview.safe)return this.fail('飞升终劫需气血至少 '+(dmg+preview.survivalDamage+1)+'（含生存损耗），当前 '+this.s.hp+'；先补充气血或护劫丹');
+  if(!this.tick(180,4,4,8))return {ok:false};
+  this.s.hp-=dmg;
+  if(this.s.hp<=0){this.collapse();return this.note('飞升终劫失利 · 重伤折寿','warn');}
+  if(usedPills>0)this.s.inv.guardPill=Math.max(0,(this.s.inv.guardPill||0)-usedPills);
+  this.spend(D.ASCENSION_RULE.cost);
+  this.log('第十二重飞升终劫 · 固定伤害−'+dmg+'，劫后气血 '+this.s.hp+'/'+this.s.maxHp,'good');
   this.s.major=9;this.s.ascended=true;this.s.flags.complete=true;
   // Capture first finish before the 1000-year ascension grant. Time excludes the 420-minute birth clock.
   this.s.ascensionRecord={version:1,race:this.s.character,
@@ -5027,11 +5051,11 @@ const batches=this.farmBatches,loot=Object.fromEntries(Object.entries(D.FARM_LOO
   this.log('赋灵 '+this.recipe(g.recipe).name+'：'+names+' · 熟练+'+gain,'good');
   return this.note(names,'ok');
  }
- /* 修为从当前进度池扣（前六境 xp / 金丹之后 daoXp），扣到 0 为止，不倒退段位 */
+ /* V90.57: daoXp retired; forging/spirit arts must consume current segment XP. */
  spendProgress(xp){
   const n=Math.max(0,Math.round(Number(xp)||0));if(!n)return true;
-  if(this.s.major>=2){const cur=Math.max(0,Math.round(Number(this.s.daoXp)||0));if(cur<n)return false;this.s.daoXp=cur-n;return true;}
-  const cur=Math.max(0,Math.round(Number(this.s.xp)||0));if(cur<n)return false;this.s.xp=cur-n;return true;
+  const cur=Math.max(0,Math.round(Number(this.s.xp)||0));if(cur<n)return false;
+  this.s.xp=cur-n;return true;
  }
  createGear(recipe,minQuality=0,source='炼制',weights=null){
   const r=this.recipe(recipe),quality=Math.max(minQuality,weights?this.rollQualityFrom(weights):this.rollQuality());
@@ -5561,11 +5585,11 @@ root.QCharacterSlots=RaceSlots;if(typeof module!=='undefined'&&module.exports)mo
 const B=root.QBirth||(typeof require==='function'?require('./birth.js'):null);
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const num=n=>String(n).padStart(3,'0');
-function header(step,back='',subtitle='人妖异途 · V90.55'){return `<header class="entry-header">${back?`<button class="entry-back" data-a="${back}" aria-label="返回">←</button>`:''}<div class="entry-brand"><strong>山野修仙记</strong><small>${subtitle}</small></div><span class="entry-step">${step} / 03</span></header>`;}
+function header(step,back='',subtitle='人妖异途 · V90.57'){return `<header class="entry-header">${back?`<button class="entry-back" data-a="${back}" aria-label="返回">←</button>`:''}<div class="entry-brand"><strong>山野修仙记</strong><small>${subtitle}</small></div><span class="entry-step">${step} / 03</span></header>`;}
 function heading(kicker,title,note){return `<section class="entry-heading"><p>${kicker}</p><h1 id="entry-title" tabindex="-1">${title}</h1><span>${note}</span></section>`;}
 function stats(c){return `<div class="entry-stat-grid">${[['气血',c.hp],[c.energy,c.spirit],['攻击',c.attack],['寿元',c.years+'年']].map(([k,v])=>`<div><small>${k}</small><strong>${v}</strong></div>`).join('')}</div>`;}
 function races(selected,active){const c=B.RACES[selected];return header('01')+heading('择一族，入凡界','选择种族','同一片山河，两条修行之路。')+
- `<section class="entry-content entry-character-content"><div class="entry-character-grid"><nav class="entry-role-menu" aria-label="种族列表">${Object.values(B.RACES).map((r,i)=>`<button class="entry-role-option ${r.id===selected?'selected':''}" data-a="choose-role" data-role="${r.id}" aria-pressed="${r.id===selected}"><small>0${i+1} / ${r.id==='human'?'问道':'化形'}</small><strong>${r.name}</strong><span>${r.id==='human'?'灵根 · 悟性':'血脉 · 本相'}</span></button>`).join('')}</nav><article class="entry-role-detail"><div class="entry-classification">${selected==='human'?'引气入体 · 悟道长生':'山野启灵 · 血脉蜕变'}</div><h2>${c.name}</h2><p class="entry-description">${c.intro}</p>${stats(c)}<small class="race-base-note">基础值 · 开局叠加抽取天赋</small><h3>天赋与修行</h3><p class="entry-detail-text">${c.detail}</p><div class="realm-track" aria-label="修行路线">${c.realms.map((r,i)=>`<span>${r}</span>${i<9?'<i>›</i>':''}`).join('')}</div><p class="entry-detail-note">${c.lore}</p></article></div></section><footer class="entry-footer"><button class="entry-main-action" data-a="view-slots" data-role="${selected}">选择${c.name} · 查看档案<span>→</span></button><button class="entry-secondary-action" data-a="ranking-open">本机飞升资质榜 · 最快通关记录 →</button>${active?'<button class="entry-secondary-action" data-a="slot-back">返回当前修行</button>':'<p>两族各100档 · 各档天赋、寿元与世界独立</p>'}</footer>`;}
+ `<section class="entry-content entry-character-content"><div class="entry-character-grid"><nav class="entry-role-menu" aria-label="种族列表">${Object.values(B.RACES).map((r,i)=>`<button class="entry-role-option ${r.id===selected?'selected':''}" data-a="choose-role" data-role="${r.id}" aria-pressed="${r.id===selected}"><small>0${i+1} / ${r.id==='human'?'问道':'化形'}</small><strong>${r.name}</strong><span>${r.id==='human'?'灵根 · 悟性':'血脉 · 本相'}</span></button>`).join('')}</nav><article class="entry-role-detail"><div class="entry-classification">${selected==='human'?'引气入体 · 悟道长生':'山野启灵 · 血脉蜕变'}</div><h2>${c.name}</h2><p class="entry-description">${c.intro}</p>${stats(c)}<small class="race-base-note">基础值 · 开局叠加抽取天赋</small><h3>天赋与修行</h3><p class="entry-detail-text">${c.detail}</p><div class="realm-track" aria-label="修行路线">${(root.QData?.REALM12?.[selected]||c.realms).map((r,i,a)=>`<span>${r}</span>${i<a.length-1?'<i>›</i>':''}`).join('')}</div><p class="entry-detail-note">${c.lore}</p></article></div></section><footer class="entry-footer"><button class="entry-main-action" data-a="view-slots" data-role="${selected}">选择${c.name} · 查看档案<span>→</span></button><button class="entry-secondary-action" data-a="ranking-open">本机飞升资质榜 · 最快通关记录 →</button>${active?'<button class="entry-secondary-action" data-a="slot-back">返回当前修行</button>':'<p>两族各100档 · 各档天赋、寿元与世界独立</p>'}</footer>`;}
 function archives(id,all,page,active){const c=B.RACES[id],used=all.filter(x=>x.status==='ready').length,empty=all.filter(x=>x.status==='empty').length,dead=all.filter(x=>x.status==='dead').length;
  const cells=all.slice(page*20,page*20+20).map(v=>{let title='新建修行',detail='空白档案';if(v.status==='ready'){title=v.name;detail=v.realm;}if(v.status==='dead'){title='已陨落';detail='可重新轮回';}if(v.status==='reset'){title='需要重构';detail='可领 '+(v.tier||300)+' 轮回玉重开';}if(v.status==='retired'){title='飞升圆满';detail='已结算 · 可重新轮回';}if(v.status==='invalid'){title='档案损坏';detail='已锁定保护';}
  return `<button class="entry-save-cell ${v.status}" data-a="slot-open" data-role="${id}" data-slot="${v.slot}" ${v.status==='invalid'?'disabled':''} aria-label="第${num(v.slot)}档，${esc(title)}，${esc(detail)}"><span class="entry-save-id">${num(v.slot)}</span><span class="entry-save-info"><b>${esc(title)}</b><small>${esc(detail)}</small></span>${v.status==='ready'?`<small class="save-life">寿 ${v.years}年</small>`:`<small class="save-life">${v.status==='empty'?'+':['dead','retired'].includes(v.status)?'↻':'—'}</small>`}</button>`;}).join('');
@@ -5580,7 +5604,7 @@ function birthConfirm(b,slot,ledger,dead=false){const c=B.profile(b),adds=(b.add
  `<section class="entry-content birth-content birth-confirm-content"><div class="birth-confirm-hero"><div class="birth-hero-top"><div class="birth-hero-meta"><div class="birth-hero-title">本世开局总览</div><div class="birth-hero-power"><strong>初始战力 <span data-bind="birth-power">${globalThis.QCombatRating.birth(b).toLocaleString("zh-CN")}</span></strong><small>道号：${esc(b.name)} · ${dead?'本档重新轮回':'本档尚未入世'}</small></div><p>你可以先用轮回玉调整本世四项基础属性，再确认入世。</p></div></div><div class="birth-hero-jade"><span class="birth-hero-chip">轮回玉 <b data-bind="jade-balance">${ledger.balance}</b></span><span class="birth-hero-chip">待消耗 <b data-bind="jade-spent">${adds.spent||0}</b></span><span class="birth-hero-chip">剩余可用 <b data-bind="jade-remaining">${remain}</b></span></div></div><div class="birth-attr-list">${rows.map(([label,key,value,tip,cost])=>`<div class="birth-attr-row" data-stat="${key}"><div class="birth-attr-main"><div class="birth-attr-meta"><small>${label}</small><div class="birth-attr-value" data-bind="stat-value">${value}</div></div><div class="birth-attr-sub">${tip}</div></div><div class="birth-attr-action"><button data-a="birth-reduce" data-kind="${key}" ${!(adds[key]>0)?'disabled':''}>－</button><button class="primary" data-a="birth-boost" data-kind="${key}" ${remain<cost?'disabled':''}>＋</button></div></div>`).join('')}</div><div class="birth-summary-card"><div class="birth-summary-head"><div class="birth-summary-title">本世加点摘要</div><span class="birth-summary-pill">剩余轮回玉 <b data-bind="summary-jade">${remain}</b></span></div><div class="summary-line"><span>气血 +<b data-bind="summary-hp">${adds.hp||0}</b></span><span>${c.energy} +<b data-bind="summary-spirit">${adds.spirit||0}</b></span><span>攻击 +<b data-bind="summary-attack">${adds.attack||0}</b></span><span>寿元 +<b data-bind="summary-years">${adds.years||0}</b>年</span></div></div></section><footer class="entry-footer birth-confirm-footer"><div class="birth-confirm-actions"><button data-a="birth-prev">返回天赋</button><button class="entry-main-action" data-a="birth-confirm-final">确认入世<span>→</span></button></div><div class="birth-reset-row"><button data-a="birth-reset" ${!(adds.spent>0)?'disabled':''}>重置加点</button><button data-a="birth-jade-ad">领取100轮回玉</button></div><p>轮回玉在本页直接用于本世加点；观看广告所得立即记入当前档位账本，可重复领取。</p></footer>`;}
 function heritage(list,slot){return header('03','heritage-back','人族 · 旧世传承')+heading('保留旧世，不合并进度','选择旧档','迁入人族第'+num(slot)+'档；原文件保持不动。')+`<section class="entry-content heritage-content">${list.map(x=>`<button class="heritage-item" data-a="legacy-pick" data-source="${encodeURIComponent(x.key)}"><b>${esc(x.label)}</b><span>${esc(x.realm)} · 第${x.day}日</span><small>保留旧传承属性，不重抽天赋 →</small></button>`).join('')||'<p>本机没有可继承的旧档，可返回并导入JSON。</p>'}</section><footer class="entry-footer"><button class="entry-secondary-action" data-a="heritage-back">返回命格页</button><p>旧档只迁入空档；每个源档只自动继承一次。</p></footer>`;}
 function imported(g,slot,label){return header('03','heritage-back','确认继承')+heading('独立迁移 · 不覆盖其他进度','核对存档',esc(label))+`<section class="entry-content heritage-content"><h2>${esc(g.s.birth.name)}</h2><p>${g.character.name} · ${g.realm} · 第${g.day}日</p><p>目标：第${num(slot)}档<br>寿元：${g.lifeYears.toFixed(1)}年<br>已通过：${g.s.cleared.filter(Boolean).length}/12境</p><p>${g.s.birth.origin==='legacy'?'旧传承与物资原样保留，不在已有角色上重新抽取天赋。':'恢复原有种族与天赋，不重新抽取。'}</p><p>原档不删除。目标非空、已陨落或浏览器写入失败时停止迁移。</p></section><footer class="entry-footer"><button class="entry-main-action" data-a="entry-import-confirm">确认继承至第${num(slot)}档<span>→</span></button><button class="entry-secondary-action" data-a="heritage-back">取消</button></footer>`;}
-function sheet(g){return `<h3>${esc(g.s.birth.name)} · ${g.character.name}</h3><p class="muted">命格入世后固定，切换档位与读取不会重抽。</p><div class="birth-traits">${B.cards(g.s.birth).map(([k,v,n])=>`<div class="birth-trait"><small>${k}</small><div><b>${esc(v)}</b><span>${esc(n)}</span></div></div>`).join('')}</div><h3>修行路线</h3><p>${g.character.realms.join(' → ')}</p><p>当前：${g.realm}${g.s.character==='demon'&&g.s.major>=3?' · 已化形，仍保留妖族血脉':''}</p>`;}
+function sheet(g){return `<h3>${esc(g.s.birth.name)} · ${g.character.name}</h3><p class="muted">命格入世后固定，切换档位与读取不会重抽。</p><div class="birth-traits">${B.cards(g.s.birth).map(([k,v,n])=>`<div class="birth-trait"><small>${k}</small><div><b>${esc(v)}</b><span>${esc(n)}</span></div></div>`).join('')}</div><h3>修行路线</h3><p>${(root.QData?.REALM12?.[g.s.character]||g.character.realms).join(' → ')}</p><p>当前：${g.realm}${g.s.character==='demon'&&g.s.major>=3?' · 已化形，仍保留妖族血脉':''}</p>`;}
 root.QEntry={races,archives,birth,birthConfirm,heritage,imported,sheet};
 if(typeof module!=='undefined'&&module.exports)module.exports=root.QEntry;
 })(globalThis);
@@ -5797,7 +5821,7 @@ function renderStatus(){const s=game.s;const power=globalThis.QCombatRating.live
 }
 function resourceStyle(k){return ['copper','cinder'].includes(k)?'fire':['dew','blossom','spring','fish','waterherb'].includes(k)?'aqua':['soul','moss','venom'].includes(k)?'yin':['star','thunder','ancient'].includes(k)?'star':['stone','ore','spiritStone','rune'].includes(k)?'mineral':'';}
 function locationActions(){const l=game.land(),s=game.s,hasGround=Object.values(game.ground).some(n=>n>0);
- if(l==='gate'&&s.zone===11&&s.major===8&&s.cleared.every(Boolean))return '<button data-a="heaven-open">九霄终劫</button><button data-a="ascend" class="important">飞升</button>';
+ if(l==='gate'&&s.zone===11)return '<button data-a="panel" data-name="quest">飞升条件</button><button data-a="ascend" class="important">承受终劫 · 飞升</button>';
  const pickup=hasGround?'<button data-a="pickup">拾遗</button>':'';
 
  if(game.atCamp){
@@ -5809,7 +5833,7 @@ function locationActions(){const l=game.land(),s=game.s,hasGround=Object.values(
  if(l==='boss')return `<button data-a="rest" data-mode="field">调息</button><button class="important" data-a="hunt">${s.cleared[s.zone]?'再战':'挑战'}</button>`;
  if(l==='gate'){
   if(s.zone===4)return '<button data-a="zone" data-zone="0">回青岚</button><button data-a="zone" data-zone="5" class="important">前往丹霞</button>';
-  if(s.zone>=5&&s.major===s.zone-4)return '<button data-a="rest" data-mode="field">调息</button><button data-a="panel" data-name="quest" class="important">先回府破境</button>';
+  if(s.level<36&&game.stageIndex===3&&s.xp>=game.required)return '<button data-a="rest" data-mode="field">调息</button><button data-a="panel" data-name="quest" class="important">查看渡劫指引</button>';
   return '<button data-a="rest" data-mode="field">调息</button><button data-a="zone" data-zone="'+(s.zone+1)+'" class="important">下一境</button>';
  }
  if(game.highEventAt)return '<button data-a="high-event" class="important">探查异兆</button>'+(pickup||'<button data-a="rest" data-mode="field">调息</button>');
@@ -6131,14 +6155,58 @@ function manualBody(){
    D.ASCENSION_STAGES、D.ITEMS、D.RES、D.RESOURCE_LAYOUT、D.ZONES
    任何判定都不写回存档，也不改变既有规则。 */
 
+/* V90.57 · 修行阶段只读引导。十二境/36段来自引擎 getter，不再读取已经退役的 daoXp。 */
 function progStage(){
-  const s=game.s;
-  if(s.zone<5) return null;
-  const st=D.ASCENSION_STAGES[s.zone-5];
-  const prev=D.ASCENSION_STAGES[s.zone-6];
-  return st?{st,cur:prev?prev.realm:'筑基',goal:st.realm}:null;
+ const s=game.s,index=game.realmIndex,stage=game.stageIndex,goal=D.ZONES[index-1]?.name||'本境';
+ return {index,stage,goal,current:game.realm,need:game.required,final:index===12};
 }
-
+function progRows(kind){
+ const s=game.s,p=progStage(),rows=[];
+ const add=(label,pass,value)=>rows.push({label,pass:!!pass,text:String(value)});
+ const max=p.final&&s.level===36;
+ add('修为阶段',p.stage===3,p.stage===3?'后期'+(s.xp>=p.need?'圆满':'修炼中'):['','初期','中期','后期'][p.stage]+' · 自动升阶');
+ add('本段修为',s.xp>=p.need,s.xp+'/'+p.need);
+ if(s.ascended){add('飞升状态',true,'凡界飞升已成');return rows;}
+ if(max){
+  add('飞升地点',s.zone===11&&game.land()==='gate',s.zone===11&&game.land()==='gate'?'已到天门界碑':'渡劫天门 · 界碑');
+  add('十二境首领',s.cleared.every(Boolean),s.cleared.filter(Boolean).length+'/12');
+  for(const [id,num] of Object.entries(D.ASCENSION_RULE.cost))add(D.ITEMS[id]?.name||id,game.has(id)>=num,game.has(id)+'/'+num);
+ }else{
+  add('当前洞府',game.atCamp,game.atCamp?'已在本境洞府':game.camp?'需返回本境洞府':'本境未建洞府');
+ }
+ if(p.stage===3&&s.xp>=p.need){
+  const prediction=game.tribPreview(max);
+  add('气血承受',prediction.safe,`${s.hp} / 需至少 ${prediction.damage+prediction.survivalDamage+1}`);
+  if(prediction.survivalDamage>0)add('额外生存损耗',false,'预计 −'+prediction.survivalDamage+' · 请先补给');
+  add('护劫丹',true,game.tribPills+' 颗生效，减伤 '+Math.round(game.tribReduce*100)+'%');
+ }
+ return rows;
+}
+function progNext(kind){
+ const s=game.s,p=progStage(),atFinal=s.level===36;
+ if(s.ascended)return {label:'已飞升',hint:'此世飞升完成，可继续自由探索',act:null};
+ if(p.stage<3||s.xp<p.need){
+  return {label:'继续修炼',hint:`${game.realm} · 修为 ${s.xp}/${p.need}；修满初/中期自动进阶，后期圆满后须主动渡劫`,act:null};
+ }
+ if(atFinal){
+  if(s.zone!==11)return {label:'前往渡劫天门',hint:'当前应前往第十二境',act:'panel',args:'quest'};
+  if(game.land()!=='gate')return {label:'前往飞升界碑',hint:'到本境地图「界」字处',act:'map',x:7,y:5};
+  if(!s.cleared.every(Boolean))return {label:'平定十二境首领',hint:`已平定 ${s.cleared.filter(Boolean).length}/12；当前飞升规则要求十二境全部通关`,act:'panel',args:'quest'};
+  const missed=Object.entries(D.ASCENSION_RULE.cost).find(([id,n])=>game.has(id)<n);
+  if(missed)return {label:'准备飞升灵材',hint:`${D.ITEMS[missed[0]]?.name||missed[0]} ${game.has(missed[0])}/${missed[1]}`,act:'panel',args:'pack'};
+ }else{
+  if(!game.camp)return {label:'先在本境建立洞府',hint:'须在当前所在地图筑庐后渡劫，其他境洞府不能代替',act:'panel',args:'camp'};
+  if(!game.atCamp)return {label:'返回本境洞府',hint:'前往自己在本境的洞府',act:'map',x:game.camp.pos.x,y:game.camp.pos.y};
+ }
+ const check=game.tribPreview(atFinal);
+ if(!check.safe)return {label:'补充气血和生存物资',hint:`伤害 ${check.damage}，额外生存损耗预计 ${check.survivalDamage}；当前气血 ${s.hp}，需至少 ${check.damage+check.survivalDamage+1}。可使用护劫丹减伤。`,act:null};
+ return {label:atFinal?'渡过飞升终劫':'渡劫突破下一境',hint:`预计实际扣血 ${check.damage+check.survivalDamage}；成功后剩余 ${check.hpAfter}/${check.maxAfter}（${check.percent}%）`,act:atFinal?'ascend':'breakthrough'};
+}
+function progGuide(kind,opts){
+ const p=progStage(),rows=progRows(kind),next=progNext(kind),done=rows.filter(r=>r.pass).length;
+ const button=next?.act&&!opts?.noAct?`<button class="btn primary prog-act" data-a="${next.act}"${next.args?` data-name="${esc(next.args)}"`:''}${next.act==='map'?` data-x="${next.x}" data-y="${next.y}"`:''}>${esc(next.label)} →</button>`:'';
+ return `<section class="prog-card" aria-label="十二境修为指引"><div class="prog-head"><span class="prog-realm">${esc(p.current)} · 第${p.index}/12境</span><span class="prog-prog">${done}/${rows.length}</span></div><p class="prog-where">等级 ${game.s.level}/36 · ${esc(p.stage===3?'后期':'初中期')} · ${esc(p.final?'最终飞升阶段':'逐段修炼')}</p><div class="prog-rows">${rows.map(r=>`<div class="prog-row ${r.pass?'ok':'no'}"><span class="prog-mark">${r.pass?'✓':'·'}</span><span class="prog-label">${esc(r.label)}</span><span class="prog-val">${esc(r.text)}</span></div>`).join('')}</div><div class="prog-next"><strong>下一步 · ${esc(next.label)}</strong><span>${esc(next.hint)}</span></div>${button}</section>`;
+}
 /* 材料来源：由 RES.loot -> RESOURCE_LAYOUT -> ZONES.map 逐层真实推导 */
 function progMatSource(id){
   const s=game.s, zi=s.zone;
@@ -6166,90 +6234,6 @@ function progMatSource(id){
     }
   }
   return null;
-}
-
-/* 条件清单：镜像 coreTrialReason / heartTrialReason 的判定项，但一次全部返回 */
-function progRows(kind){
-  const s=game.s, p=progStage(), rows=[];
-  const ok=(label,pass,text,extra)=>({label,pass:!!pass,text,extra:extra||''});
-  const zi=s.zone, z=D.ZONES[zi]||{};
-  rows.push(ok('所在境域', s.zone===zi, (z.name||'')+(z.short?' · '+z.short:'')));
-  rows.push(ok('本境问道坛', s.ritual[zi], s.ritual[zi]?'已完成':'未完成'));
-  rows.push(ok('本境首领', s.cleared[zi], s.cleared[zi]?'已击败':'未击败'));
-  if(p){
-    rows.push(ok('等级要求', s.level>=18, s.level+'/18'));
-    rows.push(ok('道行', s.daoXp>=p.st.needDao, s.daoXp+'/'+p.st.needDao));
- rows.push(ok('渡劫消耗', s.hp>=game.tribDamage, '气血 '+game.tribDamage+' / 当前 '+s.hp+(game.tribPills?'（护劫丹 '+game.tribPills+' 颗 · 减伤 '+Math.round(game.tribReduce*100)+'%）':'')));
-    for(const [id,n] of [[p.st.primary,2],[p.st.secondary,1]]){
-      const item=D.ITEMS[id]||{name:id};
-      const inv=s.inv[id]||0, stash=(game.storageReady?s.settlements[zi]?.stash?.[id]:0)||0;
-      const have=game.has(id);
-      rows.push(ok(item.name, have>=n, have+'/'+n,
-        '随身 '+inv+(stash?' · 仓库 '+stash:'')));
-    }
-  }
-  const camp=s.settlements[zi];
-  rows.push(ok('本境洞府', !!camp, camp?'已建立':'尚未建立'));
-  rows.push(ok('位于本境洞府', game.atCamp, game.atCamp?'是':'否'));
-  if(kind==='core'){
-    const t=game.coreTrial;
-    rows.push(ok('三重雷劫', t.complete, t.phase+'/3'+(t.complete?'（已渡）':t.started?'（进行中）':'（未启）')));
-  }else if(kind==='heart'){
-    const h=game.heartTrial;
-    rows.push(ok('三重问心', h.complete, h.phase+'/3'+(h.complete?'（已过）':h.started?'（入定中）':'（未启）')));
-  }
-  rows.push(ok('饱腹', s.hunger>2, String(s.hunger)));
-  rows.push(ok('饮水', s.water>2, String(s.water)));
-  if(kind==='core'||kind==='heart'){
-    rows.push(ok('灵力', s.spirit>=3, s.spirit+'/'+s.maxSpirit));
-  }
-  return rows;
-}
-
-/* 下一步：只在所有未完成项中取最关键的一条，避免多个同等醒目的按钮 */
-function progNext(kind){
-  const s=game.s, p=progStage(), zi=s.zone, z=D.ZONES[zi]||{};
-  if(!p) return null;
-  if(!s.ritual[zi]) return {label:'前往本境问道坛完成仪式',hint:(z.altar||'问道坛')+'需要 '+(z.need?Object.entries(z.need).map(([k,n])=>(D.ITEMS[k]?.name||k)+'×'+n).join('、'):'仪式材料'),act:null};
-  if(!s.cleared[zi]) return {label:'前往本境首领处',hint:'首领：'+(p.st.bossName||z.boss||'本境首领'),act:null};
-  if(s.level<18) return {label:'修炼提升等级',hint:'当前 '+s.level+'/18，可打坐或采集积累修为',act:'meditate'};
-  if(s.daoXp<p.st.needDao) return {label:'继续积累道行',hint:'道行 '+s.daoXp+'/'+p.st.needDao+'，需先修到本境后期圆满才能破境；问道坛、试炼与主线推进都会增长道行',act:'meditate'};
-  const miss=[];
-  for(const [id,n] of [[p.st.primary,2],[p.st.secondary,1]]){
-    if(game.has(id)<n){
-      const it=D.ITEMS[id]||{name:id}, src=progMatSource(id);
-      miss.push({name:it.name,need:n,have:game.has(id),src});
-    }
-  }
-  if(miss.length){
-    const m=miss[0];
-    const where=m.src?(m.src.zoneName+'的'+m.src.res.name+'（约 '+(m.src.tool?'需'+m.src.tool+'，':'')+'每次 '+m.src.minutes+' 分钟）'):'详细来源见图鉴';
-    return {label:'采集 '+m.name+'（缺 '+(m.need-m.have)+'）',hint:where,act:'codex-open',args:'book'};
-  }
-  if(!s.settlements[zi]) return {label:'在本境建立洞府',hint:'破境须在本境洞府静修',act:'build'};
-  if(!game.atCamp) return {label:'返回本境洞府',hint:'当前不在洞府坐标，无法静修破境',act:null};
-  if(kind==='core'&&!game.coreTrial.complete) return {label:game.coreTrial.started?'继续三重雷劫（第'+(game.coreTrial.phase+1)+'重）':'进入三重雷劫',hint:'雷劫未渡，无法正式破境',act:'tribulation-open'};
-  if(kind==='heart'&&!game.heartTrial.complete) return {label:game.heartTrial.started?'继续三重问心（第'+(game.heartTrial.phase+1)+'重）':'进入三重问心',hint:'问心未过，无法正式破境',act:'heart-open'};
-  if(s.hunger<=2||s.water<=2) return {label:'先用餐与补水',hint:'饱腹 '+s.hunger+'、饮水 '+s.water+'，过低会在破境时额外扣血',act:null};
-  return {label:'正式突破 · '+p.goal,hint:'全部条件已满足，消耗道材后破境',act:'breakthrough'};
-}
-
-function progGuide(kind,opts){
-  const s=game.s, p=progStage();
-  if(!p) return '';
-  const rows=progRows(kind), next=progNext(kind);
-  const done=rows.filter(r=>r.pass).length;
-  const btn=opts&&opts.noAct?'' : next?next.act
-    ? `<button class="btn primary prog-act" data-a="${next.act}"${next.args?` data-name="${next.args}"`:''}>${esc(next.label)}</button>`
-    : `<p class="prog-hint">${esc(next.hint)}</p>`
-    : '';
-  return `<section class="prog-card" aria-label="阶段成长指引">
-<div class="prog-head"><span class="prog-realm">${esc(p.cur)} → ${esc(p.goal)}</span><span class="prog-prog">${done}/${rows.length}</span></div>
-<p class="prog-where">${esc(D.ZONES[s.zone]?.name||'')} · 第 ${s.zone+1} 境</p>
-<div class="prog-rows">${rows.map(r=>`<div class="prog-row ${r.pass?'ok':'no'}"><span class="prog-mark">${r.pass?'✓':'✗'}</span><span class="prog-label">${esc(r.label)}</span><span class="prog-val">${esc(r.text)}</span>${r.extra?`<small class="prog-extra">${esc(r.extra)}</small>`:''}</div>`).join('')}</div>
-${next?`<div class="prog-next"><strong>下一步</strong><span>${esc(next.hint)}</span></div>`:''}
-${btn}
-</section>`;
 }
 function tribulationBody(){
  const s=game.s,state=game.coreTrial,role=s.character==='demon',ready=game.coreTrialReason();
@@ -6630,14 +6614,12 @@ function isCultChild(p){return p==='cultivate-trial'||p==='cultivate-art'||p==='
 
 function cultivateBody(){const s=game.s,m=s.meditation.day===game.day?s.meditation.uses:0;
  const rating=globalThis.QCombatRating.live(game);
- const trialName=s.zone===5&&s.major===1?(s.character==='demon'?'妖丹血雷':'金丹雷劫'):
-   s.zone===6&&s.major===2?(s.character==='demon'?'本相问心':'元婴问心'):
-   s.zone===11&&s.major===8?'飞升天门':s.ascended?'飞升已成':
-   s.zone>=5?'突破 · '+game.realmAt(s.zone-3):'晋升条件';
+ /* V90.56 修炼入口改为「渡劫」：三行数值页，不再挂旧的三重雷考/问心 */
+ const trialName=s.ascended?'飞升已成':s.level>=36?'飞升天门':'渡劫 · 入下一境';
  const trialState=s.ascended?'飞升已成 · 可自由选择':
-   s.zone===5&&s.major===1?(game.coreTrial.complete?'三重已渡 · 可正式破境':game.coreTrial.phase?'进行至第'+(game.coreTrial.phase+1)+'重':'尚未启劫'):
-   s.zone===6&&s.major===2?(game.heartTrial.complete?'三重已过':game.heartTrial.started?'第'+(game.heartTrial.phase+1)+'重':'尚未入定'):
-   s.zone>=5?'查看本境破境所需条件':'当前境界以修为与等级晋升，无大境界试炼';
+   s.level>=36?(s.xp>=game.required?'修为已满 · 可往天门':`修为 ${s.xp}/${game.required}`):
+   game.stageIndex===3?(s.xp>=game.required?'后期圆满 · 可渡劫':`修为 ${s.xp}/${game.required}`):
+   '需先修到本境后期';
  const artTop=s.major>=2?3:s.major>=1?2:1;
  const nav=(name,title,sub,state)=>`<button type="button" class="cult-nav-row" data-a="cult-step" data-name="${name}"><span class="cult-nav-main"><b>${title}</b><small>${sub}</small></span><span class="cult-nav-right">${state||''}<i>›</i></span></button>`;
  return `<div class="inline-buttons"><button class="btn primary" data-a="panel" data-name="manuals">功法传承</button><button class="btn" data-a="panel" data-name="birth">命格 · ${esc(game.s.birth.name)}</button></div>
@@ -6653,20 +6635,21 @@ ${nav('cultivate-rest','休整','洞府休息 · 用餐 · 休至夜间或次晨
 </nav>
 <p class="micro">试剑与法门每天有限次，不替代仪式或首领战。</p>`;}
 
-function cultivateTrialBody(){const s=game.s;
- let advance='';
- if(s.zone>=5&&!s.ascended){const t=D.ASCENSION_STAGES[s.zone-5],ready=s.cleared[s.zone];
-  advance=`<h3>破境 · ${game.realmAt(s.zone-3)}</h3>${progGuide('core',{noAct:true})}`+
-   (s.zone===5&&s.major===1?`<div class="trial-cultivate-entry"><button class="btn primary" data-a="tribulation-open">${game.coreTrial.complete?'查看雷劫记录':game.coreTrial.phase?'继续雷劫':'进入三重雷劫'}</button><p class="micro">三重雷息可提前预判：护元、纳雷或承劫。道材留到正式破境才扣除。当前 ${game.coreTrial.phase?('第'+(game.coreTrial.phase+1)+'重'):(game.coreTrial.complete?'三重已渡':'尚未启劫')}。</p></div>`:'')+
-   (s.zone===6&&s.major===2?`<div class="trial-cultivate-entry"><button class="btn primary" data-a="heart-open">${game.heartTrial.complete?'回顾问心':'前往问心试炼'}</button><p class="micro">以断碑旧事、心魔幻象与自我抉择完成三重问心；原破境材料仍只扣一次。当前 ${game.heartTrial.started?('第'+(game.heartTrial.phase+1)+'重'):(game.heartTrial.complete?'三重已过':'尚未入定')}。</p></div>`:'')+
-   `<button class="btn ${(s.zone===5&&s.major===1&&!game.coreTrial.complete)||(s.zone===6&&s.major===2&&!game.heartTrial.complete)?'':'primary'}" data-a="breakthrough" ${s.ascended||s.zone===5&&s.major===1&&!game.coreTrial.complete||s.zone===6&&s.major===2&&!game.heartTrial.complete?'disabled':''}>${s.zone===5&&s.major===1&&!game.coreTrial.complete?'先渡雷劫':s.zone===6&&s.major===2&&!game.heartTrial.complete?'先过问心':s.major===s.zone-4?'尝试破境':'已突破本境'}</button>`;
- }
- if(s.zone===11&&s.major===8&&!s.ascended){const f=D.ASCENSION_RULE;
-  advance=`<h3>飞升天门</h3><div class="stat-chips"><span>道行 ${s.daoXp}/${f.dao}</span>${Object.entries(f.cost).map(([id,n])=>`<span>${D.ITEMS[id].name} ${game.has(id)}/${n}</span>`).join('')}</div><p>已达渡劫境。积累道行并随身携带劫雷晶和天门符，在渡劫天门的「界」格点击飞升。仙界内容尚未开放。</p><button class="btn primary" data-a="map" data-x="7" data-y="5">前往天门</button>`;
- }
- if(s.ascended)advance='<h3>飞升已成 · 自由选择</h3><p>仙界尚未开放。你可以留在人间继续探索、炼器与收集，也可以主动结束本轮领取大额轮回玉。本世首次飞升成绩已经锁定，不受此后行动影响。</p><div class="inline-buttons"><button class="btn primary" data-a="ascension-retire">结束本世 · 领取轮回玉</button><button class="btn" data-a="ranking-open">查看资质榜</button></div>';
- return advance||'<p class="muted">当前境界尚未开启大境界试炼。继续积累修为与道行即可。</p>';}
-
+/* V90.56 渡劫页（docs §七）：只有三行——本次伤害 / 你的气血上限 / 渡劫后剩余百分比。
+   不再有三重雷考/问心/道誓/终劫这类选项式前摇（docs §十 明确不做）。 */
+/* V90.57 修炼页面：引擎试算和实际扣血共享 tribPreview() 口径。 */
+function cultivateTrialBody(){
+ const s=game.s;
+ if(s.ascended)return '<h3>飞升已成 · 自由探索</h3><p>第十二境已渡，仙界尚未开放。可以继续搜集或结束本世结算。</p><button class="btn primary" data-a="ascension-retire">结束本世 · 领取轮回玉</button>';
+ const final=s.level===36,preview=game.tribPreview(final),full=game.stageIndex===3&&s.xp>=game.required;
+ const where=final?(s.zone===11&&game.land()==='gate'):(game.atCamp);
+ const conditions=progRows('current');
+ const next=progNext('current');
+ const canAct=next.act===(final?'ascend':'breakthrough');
+ const head=final?'第十二重 · 飞升终劫':'渡劫 · '+game.realm+' → 下一境';
+ const actionBtn=final?`<button class="btn ${canAct?'primary':''}" data-a="ascend" ${canAct?'':'disabled'}>${canAct?'飞升 · 承受第十二重天劫':esc(next.label)}</button>`:`<button class="btn ${canAct?'primary':''}" data-a="breakthrough" ${canAct?'':'disabled'}>${canAct?'渡劫 · 承受固定伤害':esc(next.label)}</button>`;
+ return `<section class="trial-page v957-tribulation"><div class="trial-intro"><small>第 ${game.realmIndex}/12 境 · ${esc(game.realm)} · 后期修满后触发</small><h3>${head}</h3><p>固定扣血，不掷概率也不要求旧版三重试炼；护劫丹每颗减伤15%，最多两颗。${final?'终劫通过后才会正式飞升，结算后气血恢复至满值。':'渡劫在本境洞府执行；结算后按下一境的气血上限显示。'}</p></div><div class="stat-chips"><span>本次伤害 ${preview.damage}</span><span>你的气血上限 ${s.maxHp}</span><span>渡劫后剩余 ${preview.percent}%</span></div><p class="muted">当前气血 ${s.hp}/${s.maxHp} · 当前修为 ${s.xp}/${game.required} · 护劫丹 ${preview.pills} 颗。${preview.survivalDamage?'食水耗尽将额外扣血 '+preview.survivalDamage+'；请先补给。':'本次行动无额外饥渴扣血预期。'}预计成功时气血 ${preview.hpAfter}/${preview.maxAfter}。</p><div class="prog-rows" aria-label="渡劫条件清单">${conditions.map(r=>`<div class="prog-row ${r.pass?'ok':'no'}"><span class="prog-mark">${r.pass?'✓':'·'}</span><span class="prog-label">${esc(r.label)}</span><span class="prog-val">${esc(r.text)}</span></div>`).join('')}</div><p class="trial-note">${esc(next.hint)}</p>${actionBtn}${!full?'<p class="micro">只有后期修满才显示可执行的渡劫按钮；初中期修满会自动升到下一段。</p>':''}</section>`;
+}
 function cultivateArtBody(){const s=game.s;
  return `<h3>境界专属法门</h3><p class="muted">每天有限次，每次消耗灵石和游戏时间；不替代仪式或首领挑战。</p>`+
   `<div class="cult-art-list"><button type="button" class="btn" data-a="realm-art" data-id="sustain">炼气·调和五谷（石1）</button>`+
@@ -6689,13 +6672,13 @@ const REGION_PLAYBOOK=[
  ['火岭求生','用石镐采赤铜、焰心砂，炼制耐火装备与避火丹。','在赤焰古炉镇火并击败赤焰魔猿。','火岭额外消耗饮水，出行需带更多清水。'],
  ['阴沼化险','采玄阴苔和幽魂砂，准备清瘴丹与玄阴护具。','前往第5列第5行「碑」字镇魂古碑完成镇魂，再击败渡魂鬼将。','中毒或危险地形可能额外损耗灵力。'],
  ['天阙筑道','取得星髓矿、雷霆髓和古阵残纹，补齐高阶装备。','完成天阙祭台，打通金丹后续道途。','注意术法耗灵与雷霆高阶采集门槛。'],
- ['金丹成型','在丹霞两类地形采集结丹道材；配置合适的功法或本命神通。','坛前提交4主材与2副材、挑战结丹雷蛟，再回府积攒60道行破境。','不同流派应在此形成明确的攻守搭配。'],
- ['元婴凝神','寻找养魂相关道材，提升护体与续航能力。','提交本境道材，平定夺舍魂君；110道行后回府破境。','秘境中优先安全撤退与资源保存。'],
- ['化神识海','收集神识道材，升级法器与修行设施。','平定化神云海首领，积累160道行回府突破。','更需要灵力、持续作战与风险管理。'],
- ['炼虚裂隙','探索裂虚矿崖与裂界地缝，构建高阶功法组合。','交付本境材料、击败裂空兽；220道行后破境。','先观察资源点限制再投入出行时间。'],
- ['合体仙城','收集合灵金与同心灵木，强化身法、攻防配合。','击败千面合灵傀，280道行后归府破境。','仓储和材料跨境不共享，注意随身运输。'],
- ['大乘古道','寻找大道残章与道源玉，准备渡劫配置。','平定大道镇界灵，积累350道行破境。','减少无效旅行，保留高级丹药和护体手段。'],
- ['渡劫天门','收集劫雷结晶与天门符印，准备最终试炼。','击败九霄天劫主，430道行完成渡劫，再满足最终飞升条件。','飞升仍需另行达标道行与材料，不会击败首领就自动成功。']
+ ['金丹成型','在丹霞两类地形采集结丹道材；配置合适的功法或本命神通。','坛与首领是地图挑战；金丹后期修满后回本境洞府承受固定伤害渡劫。','不同流派应在此形成明确的攻守搭配。'],
+ ['元婴凝神','寻找养魂相关道材，提升护体与续航能力。','平定夺舍魂君，元婴后期圆满后回洞府承受固定伤害渡劫。','秘境中优先安全撤退与资源保存。'],
+ ['化神识海','收集神识道材，升级法器与修行设施。','平定云海首领；后期修满后回本境洞府渡劫，不再消耗道行。','更需要灵力、持续作战与风险管理。'],
+ ['炼虚裂隙','探索裂虚矿崖与裂界地缝，构建高阶功法组合。','挑战裂空兽；后期修满后回洞府渡劫，不再需要突破道材。','先观察资源点限制再投入出行时间。'],
+ ['合体仙城','收集合灵金与同心灵木，强化身法、攻防配合。','挑战千面合灵傀；后期修满后回府承受固定伤害渡劫。','仓储和材料跨境不共享，注意随身运输。'],
+ ['大乘古道','寻找大道残章与道源玉，准备渡劫配置。','挑战大道镇界灵；后期圆满回府渡劫，注意提升气血上限。','减少无效旅行，保留高级丹药和护体手段。'],
+ ['渡劫天门','收集劫雷结晶与天门符印，准备最终试炼。','平定十二境、修满渡劫后期（等级36）；在天门界碑承受第十二重终劫。','飞升需要劫雷晶×3、天门符×2以及足够气血；成功才消耗材料。']
 ];
 function realmPlaybookHTML(){const z=game.s.zone,d=REGION_PLAYBOOK[z];if(!d)return '';const zone=D.ZONES[z];return `<section class="realm-playbook"><h3>本境游玩指引 · ${esc(zone.name)}</h3><div class="realm-playbook-row"><b>探索与养成</b><p>${esc(d[1])}</p></div><div class="realm-playbook-row"><b>通关目标</b><p>${esc(d[2])}</p></div><div class="realm-playbook-row"><b>生存提醒</b><p>${esc(d[3])}</p></div><div class="realm-playbook-row"><b>当前状态</b><p>${game.s.ritual[z]?'仪式完成':'仪式待完成'} · ${game.s.cleared[z]?'首领已击败':'首领未击败'} · ${game.s.settlements[z]?'已建洞府':'未建洞府'}</p></div></section>`;}
 function itemSources(id){if(sourceCache[id])return sourceCache[id];const found=[];D.ZONES.forEach((z,i)=>{const kinds=new Set(z.map.flat());const has=[...kinds].some(l=>(D.RESOURCE_LAYOUT[l]||[]).some(k=>k&&D.RES[k].loot[id]));if(has)found.push(z.name);});if(!found.length){const secret=D.SECRETS.find(q=>q.item===id);if(secret)found.push(D.ZONES[secret.zone].name+' · '+secret.name+'（灵材、秘藏、守卫）');const r=D.RECIPES.find(r=>r.item===id);if(!secret&&r)found.push((r.zone?D.ZONES[r.zone].name+'开放后':'入门')+'炼制');else if(!secret&&id==='dust')found.push('分解法器、遗迹、图鉴奖励');else if(!secret&&id==='hide')found.push('青岚妖兽掉落');else if(!secret)found.push('初始物资或奇遇');}return sourceCache[id]=found.join('、');}
@@ -6719,7 +6702,7 @@ function bookRows(){const s=game.s;let rows=[];
   // 百科扩展：基础图鉴逻辑；V90.6 新增储物袋常驻图鉴类别。
  for(const [i,z] of D.ZONES.entries())rows.push({key:'zone-'+i,name:z.name,cat:'zone',known:i===0||!!s.cleared[i-1]||s.zone>=i,mark:'境',hint:'第'+(i+1)+'境 · 世界地图',detail:`<div>第${i+1}境 · ${esc(z.name)}</div><div>区域首领：${esc(D.ENEMIES['boss'+i]?.name||'待探索')}</div><div>本境仪式：${esc(z.verb||'探索仪式')}</div><div>区域8×8格；首次完成本境首领试炼后开启下一境。</div>`});
  for(const [i,q] of D.SECRETS.entries())rows.push({key:'secret-'+i,name:q.name,cat:'secret',known:!!s.cleared[i]||s.zone===i&&!!s.secretVisited&&Object.keys(s.secretVisited).some(k=>k.startsWith(i+':')||k.includes('z'+i))||!!s.codex.items[q.item],mark:'秘',hint:D.ZONES[i].name+' · 随机秘境入口',detail:`<div>位置：${esc(D.ZONES[i].name)}</div><div>小地图：外围迷雾不可走，中央区域探索。</div><div>专属灵材：${esc(D.ITEMS[q.item]?.name||'未知')}</div><div>守卫与秘藏：击败守卫后可开启中央秘藏。</div>`});
- for(const [i,stage] of D.ASCENSION_STAGES.entries())rows.push({key:'realm-'+i,name:'第'+(i+6)+'境 · 破境修炼',cat:'realm',known:s.major>=i+2,mark:'修',hint:'高阶突破 · 第'+(i+6)+'境',detail:`<div>道行门槛：${stage.needDao}</div><div>突破材料：${esc(D.ITEMS[stage.primary]?.name||stage.primary)}×2、${esc(D.ITEMS[stage.secondary]?.name||stage.secondary)}×1</div><div>要求：本境洞府、本境首领通关、达到突破前置境界。</div>`});
+ for(const [i,stage] of D.ASCENSION_STAGES.entries())rows.push({key:'realm-'+i,name:'第'+(i+6)+'境 · 破境修炼',cat:'realm',known:s.major>=i+2,mark:'修',hint:'高阶突破 · 第'+(i+6)+'境',detail:`<div>修为采用36段：初中期修满自动升阶，后期圆满在本境洞府渡劫。</div><div>固定伤害：${D.TRIB_DAMAGE[Math.min(11,i+5)]}；护劫丹每颗减伤15%，最多两颗。</div><div>首领与祭坛仍属于地图通关内容；不再要求旧版道行或道材破境。</div>`});
  for(const [id,def] of Object.entries(D.BUILDINGS)){
   const best=Math.max(0,...s.settlements.map(c=>game.roomLevel(id,c)));
   rows.push({key:'home-'+id,name:def.name,known:best>0,cat:'home',mark:def.mark,hint:'洞府营建',detail:`<div>最高已建：${best}阶</div>${def.levels.map((l,i)=>'<div><b>'+(i+1)+'阶</b> · '+esc(l.effect)+'<br>材料：'+Object.entries(l.cost).map(([k,n])=>D.ITEMS[k].name+'×'+n).join('、')+'</div>').join('')}`});
@@ -6809,12 +6792,10 @@ function helpBody(){const g=game.s.guide;return `<div class="manual-hints"><h3>�
 function manualPlaytestHints(){
  const s=game.s,zone=s.zone,parts=[];
  if(s.secretRealm)parts.push('你正在秘境中：先查看相邻格，再移动或探索；可随时撤离，不会更换大地图。');
- if(!s.ritual[zone])parts.push(zone===0?'先在本境洞府修建山门并恢复护山阵；缺料请看下方材料清单。':'本境仪式尚未完成：先搜集祭坛所需材料，并携带到地图上的祭坛位置。');
- else if(!s.cleared[zone])parts.push('本境仪式已完成：检查装备、气血和补给，再前往首领。');
- else if(zone===6&&s.major===2&&s.cleared[6]&&!s.flags.heartTrial?.complete)parts.push('婴灵古墟首领已平定：回本境洞府完成三重问心，再依原条件突破元婴。');
- else if(zone>=5&&zone<11)parts.push(zone===5&&s.major===1&&!s.flags.coreTribulation?.complete?'丹霞雷蛟已平定：请在本境洞府修炼面板完成三重凝丹雷劫，再按旧条件破境。':'本境首领已击败：高境需在【本境】筑庐，积累道行与突破材料，再到【修炼】主动破境。');
- else if(zone===11&&!s.ascended)parts.push('渡劫终点：查看修炼面板的飞升条件，准备劫雷晶、天门符和道行后前往天门。');
- else if(zone<11)parts.push('已平定本境：通过下方旅行菜单前往下一境，旧境可随时回访采集。');
+ if(game.stageIndex===3&&s.xp>=game.required&&!s.ascended)parts.push(s.level===36?'最终渡劫后期已满：平定十二境，携带劫雷晶×3与天门符×2，到渡劫天门界碑承受第十二次固定伤害终劫。':'当前后期已圆满：在本境自己的洞府进入【修炼 → 渡劫】，准备气血与护劫丹；不需要道行或旧版三重试炼。');
+ else parts.push('当前'+game.realm+'，修为 '+s.xp+'/'+game.required+'。初/中期修满自动升段，后期圆满须回本境洞府主动渡劫。');
+ if(!s.ritual[zone])parts.push(zone===0?'本境地图任务：先筑庐并修建山门与护山阵。':'本境地图任务：收集祭坛材料后前往地图「坛」字；该任务不消耗你的突破修为。');
+ else if(!s.cleared[zone])parts.push('本境地图任务：祭坛已完成，检查装备与补给后挑战首领。');
  if(!s.secretRealm)parts.push('秘境入口是随机场景对象，可选探索；迷雾外圈不能通行，探索中可返回主世界。');
  return `<section class="manual-hints" aria-label="当前阶段提示"><h3>当前建议行动</h3>${parts.map(p=>`<p>${p}</p>`).join('')}</section>`;
 }
@@ -6877,59 +6858,57 @@ function relicCourtQuestHTML(){return loreJournalEntry();}
 let questReturnFocus='guide';
 function glyph(n){return /净泉|灵泉/.test(n)?"泉":/古炉/.test(n)?"炉":/古碑/.test(n)?"碑":/祭台/.test(n)?"台":"坛";}
 function poi(i,type){const z=D.ZONES[i];if(!z)return null;for(let y=0;y<8;y++)for(let x=0;x<8;x++)if(z.map[y][x]===type){const k=i+":"+x+","+y;return {x,y,key:k,mark:type==="shrine"?glyph(z.altar):type==="boss"?z.bossMark:"界",name:type==="shrine"?z.altar:(D.NAMED[k]?.[0]||D.ENEMIES[z.boss]?.name||"界碑")};}return null;}
+/* V90.57 主线：地图事件与角色修为分别展示；首领记录不再冒充渡劫硬门槛。 */
 function objective(){
- const s=game.s,i=s.zone,z=D.ZONES[i],camp=s.settlements[i],here=!!camp&&game.atCamp;
+ const s=game.s,i=s.zone,z=D.ZONES[i],camp=s.settlements[i],here=game.atCamp;
  const at=p=>!!p&&p.x===s.pos.x&&p.y===s.pos.y;
- const where=p=>p?`第${p.x+1}列第${p.y+1}行「${p.mark}」字处`:"地图";
  const action=(label,type,args={})=>({label,type,...args});
- const needs=(x,stash=false)=>Object.entries(x).map(([id,n])=>({id,name:D.ITEMS[id]?.name||id,n,have:(s.inv[id]||0)+(stash?(camp?.stash?.[id]||0):0)}));
- const out={title:"",detail:"",short:"",point:null,needs:[],note:"",action:null};
- if(s.ascended)return {...out,title:"凡界修行已成",detail:"十二境已平定，飞升完成。仙界暂未开放；已解锁区域可继续回访。",short:"凡界飞升已成"};
+ const needs=cost=>Object.entries(cost).map(([id,n])=>({id,name:D.ITEMS[id]?.name||id,n,have:game.has(id)}));
+ const out={title:'',detail:'',short:'',point:null,needs:[],note:'',action:null};
+ const p=progStage(),ready=p.stage===3&&s.xp>=game.required;
+ if(s.ascended)return {...out,title:'凡界修行已成',detail:'飞升完成。仙界暂未开放；已探索地图可继续回访。',short:'飞升已成'};
+ if(s.level===36&&i===11&&s.cleared.every(Boolean)){
+  const gate=poi(i,'gate');out.title='第十二重终劫 · 飞升天门';out.point=gate;
+  out.detail=`渡劫后期 ${s.xp}/${game.required}；需劫雷晶×3、天门符×2，并在界碑承受 ${game.tribDamage} 点固定终劫伤害（护劫丹最多减伤30%）。不再需要道行或旧版三重问答。`;
+  out.needs=needs(D.ASCENSION_RULE.cost);out.note='当前气血 '+s.hp+'/'+s.maxHp+' · '+(ready?'后期圆满':'继续修满后期');
+  out.action=gate?(at(gate)?action('查看飞升条件','panel',{panel:'cultivate-trial'}):action('导航到飞升天门','map',{x:gate.x,y:gate.y})):null;
+  out.short='渡劫圆满 · 天门最终固定伤害';return out;
+ }
+ if(ready&&s.level<36&&game.realmIndex===i+1){
+  out.title=game.realm+' · 后期圆满';
+  out.detail='本段修为已修满。返回当前所在境域自己的洞府，在「洞府 → 修炼 → 渡劫」承受固定伤害；不再要求道行或三重试炼。';
+  out.point=camp?{...camp.pos,mark:'府',name:'本境自建洞府'}:null;
+  out.note='本次伤害 '+game.tribDamage+' · 气血 '+s.hp+'/'+s.maxHp;
+  out.action=!camp?action('在本境筑庐','panel',{panel:'camp'}):here?action('进入渡劫条件页','panel',{panel:'cultivate-trial'}):action('返回本境洞府','map',{x:camp.pos.x,y:camp.pos.y});
+  out.short=game.realm+' · 可准备渡劫';return out;
+ }
  if(!s.ritual[i]){
   if(i===0){
-   out.title=camp?"修建青岚山门与护山阵":"先择地筑庐，建立洞府";
-   out.detail=camp?"在你的自建洞府修建「山门与护山阵」。完成后才能挑战青岚妖窟。":"旧营坪不是现成的山门。先采集木石与青藤，选址筑庐，之后才可营建山门。";
-   out.point=camp?{x:camp.pos.x,y:camp.pos.y,mark:"府",name:"自建洞府"}:null;
-   out.needs=camp?needs(z.need,true):[];
-   out.action=!camp?action("打开洞府选址","panel",{panel:"camp"}):here?action("查看山门营建","panel",{panel:"camp"}):action("返回自建洞府","map",{x:camp.pos.x,y:camp.pos.y});
-   out.short=camp?"返回洞府 · 修建山门":"先择地筑庐 · 建立洞府";
+   out.title=camp?'修建青岚山门与护山阵':'先择地筑庐，建立洞府';
+   out.detail=camp?'在自建洞府修筑山门和护山阵；完成后解锁首领挑战。':'采集木石与青藤，在合适地形筑庐，之后营建山门。';
+   out.point=camp?{...camp.pos,mark:'府',name:'自建洞府'}:null;out.needs=camp?needs(z.need):[];
+   out.action=!camp?action('打开洞府选址','panel',{panel:'camp'}):here?action('查看山门营建','panel',{panel:'camp'}):action('返回洞府','map',{x:camp.pos.x,y:camp.pos.y});
   }else{
-   const p=poi(i,"shrine");out.title=z.verb+" · "+z.altar;out.point=p;
-   out.detail="前往地图指示的位置完成"+z.verb+"仪式。所需材料必须随身携带，不能隔空使用仓库。";
-   out.needs=needs(z.need);out.action=p?(at(p)?action("在此完成"+z.verb,"repair"):action("导航到"+z.altar,"map",{x:p.x,y:p.y})):null;
-   out.short=z.verb+" · 地图「"+(p?.mark||"坛")+"」字（第"+(p?.x+1||5)+"列第"+(p?.y+1||5)+"行）";
+   const altar=poi(i,'shrine');out.title=z.verb+' · '+z.altar;out.point=altar;
+   out.detail='本境探索目标：携带仪式材料前往祭坛，完成后解锁首领据点。这是地图任务，不是已满修为的渡劫条件。';
+   out.needs=needs(z.need);out.action=altar?(at(altar)?action('在此完成'+z.verb,'repair'):action('导航到'+z.altar,'map',{x:altar.x,y:altar.y})):null;
   }
  }else if(!s.cleared[i]){
-  const p=poi(i,"boss"),enemy=D.ENEMIES[z.boss]?.name||"首领";out.point=p;
-  out.title="挑战首领 · "+enemy;
-  out.detail="仪式已完成。前往地图标记处挑战"+enemy+"，出发前检查气血、食水与装备。";
-  out.action=p?(at(p)?action("在此挑战首领","hunt"):action("导航到首领据点","map",{x:p.x,y:p.y})):null;
-  out.short="挑战"+enemy+" · 找地图「"+z.bossMark+"」字";
- }else if(i>=5&&s.major===i-4){
-  const stage=D.ASCENSION_STAGES[i-5],core=i===5&&!game.coreTrial.complete,heart=i===6&&!game.heartTrial.complete;
-  out.title=core?"凝丹雷劫 · 三重试炼":heart?"元婴问心 · 三重试炼":"回洞府准备突破境界";
-  out.detail=core?"在丹霞雷渊本境洞府，完成「修炼 → 凝丹雷劫」后再正式突破。":heart?"在婴灵古墟本境洞府，完成「修炼 → 元婴问心」后再正式突破。":"本境首领已败；请在本境建洞府，积累道行并备齐突破道材，在修炼中主动破境。";
-  out.point=camp?{x:camp.pos.x,y:camp.pos.y,mark:"府",name:"本境自建洞府"}:null;
-  out.needs=stage?needs({[stage.primary]:2,[stage.secondary]:1},true):[];
-  out.note=stage?"道行 "+s.daoXp+"/"+stage.needDao+" · 可从本境仓房使用突破材料":"";
-  out.action=!camp?action("先在本境筑庐","panel",{panel:"camp"}):here?action("进入修炼与破境","panel",{panel:"cultivate"}):action("回到本境洞府","map",{x:camp.pos.x,y:camp.pos.y});
-  out.short=core?"本境洞府 · 凝丹雷劫":heart?"本境洞府 · 元婴问心":"本境洞府 · 道行"+s.daoXp+"/"+(stage?.needDao||0)+"待突破";
- }else if(i===11&&s.major>=8){
-  const p=poi(i,"gate");out.title="渡劫已成 · 前往飞升天门";out.point=p;
-  out.detail="在飞升天门的界碑结算。需150道行、劫雷晶×3、天门符×2；可直接飞升，也可选做九霄终劫。";
-  out.needs=needs(D.ASCENSION_RULE.cost);out.note="飞升道行 "+s.daoXp+"/"+D.ASCENSION_RULE.dao;
-  out.action=p?(at(p)?action("查看飞升与九霄终劫","heaven-open"):action("导航到飞升天门","map",{x:p.x,y:p.y})):null;
-  out.short="渡劫已成 · 前往「界」字飞升天门";
+  const boss=poi(i,'boss'),enemy=D.ENEMIES[z.boss]?.name||'本境首领';out.title='挑战首领 · '+enemy;out.point=boss;
+  out.detail='仪式已经完成，前往首领据点挑战；建议先检查气血、食水和装备。首领通关记录用于地图进度与飞升条件。';
+  out.action=boss?(at(boss)?action('在此挑战首领','hunt'):action('导航到首领据点','map',{x:boss.x,y:boss.y})):null;
+ }else if(i===11&&s.level<36){
+  out.title='渡劫天门 · 修满最终境界';out.detail=`当前 ${game.realm}，修为 ${s.xp}/${game.required}。把人物修至渡劫后期圆满（等级36），随后到界碑完成飞升终劫。`;
+  out.action=action('查看修炼与渡劫','panel',{panel:'cultivate-trial'});
  }else if(i<11){
-  out.title="本境已平定 · 前往"+D.ZONES[i+1].name;
-  out.detail="仪式与首领已完成，可出行至下一境。旧境洞府、仓房、地图与物资仍会保留。";
-  out.action=i+1<s.unlocked?action("前往"+D.ZONES[i+1].name,"zone",{zone:i+1}):null;
-  out.short="本境通关 · 下一境"+D.ZONES[i+1].name;
+  out.title='本境已平定 · 继续修炼与探索';
+  out.detail=`当前 ${game.realm}，修为 ${s.xp}/${game.required}。初/中期修满自动升段，后期圆满回本境洞府渡劫；可探索旧境采集。`;
+  out.action=action('查看修炼进度','panel',{panel:'cultivate'});
  }else{
-  out.title="回本境洞府完成渡劫突破";out.detail="完成本境修炼与突破后，再前往飞升天门。";
-  out.action=action("打开洞府","panel",{panel:"camp"});out.short=out.title;
+  out.title='前往飞升界碑';out.detail='渡劫天门的最终目标是修满36段、平定十二境并准备灵材，在界碑承受第十二重固定伤害。';
+  out.action=action('查看修炼','panel',{panel:'cultivate-trial'});
  }
- return out;
+ out.short=out.title;return out;
 }
 function questDisplay(){
  const s=game.s,q=objective(),n=s.cleared.filter(Boolean).length;
@@ -6958,7 +6937,7 @@ function worldPage(){
  return `<div class="q4-page"><div class="q4-intro"><small>${esc(game.character.name)} · 本世修行记录</small><h3>凡界十二境</h3><p>进度依据通关数据；进入地图不代表已经平定首领。</p></div>
  <div class="q4-count"><strong>${n}/12</strong><small>${esc(game.realm)} · 第${game.day}日</small></div>
  <ol class="q4-stages">${D.ZONES.map((z,i)=>`<li class="${i===s.zone?'current':''}" ${i===s.zone?'aria-current="step"':''}><span class="q4-no">${String(i+1).padStart(2,'0')}</span><span class="q4-name"><strong>${esc(z.name)}</strong><small>${s.cleared[i]?'仪式与首领已完成':i===s.zone?esc(objective().title):i<s.unlocked?'开放探索':'等待前置条件'}</small></span><em>${status(i)}</em></li>`).join('')}</ol>
- <div class="q4-realm"><strong>修行境界</strong><p>${esc(game.character.realms.join(' → '))}</p><small>高境关卡通关后还需要在本境洞府完成主动破境。</small></div>
+ <div class="q4-realm"><strong>修行境界</strong><p>${esc((D.REALM12?.[game.s.character]||game.character.realms).join(' → '))}</p><small>高境关卡通关后还需要在本境洞府完成主动破境。</small></div>
  <div class="q4-footer"><button type="button" class="btn" data-a="quest-return">← 返回主线</button></div></div>`;
 }
 
@@ -7017,7 +6996,7 @@ function leaderboardBody(){
 function exportLeaderboard(){
  try{const envelope={format:'ShanyeAscensionLocalLeaderboard',schemaVersion:1,origin:'local_unverified',exportedAt:new Date().toISOString(),...slots.leaderboard()};
   const data=JSON.stringify(envelope,null,2),url=URL.createObjectURL(new Blob([data],{type:'application/json'})),link=document.createElement('a');
-  link.href=url;link.download='山野修仙记_V90.51_本机飞升资质榜.json';link.click();
+  link.href=url;link.download='山野修仙记_V90.57_本机飞升资质榜.json';link.click();
   setTimeout(()=>URL.revokeObjectURL(url),3000);notify('已导出本机排行榜，仅为可迁移备份、非云端认证','ok');
  }catch(e){notify('排行榜导出失败：'+e.message,'warn');}
 }
@@ -7034,7 +7013,7 @@ function settingsBody(){
   `<span class="cult-nav-main"><b>${title}</b><small>${sub}</small></span>`+
   `<span class="cult-nav-right">${state||''}<i>›</i></span></button>`;
  return `<div class="v909-set">
-<div class="v909-set-head"><span class="v909-set-id">V90.51 · ${game.character.name} · 档位 ${String(activeSlot).padStart(3,'0')}</span><span class="v909-set-save ${saveAvailable?'is-ok':'is-bad'}">${saveAvailable?'可本地保存':'存储受限'}</span></div>
+<div class="v909-set-head"><span class="v909-set-id">V90.57 · ${game.character.name} · 档位 ${String(activeSlot).padStart(3,'0')}</span><span class="v909-set-save ${saveAvailable?'is-ok':'is-bad'}">${saveAvailable?'可本地保存':'存储受限'}</span></div>
 <p class="v909-set-status">${esc(saveStatus)}</p>
 ${game.s.ascended?`<section class="v909-mod v909-mod-gold"><h3 class="v909-mod-title">飞升已成 · 轮回结算</h3><p class="v909-mod-hint">可在人间继续发育，或确认结束当前本世领取轮回玉；首次飞升资质成绩不随之后的岁月改变。</p><div class="v909-actions"><button class="btn primary v909-btn" data-a="ascension-retire">结束本世 · 结算轮回玉</button></div></section>`:''}
 <nav class="cult-nav" aria-label="设置分区">
