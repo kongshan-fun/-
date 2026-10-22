@@ -1,0 +1,46 @@
+name: V90.64 Difficulty Modes Verification
+on:
+  push:
+    branches: [feat/v90.64-difficulty-modes]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Syntax and three-difficulty engine/isolation tests
+        run: |
+          node tests/syntax_check.cjs
+          node tests/v964_difficulty_modes.cjs
+      - name: Core growth and legacy save regressions
+        run: |
+          node tests/v962_p0_save_integrity.cjs
+          node tests/v962_200slots_faults.cjs
+          node tests/v959_combat_save.cjs
+          node tests/v960_breakthrough_split.cjs
+          node tests/v958_dual_growth_chain.cjs
+      - name: Install Chromium and Chinese fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-noto-cjk fonts-wqy-zenhei
+          python3 -m pip install --disable-pip-version-check playwright==1.56.0
+          python3 -m playwright install --with-deps chromium
+      - name: Six viewport responsive validation
+        run: python3 tests/browser_responsive.py
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v964-difficulty-ui-${{ github.run_id }}
+          path: artifacts/browser-responsive/
+          if-no-files-found: warn
+          retention-days: 14
