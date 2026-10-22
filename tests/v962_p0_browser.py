@@ -74,22 +74,27 @@ try:
     check(data['ledger']['rebuildCompensation']['tier']==600,'single ledger marker')
     check(data['done']=='1','old marker compatibility persisted')
     pg.screenshot(path=str(out/'after-reset-360x640.png'))
-    # Simulate a previous paid-and-spent ledger that later sees the old source
-    # again (historical backup, interrupted previous UI flow).
-    pg.evaluate('''(values) => {const [k,oldRaw]=values;
-      let l=JSON.parse(localStorage.getItem(k+'-legacy-v1'));
-      l.balance=9;localStorage.setItem(k+'-legacy-v1',JSON.stringify(l));
-      localStorage.setItem(k,oldRaw);
-    }''',[KEY,old_raw])
-    pg.reload(wait_until='load')
-    open_slot(pg)
-    pg.locator('[data-a="reset-confirm"]').wait_for(timeout=12000)
-    repeat_text=pg.locator('#modal-root').inner_text()
-    print('REPEAT_DIALOG_TEXT:',repr(repeat_text[:700]),flush=True)
-    pg.screenshot(path=str(out/'repeat-compensation-modal-360x640.png'))
+    # Separate browser profile: player restores an old original after credit was
+    # already claimed and mostly spent. This avoids in-session active-slot caches.
+    prior=dict(data['ledger']);prior['balance']=9
+    ctx2=browser.new_context(viewport={'width':390,'height':844},accept_downloads=True)
+    pg2=ctx2.new_page();pg2.on('pageerror',lambda e: errors.append(str(e)))
+    seed2=f"""try{{if(!localStorage.getItem('__v962_seeded')){{
+      localStorage.setItem({json.dumps(KEY)},{json.dumps(old_raw)});
+      localStorage.setItem({json.dumps(LED)},{json.dumps(json.dumps(prior,ensure_ascii=False))});
+      localStorage.setItem({json.dumps(KEY+'-rebuild-compensated')},'1');
+      localStorage.setItem('__v962_seeded','1');
+    }}}}catch(e){{}}"""
+    pg2.add_init_script(seed2)
+    pg2.goto(url,wait_until='load',timeout=30000)
+    open_slot(pg2)
+    pg2.locator('[data-a="reset-confirm"]').wait_for(timeout=12000)
+    repeat_text=pg2.locator('#modal-root').inner_text()
+    pg2.screenshot(path=str(out/'repeat-compensation-modal-390x844.png'))
     check('不重复' in repeat_text,'repeat dialog warns no second payout')
-    pg.locator('[data-a="reset-confirm"]').click()
-    check(fetch(pg)['ledger']['balance']==9,'spent jade not replenished on retry')
+    pg2.locator('[data-a="reset-confirm"]').click()
+    check(fetch(pg2)['ledger']['balance']==9,'spent jade not replenished on retry')
+    ctx2.close()
     check(not errors,'no uncaught errors: '+repr(errors[:3]))
     ctx.close();browser.close()
     print(f'V90.62 REAL BROWSER PASS {checks} checks; screenshots in {out}')
