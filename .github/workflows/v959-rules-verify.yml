@@ -1,0 +1,40 @@
+name: V90.59 Combat Save and Advancement Verification
+on:
+  push:
+    branches:
+      - fix/v90.59-combat-save-upgrade-xp
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Rebuild V90.59 from locked V90.58
+        run: |
+          python3 tools/build_v959_from_main.py
+          git diff --exit-code -- index.html releases/山野修仙记_V90.59_存档晋升与修为继承版.html
+      - name: Current core and historical regression
+        run: python3 tests/run_v959_verification.py --skip-batch --skip-browser
+      - name: Real engine integration - 100 human and 100 demon slots
+        run: node tests/v959_200slots_integration.cjs
+      - name: Install Chromium browser driver
+        run: |
+          python3 -m pip install --disable-pip-version-check playwright==1.56.0
+          python3 -m playwright install --with-deps chromium
+      - name: Browser UI and battle save restore smoke
+        run: python3 tests/v959_browser_actions.py
+      - name: Archive V90.59 verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v959-rule-regression-evidence
+          path: |
+            evidence/v959/
+          if-no-files-found: warn
