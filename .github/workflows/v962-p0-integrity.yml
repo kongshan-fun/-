@@ -1,0 +1,35 @@
+name: V90.62 P0 Storage Integrity
+on:
+  push:
+    branches:
+      - fix/v90.62-p0-save-ledger-integrity
+  pull_request:
+    branches:
+      - release/v90.61
+jobs:
+  verify-p0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Reproduce exact V90.62 build
+        run: python3 tools/build_v962_from_main.py --check
+      - name: Check all embedded scripts
+        run: node tests/syntax_check.cjs
+      - name: P0 persistence and fault-injection tests
+        run: node tests/v962_p0_integrity.cjs
+      - name: Combat save and XP boundary regression
+        run: |
+          node tests/v959_combat_save.cjs
+          node tests/v960_breakthrough_split.cjs
+          node tests/v958_cross_realm_unlock.cjs
+          node tests/v958_dual_growth_chain.cjs
+          node tests/v951_zone_gap.cjs
+      - name: Core 200-slot engine regression
+        run: node tests/run_v908_regression.cjs
