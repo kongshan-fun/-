@@ -2590,6 +2590,8 @@ const SPIRIT_BASE=[
 ];
 /* docs §五 装备基准：第 1..12 境的武器基准（词条固定值的分母） */
 const WEAPON_BASE=[7,11,16,23,34,49,72,106,156,228,336,492];
+/* docs §七 渡劫固定伤害（绝对表，按「从哪个境出发」：凡人→感气 … 渡劫→飞升） */
+const TRIB_DAMAGE=[150,260,410,650,1020,1620,2550,4000,6300,9900,15500,24200];
 /* ===== V90.55 36 段修为轴（docs §三）：一段一级，level 1..36 是唯一真源 =====
    境基础 = round(800 × 境序^1.35)；三阶系数 [1.0, 1.6, 2.4]；daoXp 退役并入 xp */
 const REALM_BASE=[800,2039,3525,5198,7026,8987,11066,13251,15535,17910,20369,22908];
@@ -3036,7 +3038,7 @@ HELP.push({id:'combat-balance-v905',title:'斗法进阶：预警与防守',parag
 // V90.6: storage artifacts are permanent, weightless ownership records, not physical inventory stacks.
 const STORAGE_BAGS=[{"id":"bag01","name":"一阶储物袋","tier":1,"zone":0,"bonus":32,"cost":{"wood":7,"fiber":6,"stone":5,"rune":2},"forgeTier":1},{"id":"bag02","name":"二阶储物袋","tier":2,"zone":1,"bonus":55,"cost":{"blossom":6,"dew":6,"hide":3,"ore":4},"forgeTier":1},{"id":"bag03","name":"三阶储物袋","tier":3,"zone":2,"bonus":80,"cost":{"copper":7,"cinder":5,"ore":6,"hide":3},"forgeTier":2},{"id":"bag04","name":"四阶储物袋","tier":4,"zone":3,"bonus":110,"cost":{"moss":8,"soul":6,"hide":4,"rune":4},"forgeTier":2},{"id":"bag05","name":"五阶储物袋","tier":5,"zone":4,"bonus":145,"cost":{"star":9,"thunder":6,"ancient":2,"rune":5},"forgeTier":3},{"id":"bag06","name":"六阶储物袋","tier":6,"zone":5,"bonus":185,"cost":{"coreOre":8,"coreHerb":5,"dust":4},"forgeTier":3},{"id":"bag07","name":"七阶储物袋","tier":7,"zone":6,"bonus":235,"cost":{"soulJade":10,"soulDew":6,"dust":6},"forgeTier":3},{"id":"bag08","name":"八阶储物袋","tier":8,"zone":7,"bonus":290,"cost":{"godSilk":12,"godFruit":7,"dust":8},"forgeTier":3},{"id":"bag09","name":"九阶储物袋","tier":9,"zone":8,"bonus":355,"cost":{"voidStone":14,"riftEssence":8,"dust":10},"forgeTier":3},{"id":"bag10","name":"十阶储物袋","tier":10,"zone":9,"bonus":430,"cost":{"unionGold":16,"unionBark":9,"dust":12},"forgeTier":3},{"id":"bag11","name":"十一阶储物袋","tier":11,"zone":10,"bonus":520,"cost":{"mahayaRune":18,"mahayaJade":10,"dust":14},"forgeTier":3},{"id":"bag12","name":"十二阶储物袋","tier":12,"zone":11,"bonus":630,"cost":{"tribulationCrystal":20,"ascendToken":11,"dust":16},"forgeTier":3},{"id":"bagSlayer","name":"杀神储物袋","bonus":780,"source":"击败100只妖兽自动获得","kills":100},{"id":"bagVoid","name":"虚空储物袋","bonus":1250,"source":"秘境内成功完成节点时独立1%判定","chance":0.01}];
 for(const bag of STORAGE_BAGS){if(!bag.tier)continue;bag.forgeTier=bag.tier>=10?5:bag.tier>=6?4:bag.forgeTier;RECIPES.push({id:bag.id,name:bag.name,type:'储物袋',cost:bag.cost,zone:bag.zone,room:'forge',tier:bag.forgeTier,storageBag:bag.id});}
-const D={STORAGE_BAGS,COMBAT_BALANCE,SECRETS,HIGH_TRAITS,HIGH_EVENTS,HEAVEN_LAYERS,ESTATE_TRIALS,DAO_PATHS,MIRROR_SCROLLS,BIRTH:B,RACES:B.RACES,LEGACY_CHARACTERS,ASCENSION_RULE,REALMS,ASCENSION_STAGES,CHARACTERS,SLOT_PREFIX:'qinglan-wendao-v14-',MIGRATION_KEY:'qinglan-wendao-v11-legacy-used',ACTIVE_KEY:'qinglan-wendao-v14-current',VERSION:14,SAVE:'qinglan-wendao-v10',DEATH_KEY:'qinglan-wendao-v10-permadeath',LIFE,LEGACY:['qinglan-wendao-v9','qinglan-wendao-v8','qinglan-wendao-v7','qinglan-cultivation-five-v5','qinglan-cultivation-demo-v2','qinglan-cultivation-demo-v1'],ZONES,LAND,ITEMS,RECIPES,ENEMIES,NAMED,EVENTS,RES,RESOURCE_LAYOUT,SITES,QUALITIES,QUALITY_WEIGHTS,FORGE_RANKS,FORGE_WEIGHTS,SPIRIT_RANKS,SPIRIT_TIERS,SPIRIT_TIER_MULT,SPIRIT_WEIGHTS,SPIRIT_BASE,WEAPON_BASE,REALM_BASE,STAGE_MULT,XP_RATE,AFFIXES,BOOK_REWARDS,GUIDE,HELP,BUILDINGS,CAMP_LANDS,SETTLE_COST,MOVE_CAMP_COST,FARM_LOOT};
+const D={STORAGE_BAGS,COMBAT_BALANCE,SECRETS,HIGH_TRAITS,HIGH_EVENTS,HEAVEN_LAYERS,ESTATE_TRIALS,DAO_PATHS,MIRROR_SCROLLS,BIRTH:B,RACES:B.RACES,LEGACY_CHARACTERS,ASCENSION_RULE,REALMS,ASCENSION_STAGES,CHARACTERS,SLOT_PREFIX:'qinglan-wendao-v14-',MIGRATION_KEY:'qinglan-wendao-v11-legacy-used',ACTIVE_KEY:'qinglan-wendao-v14-current',VERSION:14,SAVE:'qinglan-wendao-v10',DEATH_KEY:'qinglan-wendao-v10-permadeath',LIFE,LEGACY:['qinglan-wendao-v9','qinglan-wendao-v8','qinglan-wendao-v7','qinglan-cultivation-five-v5','qinglan-cultivation-demo-v2','qinglan-cultivation-demo-v1'],ZONES,LAND,ITEMS,RECIPES,ENEMIES,NAMED,EVENTS,RES,RESOURCE_LAYOUT,SITES,QUALITIES,QUALITY_WEIGHTS,FORGE_RANKS,FORGE_WEIGHTS,SPIRIT_RANKS,SPIRIT_TIERS,SPIRIT_TIER_MULT,SPIRIT_WEIGHTS,SPIRIT_BASE,WEAPON_BASE,TRIB_DAMAGE,REALM_BASE,STAGE_MULT,XP_RATE,AFFIXES,BOOK_REWARDS,GUIDE,HELP,BUILDINGS,CAMP_LANDS,SETTLE_COST,MOVE_CAMP_COST,FARM_LOOT};
 const currentHelp=root.QHelp||(typeof require==='function'?require('./help.js'):null);
 HELP.splice(0,HELP.length,...currentHelp);
 HELP.push({id:'building-progression-v908',title:'洞府五阶与高阶炼制',paragraphs:[
@@ -3614,8 +3616,10 @@ class Game{
  get playerDampen(){return Math.max(0.20,1-0.08*this.zoneGap);}
  get tribPills(){return Math.min(2,Math.max(0,Math.round(Number((this.s.inv||{}).guardPill)||0)));}
  get tribReduce(){return this.tribPills*.15;}
- get tribDamage(){const r={5:.70,6:.75,7:.80,8:.85,9:.90,10:.95,11:1.00}[this.s.zone]||.70;
-  return Math.max(1,Math.round(this.s.maxHp*r*(1-this.tribReduce)));}
+ /* V90.56 渡劫伤害改用 docs §七 的**绝对表**（按「从哪个境出发」取，境序 1..12）；
+    不再用「气血上限 × 0.70~1.00」的旧口径——那是 V90.46 的临时实现，与定稿表量级/索引都不一致。 */
+ get tribDamage(){const base=D.TRIB_DAMAGE[Math.min(11,Math.max(0,this.realmIndex-1))]||150;
+  return Math.max(1,Math.round(base*(1-this.tribReduce)));}
 get character(){return B.profile(this.s.birth);}
  get birthEffects(){return B.effects(this.s.birth);}
  realmAt(m){return D.CHARACTERS[this.s.character].realms[m];}
