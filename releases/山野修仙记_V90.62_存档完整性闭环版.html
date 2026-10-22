@@ -5608,7 +5608,8 @@ class RaceSlots{
   const raw=this.readKey(found.reset.source==='自动备份'?backup:key);
   if(!raw)throw Error('无法确认旧档原始记录，操作已取消');
   const old=JSON.parse(raw);
-  if(!obj(old)||!obj(old.inv)||!pos(old.pos)||
+  if(!old||typeof old!=='object'||Array.isArray(old)||!old.inv||typeof old.inv!=='object'||Array.isArray(old.inv)||
+     !old.pos||!Number.isInteger(old.pos.x)||!Number.isInteger(old.pos.y)||old.pos.x<0||old.pos.x>=8||old.pos.y<0||old.pos.y>=8||
      (old.version>=14?(old.race!==id||old.character!==id):(id!=='human')))
     throw Error('旧档内容或种族身份不符，禁止重置');
   const ledger=this.legacy(id,n);

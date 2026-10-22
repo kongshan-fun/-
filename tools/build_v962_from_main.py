@@ -15,7 +15,7 @@ for patch in manifest['changes']:
     assert text.count(original)==1, f"anchor {patch['label']} mismatch: {text.count(original)}"
     text=text.replace(original,replacement,1)
 out=text.encode('utf-8')
-assert blob(out)=='6d88f136757d530c47c8eccfc8badd09fab089a1', 'V90.62 output hash mismatch'
+assert blob(out)=='a752877eaa007c939ae253b508e1199202a86834', 'V90.62 output hash mismatch'
 index=root/'index.html';release=root/manifest['outputFile']
 if '--check' in sys.argv:
     assert index.read_bytes()==out, 'index.html not deterministic'
