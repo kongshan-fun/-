@@ -1,0 +1,43 @@
+name: V90.58 P0 Candidate Verification
+on:
+  push:
+    branches:
+      - fix/v90.58-p0-closure
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Deterministic rebuild of V90.58
+        run: |
+          python3 tools/build_v958_from_v957.py
+          git diff --exit-code -- index.html releases/山野修仙记_V90.58_跨境与旧档补偿闭环版.html
+      - name: P0 engine and save migration tests
+        run: |
+          node tests/syntax_check.cjs
+          node tests/v958_p0_closure.cjs
+          node tests/v958_dual_race_12zones.cjs
+          node tests/v958_tribulation_regression.cjs
+      - name: Install headless browser tests
+        run: |
+          python3 -m pip install --disable-pip-version-check playwright==1.56.0
+          python3 -m playwright install --with-deps chromium
+      - name: Full current-version self-contained regression and browser UI
+        run: python3 tests/run_v958_verification.py
+      - name: Upload P0 test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v958-p0-evidence
+          path: |
+            evidence/v958/
+            evidence/verification/
+          if-no-files-found: warn
