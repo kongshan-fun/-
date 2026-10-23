@@ -26,6 +26,7 @@ jobs:
         run: |
           node tests/syntax_check.cjs
           node tests/v964_difficulty_modes.cjs
+          node tests/v964_taptap_rank_guard.cjs
       - name: Core growth and legacy save regressions
         run: |
           node tests/v962_p0_save_integrity.cjs
