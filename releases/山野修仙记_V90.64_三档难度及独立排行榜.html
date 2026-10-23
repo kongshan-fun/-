@@ -7578,6 +7578,7 @@ function handle(a,b){
  if(a==='promo-copy'){copyPromoGroup();return;}
  if(a==='promo-close'){promoMark();closeModal();render();return;}
  if(a==='modal-close'&&modal){closeModal();return;}
+ if(a==='characters'&&frontPage?.kind==='slots'){showPage({kind:'characters'});return;}
  if(a==='characters'){showCharacters();return;}
  if(a==='slot-back'&&activeRole&&!deathBoot){modal=null;frontPage=null;renderPage();renderModal();render();return;}
  if(a==='choose-role'&&frontPage?.kind==='characters'){selectedRole=b.dataset.role;renderPage();$('entry-root').querySelector(`[data-a="choose-role"][data-role="${selectedRole}"]`)?.focus({preventScroll:true});return;}
