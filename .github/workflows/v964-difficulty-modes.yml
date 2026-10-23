@@ -1,0 +1,22 @@
+name: V90.64 Difficulty Modes Candidate
+on:
+  push:
+    branches: [feat/v90.64-three-difficulty-modes]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: V90.64 difficulty rules, combat and isolated slots
+        run: node tests/v964_difficulty_modes.cjs
+      - name: V90.62 save and combat regression
+        run: |
+          node tests/v962_p0_save_integrity.cjs
+          node tests/v959_combat_save.cjs
+          node tests/v960_breakthrough_split.cjs
