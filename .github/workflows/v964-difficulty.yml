@@ -1,0 +1,83 @@
+name: V90.64 Difficulty Modes Verification
+on:
+  push:
+    branches: [feat/v90.64-difficulty-modes]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Deterministic build from V90.62
+        run: |
+          python3 tools/check_entry_consistency.py
+          python3 tools/check_entry_consistency.py --rebuild
+          git diff --exit-code -- index.html releases/
+      - name: Syntax and three-difficulty engine/isolation tests
+        run: |
+          node tests/syntax_check.cjs
+          node tests/v964_difficulty_modes.cjs
+          node tests/v964_taptap_rank_guard.cjs
+      - name: TapTap platform adapter fixture build and rank gate (NOT real platform)
+        run: python3 tests/v964_taptap_package_smoke.py
+      - name: Core growth and legacy save regressions
+        run: |
+          node tests/v962_p0_save_integrity.cjs
+          node tests/v962_200slots_faults.cjs
+          node tests/v959_combat_save.cjs
+          node tests/v960_breakthrough_split.cjs
+          node tests/v958_dual_growth_chain.cjs
+      - name: Install Chromium and Chinese fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-noto-cjk fonts-wqy-zenhei
+          python3 -m pip install --disable-pip-version-check playwright==1.56.0
+          python3 -m playwright install --with-deps chromium
+      - name: First-entry difficulty flow, old saves, two ranked boards
+        run: python3 tests/v964_difficulty_browser.py
+      - name: Independent second review - real character creation, reload, cross-mode import
+        run: python3 tests/v964_second_audit_browser.py
+      - name: Six viewport responsive validation
+        run: python3 tests/browser_responsive.py
+      - name: Build and independently verify complete V90.64 local handoff ZIP
+        run: python3 tools/package_v964_local_candidate.py
+      - name: Upload complete V90.64 local development package
+        uses: actions/upload-artifact@v4
+        with:
+          name: v964-full-local-handoff-${{ github.run_id }}
+          path: dist/山野修仙记_V90.64_本地完整交付候选包.zip
+          retention-days: 30
+          if-no-files-found: error
+      - name: Upload offline playable V90.64 H5 candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: v964-playable-h5-${{ github.run_id }}
+          path: |
+            index.html
+            releases/山野修仙记_V90.64_难度分级版.html
+            docs/V9064_三档难度与独立排行榜_设计验收.md
+            tests/v964_difficulty_modes.cjs
+            tests/v964_difficulty_browser.py
+            platform/taptap-difficulty-ranks-v964.js
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v964-difficulty-ui-${{ github.run_id }}
+          path: |
+            artifacts/browser-responsive/
+            artifacts/v964-difficulty/
+            artifacts/v964-second-review/
+          if-no-files-found: warn
+          retention-days: 14
