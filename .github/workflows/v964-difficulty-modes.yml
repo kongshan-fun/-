@@ -18,6 +18,8 @@ jobs:
           python-version: '3.12'
       - name: V90.64 difficulty rules, combat and isolated slots
         run: node tests/v964_difficulty_modes.cjs
+      - name: All 600 logical save slots isolated
+        run: node tests/v964_600slots_isolation.cjs
       - name: Candidate reproducible build
         run: |
           python3 tools/check_entry_consistency.py
