@@ -22,6 +22,7 @@ def main():
  old=" if(a==='characters'){showCharacters();return;}"
  new=" if(a==='characters'&&frontPage?.kind==='slots'){showPage({kind:'characters'});return;}\n if(a==='characters'){showCharacters();return;}"
  if text.count(old)!=1:raise SystemExit("ABORT: navigation patch anchor drift")
+ text=text.replace("@media(min-width:720px){.difficulty-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}","")
  result=text.replace(old,new,1).encode("utf-8")
  frozen=RELEASES/OUT_NAME
  if frozen.exists() and frozen.read_bytes()!=result:
