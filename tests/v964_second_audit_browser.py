@@ -76,6 +76,8 @@ try:
   page.goto(f"http://127.0.0.1:{srv.server_port}/index.html",wait_until="load")
   created=make_character(page,'easy','human',1);close_intro(page)
   key='qinglan-wendao-v14-easy-human-slot-001';before=json.loads(data(page,key))
+  page.locator('[data-a="panel"][data-name="settings"]').first.click()
+  page.locator('[data-a="panel-step"][data-name="set-char"]').click()
   page.locator('[data-a="characters"]').first.click()
   check(page.locator('[data-a="difficulty-choice"]').count()==3,"return to difficulty selector")
   page.locator('[data-a="difficulty-choice"][data-mode="challenge"]').click()
@@ -86,6 +88,8 @@ try:
   check(json.loads(data(page,key))['seed']==before['seed'],"mode switch didn't overwrite original")
   check(data(page,'qinglan-wendao-v14-human-slot-001') is None,"challenge slot not accidentally created")
   # Cross-mode JSON import is rejected at the actual browser FileReader entry.
+  page.locator('[data-a="panel"][data-name="settings"]').first.click()
+  page.locator('[data-a="panel-step"][data-name="set-char"]').click()
   page.locator('[data-a="characters"]').first.click()
   page.locator('[data-a="difficulty-choice"][data-mode="standard"]').click()
   page.locator('[data-a="difficulty-next"]').click()
