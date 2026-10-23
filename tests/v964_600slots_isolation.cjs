@@ -9,7 +9,7 @@ const storage={
  name(key){const k=String(key);return mode==='challenge'?k:k.startsWith(D.SLOT_PREFIX)?D.SLOT_PREFIX+mode+'-'+k.slice(D.SLOT_PREFIX.length):'shanye-mode-'+mode+':'+k},
  getItem(k){return db.get(this.name(k))??null},
  setItem(k,v){db.set(this.name(k),String(v))},
- removeItem(k){db.delete(this.name(k)}
+ removeItem(k){db.delete(this.name(k))}
 };
 const slots=new Slots(storage),observed=new Set();let pass=0;
 const initialChallengeSlot=slots.key('human',1);
