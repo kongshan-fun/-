@@ -59,7 +59,7 @@ try:
      select(pg,"easy");archives(pg)
      check("ready" in pg.locator('.entry-save-cell').nth(0).get_attribute("class"),"easy ready")
      check("empty" in pg.locator('.entry-save-cell').nth(1).get_attribute("class"),"challenge slot invisible in easy")
-     pg.locator('[data-a="characters"]').click()
+     pg.locator('[data-a="characters"]').last.click()
      pg.locator('[data-a="difficulty-back"]').click()
      select(pg,"challenge");archives(pg)
      check("empty" in pg.locator('.entry-save-cell').nth(0).get_attribute("class"),"easy invisible in challenge")
