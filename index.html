@@ -5496,7 +5496,8 @@ const D=root.QData||(typeof require==='function'?require('./data.js'):null);
 const Game=root.QGame||(typeof require==='function'?require('./engine.js'):null);
 const B=D.BIRTH;
 class RaceSlots{
- constructor(storage){this.storage=storage;}
+ constructor(storage){this.storage=storage;this.difficulty='challenge';}
+ setDifficulty(id){if(!Object.hasOwn(D.DIFFICULTIES,id))throw Error('未知修行难度');this.difficulty=id;return id;}
  check(id){if(!Object.hasOwn(D.RACES,id))throw Error('未知种族');return id;}
  slot(n=1){n=Number(n);if(!Number.isInteger(n)||n<1||n>100)throw Error('存档位必须为1至100');return n;}
  key(id,n=1){return D.SLOT_PREFIX+this.check(id)+'-slot-'+String(this.slot(n)).padStart(3,'0');}
@@ -5514,6 +5515,7 @@ class RaceSlots{
  leaderboardKey(){return 'shanye-v907-local-ascension-board-v1';}
  leaderboard(){
   const raw=this.readKey(this.leaderboardKey());
+  if(this.difficulty==='easy')return {schemaVersion:1,source:'local_unverified',records:[]};
   if(!raw)return {schemaVersion:1,source:'local_unverified',records:[]};
   const b=JSON.parse(raw);
   if(b?.schemaVersion!==1||b.source!=='local_unverified'||!Array.isArray(b.records)||b.records.length>200)throw Error('本机资质榜格式无效，已停止覆盖');
@@ -5527,10 +5529,10 @@ class RaceSlots{
  }
  recordAscension(id,n,g){
   this.check(id);this.slot(n);const a=g.s.ascensionRecord;
-  if(!g.s.ascended||!a||a.race!==id)return null;
+  if(this.difficulty==='easy'||!g.s.ascended||!a||a.race!==id)return null;
   const board=this.leaderboard();
   const exists=board.records.find(r=>r.runId===a.runId);if(exists)return exists;
-  const item={schemaVersion:1,source:'local_unverified',runId:a.runId,race:id,slot:n,
+  const item={schemaVersion:1,source:'local_unverified',difficulty:this.difficulty,runId:a.runId,race:id,slot:n,
     name:String(g.s.birth?.name||'无名修士').slice(0,16),elapsedMinutes:a.elapsedMinutes,
     defeats:a.defeats,remainingLifeMinutes:a.remainingLifeMinutes,
     recordedAt:new Date().toISOString(),playerId:null,verification:'unverified'};
@@ -5592,6 +5594,7 @@ class RaceSlots{
     /* V90.43：重构前的档没有 rebuilt 标记 —— 不加载、不删除，交给重置流程 */
     if(obj.version===14&&!obj.rebuilt)return {reset:{tier:this.tierOf(obj),source,race:id,slot:n}};
     if(obj.version!==14||obj.race!==id||obj.character!==id)throw Error('种族身份不符');
+    if((obj.difficulty||'challenge')!==this.difficulty)throw Error('跨模式读取禁止');
     return {game:new Game(obj,261014,id),source};}catch{}
   }
   if(present)throw Error('此档数据损坏，已锁定防止覆盖');return null;
@@ -5619,7 +5622,7 @@ class RaceSlots{
    updated.rebuildCompensation={tier:0,source:'legacy-marker',at:new Date().toISOString()};
    this.putLegacy(id,n,updated);
   }
-  const g=new Game(null,261014,id),up=updated.upgrades||{};
+  const g=new Game(null,261014,id),up=updated.upgrades||{};g.s.difficulty=this.difficulty;
   g.s.maxHp+=4*(up.vigor||0);g.s.hp+=4*(up.vigor||0);
   g.s.maxSpirit+=4*(up.spirit||0);g.s.spirit+=4*(up.spirit||0);g.s.attack+=up.attack||0;
   const raw=JSON.stringify(g.state()),key=this.key(id,n);
@@ -5636,13 +5639,14 @@ class RaceSlots{
  listSlots(id,start=1,count=100){this.check(id);this.slot(start);if(!Number.isInteger(count)||count<1||count>100)throw Error('读取档数无效');return Array.from({length:Math.min(count,101-start)},(_,i)=>this.status(id,start+i));}
  save(id,game,n=1){this.check(id);this.slot(n);if(this.dead(id,n))throw Error('此档已寿尽，不能保存');
   if(game.s.ended||game.s.race!==id||game.s.character!==id||game.s.version!==14)throw Error('拒绝写入错误种族或终结存档');
+  if((game.s.difficulty||'challenge')!==this.difficulty)throw Error('跨模式写入禁止');
   const valid=new Game(game.state(),261014,id),raw=JSON.stringify(valid.state()),key=this.key(id,n),prior=this.readKey(key);
   if(prior&&prior!==raw){try{const old=JSON.parse(prior);new Game(old,261014,id);this.storage.setItem(this.backupKey(id,n),prior);}catch(e){/* If quota blocks a backup, primary remains intact until its own atomic write. */}}
   this.storage.setItem(key,raw);return true;
  }
  newGame(id,seed=261014,n=1,birth=null){this.check(id);this.slot(n);
   if(!this.dead(id,n)&&(this.readKey(this.key(id,n))||this.readKey(this.backupKey(id,n))))throw Error('该档位已有进度，禁止覆盖');
-  const g=new Game(null,seed,id,birth);
+  const g=new Game(null,seed,id,birth);g.s.difficulty=this.difficulty;
   const legacy=this.legacy(id,n),up=legacy.upgrades;
   g.s.maxHp+=4*(up.vigor||0);g.s.hp+=4*(up.vigor||0);
   g.s.maxSpirit+=4*(up.spirit||0);g.s.spirit+=4*(up.spirit||0);
