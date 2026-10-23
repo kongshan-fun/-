@@ -27,6 +27,8 @@ jobs:
           node tests/syntax_check.cjs
           node tests/v964_difficulty_modes.cjs
           node tests/v964_taptap_rank_guard.cjs
+      - name: TapTap platform adapter fixture build and rank gate (NOT real platform)
+        run: python3 tests/v964_taptap_package_smoke.py
       - name: Core growth and legacy save regressions
         run: |
           node tests/v962_p0_save_integrity.cjs
