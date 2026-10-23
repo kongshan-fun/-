@@ -1,6 +1,6 @@
-# 山野修仙记 · V90.62 主线已合并（TapTap 平台发布待验收）
+# 山野修仙记 · V90.64 三档难度（本地验收候选）
 
-原创竖屏 H5 文字修仙生存 RPG。**V90.62 已通过 PR #22 正式合并至 GitHub `main`（合并提交 `8d9c1ba47d967884898f86fb3b0326adaa1561ed`），主线构建 CI 通过；这不等于 TapTap 线上已更新。**默认入口 [`index.html`](index.html) 与 [V90.62 独立发布文件](releases/山野修仙记_V90.62_存档可靠性收口.html) 字节一致，并由 [`tools/build_v962_from_main.py`](tools/build_v962_from_main.py) 从冻结 V90.61 基线确定性重建。
+原创竖屏 H5 文字修仙生存 RPG。**此分支 `feat/v90.64-difficulty-modes` 是 V90.64 本地功能验收候选，尚未合并正式 `main`。`main` 仍为 V90.62；TapTap 线上未被改动。**默认入口 [`index.html`](index.html) 与 [V90.64 独立文件](releases/山野修仙记_V90.64_难度分级版.html) 字节一致，并由 [`tools/build_v964_from_main.py`](tools/build_v964_from_main.py) 从 V90.62 冻结基线确定性重建。
 
 > **状态说明（2026-10-23）：** V90.62 GitHub 主线已合并，合并后的 Main Verify 通过；本地独立历史回归 43/43，双族 200 档故障注入 1,442 断言通过。TapTap 包体库的上传记录（h5PackageId `108907` / h5VersionId `350466`）明确为**上传但未绑定、未发布**；尚无真机云存档、真实激励广告和旧玩家存档完整验证。发布前必须从平台后台实时回读并经 OWNER 审批。下一阶段修复计划：[V90.63 平台与存档专项](docs/V9063_下一阶段修复计划_平台与存档收口.md)。
 
@@ -43,6 +43,7 @@
 | V90.55–57 | 36 段修为及境界边界渡劫、属性丹 |
 | V90.58–61 | 破境即时解锁、旧档补偿、战斗存档、晋升分流与修为继承 |
 | **V90.62** | **旧档补偿防重复、修为存档精度、200 档故障注入、真实浏览器验收及确定性构建** |
+| **V90.64（候选）** | **开局选择简单/标准/挑战；经验需求、敌方属性和雷劫分别 ×0.5/0.8/1.0；600 档严格隔离；简单不计榜、标准/挑战双本机榜** |
 
 历史版本（V83~V90.15）仍在 [`releases/`](releases/) 里冻结保留。
 
@@ -58,6 +59,21 @@
 | [`tests/run_v908_regression.cjs`](tests/run_v908_regression.cjs) | 引擎级 6 套回归（含 100 档全里程碑） |
 | [`docs/交接文档.md`](docs/交接文档.md) | **接手必读**：界面规范、验收方法、已知问题、TapTap 发布流程 |
 | `src/`、`build.py`、`青岚问道_V9_洞府营建.html` | 旧 V9 原型代码与历史资产，**不是当前构建入口** |
+
+## V90.64 本地验收路径
+
+```bash
+python3 tools/build_v964_from_main.py                # 从冻结 V90.62 精确重建 V90.64
+python3 tools/check_entry_consistency.py --rebuild   # 验证入口与发布文件
+node tests/v964_difficulty_modes.cjs                 # 600 档模式隔离与数值
+node tests/v964_taptap_rank_guard.cjs               # 模式防串榜（SDK 模拟）
+python3 tests/v964_difficulty_browser.py            # 3 视口难度选项
+python3 tests/v964_second_audit_browser.py          # 真实角色创建、续玩、跨档拒绝
+python3 tests/browser_responsive.py                 # 6 视口布局
+python3 tests/v964_taptap_package_smoke.py          # 模拟平台包，非生产
+```
+
+**注意：** 旧 `run_full_regression.cjs` 的许多 Chromium 层固定从 `play/jindan-v961` 等冻结历史文件读取页面，因此历史 43/43 不能直接证明 V90.64 的真实首屏与新存档规则。本版本增加了从当前 `index.html` 直接启动的独立真实浏览器测试。本地 AI 应分别报告历史基线回归与候选当前页面回归。详情见 [V90.64 二审与交付文档](docs/V9064_独立二审与本地交付.md)。
 
 ## 确定性构建及回归
 
