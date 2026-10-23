@@ -161,9 +161,9 @@ def main():
     if "q.rankDifficulty" not in guard or "auto.enabled=false" not in guard:
         die("难度榜拦截器缺少内部自动上报保护")
     standard_setup = "window.__SHANYE_STANDARD_BOARD_IDS=" + json.dumps(standard_ids, ensure_ascii=False, separators=(',', ':')) + ";"
-    rank_section = "\\n" + standard_setup + "\\n" + guard
+    rank_section = "\n" + standard_setup + "\n" + guard
     text = rep1(text, P1_OLD,
-                '<body>\\n<script>\\n' + adapter + rank_section + '\\n</script>\\n<div id="phone"',
+                '<body>\n<script>\n' + adapter + rank_section + '\n</script>\n<div id="phone"',
                 "P1 注入 QTAP 适配层与三档难度榜保护器")
     applied.append("三档难度榜保护器")
 
