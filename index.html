@@ -5892,6 +5892,7 @@ function beginBirth(id,n){
 function birthBack(){entryImport=null;slotPage=Math.floor((draftSlot-1)/20);showPage({kind:'slots',role:selectedRole});}
 function completeImport(){
  if(!entryImport)return;try{const id=entryImport.game.s.race,n=draftSlot;
+  if((entryImport.game.s.difficulty||'challenge')!==selectedDifficulty)throw Error('此存档属于其他难度，禁止跨模式继承');
   if(slots.status(id,n).status!=='empty')throw Error('目标必须是空档');
   if(entryImport.source)slots.migrate(id,n,entryImport.source);else slots.save(id,entryImport.game,n);
   entryImport=null;selectCharacter(id,'open',n);notify('已继承到独立档位，原档未删除','ok');
@@ -7186,7 +7187,7 @@ function leaderboardBody(){
  const show=records.filter(r=>rankFilter==='all'||r.race===rankFilter).slice(0,30);
  const rows=show.map((r,i)=>{const time=elapsedInfo(r),death=(r.defeats||0)*D.LIFE.defeatYears;
   return `<article class="v907-rank-row"><span class="v907-rank-place">${String(i+1).padStart(2,'0')}</span><div class="v907-rank-person"><strong>${esc(r.name)}</strong><small>${r.race==='human'?'人族':'妖族'} · ${String(r.slot).padStart(3,'0')}档 · 战败${r.defeats||0}次</small><small>累计耗寿约 ${(time.years+((r.defeats||0)*D.LIFE.defeatYears)).toFixed(2)} 年（含额外折寿）</small></div><div class="v907-rank-time"><b>${time.years.toFixed(2)}年</b><small>${time.days.toFixed(1)}日</small></div></article>`;}).join('');
- return `<div class="v907-rank"><div class="v907-rank-head"><small>凡界十二境 · 首次飞升计时</small><h2>本机飞升资质榜</h2><p>按照出生至首次飞升的<strong>游戏历时</strong>从短到长排序；每4游戏日折合1年，突破增寿不抵扣时间。继续发育不会修改历史成绩。</p></div>
+ return `<div class="v907-rank"><div class="v907-rank-head"><small>凡界十二境 · 首次飞升计时</small><h2>${D.DIFFICULTIES[selectedDifficulty].name} · 本机飞升资质榜</h2><p>按照出生至首次飞升的<strong>游戏历时</strong>从短到长排序；每4游戏日折合1年，突破增寿不抵扣时间。继续发育不会修改历史成绩。</p></div>
  <nav class="v907-rank-tabs" aria-label="排行榜种族筛选">${[['all','全部'],['human','人族'],['demon','妖族']].map(([id,title])=>`<button data-a="rank-switch" data-race="${id}" class="${rankFilter===id?'active':''}">${title}</button>`).join('')}</nav>
  ${error?`<p class="danger-text">${esc(error)}，不会自动覆盖损坏数据。</p>`:show.length?`<div class="v907-rank-rows">${rows}</div>`:'<div class="v907-empty"><strong>尚无飞升成绩</strong><p>首次飞升成功并保存后，将在本机留下永久记录。</p></div>'}
  <p class="v907-rank-notice">本机排行榜，最多保留前 200 条（显示前 30 条）。成绩存在这台设备上，换设备不会自动带过去。<br>战力算法自 V90.53 起按十二境系数（1+(境序-1)×0.12）计算，此前记录仅供参考。</p>
@@ -7530,6 +7531,7 @@ function exportSave(){const envelope={format:'QinglanWendao',version:D.VERSION,c
 async function importFile(file){if(!file)return;try{
  if(file.size>2*1024*1024)throw Error('文件超过2MB');const data=JSON.parse(await file.text());if(data.format&&data.format!=='QinglanWendao')throw Error('不是山野修仙记存档');
  const race=frontPage?selectedRole:activeRole,candidate=new QGame(data.state||data,261014,race);
+ if((candidate.s.difficulty||'challenge')!==selectedDifficulty)throw Error('此存档属于其他难度，不可跨模式导入');
  if(frontPage){if(slots.status(race,draftSlot).status!=='empty')throw Error('请选择空白档位');entryImport={game:candidate,label:file.name};showPage({kind:'entry-import'});}
  else{importCandidate=candidate;showModal({kind:'import',label:file.name});}
  }catch(e){notify('导入失败：'+e.message,'warn');}finally{$('import-file').value='';}}
@@ -7555,6 +7557,9 @@ function handle(a,b){
   }
   return; // The open modal blocks all unrelated background actions.
  }
+ if(a==='difficulty-open'&&frontPage?.kind==='modes'){selectDifficulty(b.dataset.difficulty);return;}
+ if(a==='difficulty-rank'&&frontPage?.kind==='modes'){selectDifficulty(b.dataset.difficulty,true);return;}
+ if(a==='difficulty-back'&&frontPage?.kind==='characters'){showPage({kind:'modes'});return;}
  if(a==='ranking-open'){rankFilter='all';showModal({kind:'ranking'});return;}
  if(a==='rank-switch'&&modal?.kind==='ranking'){rankFilter=['all','human','demon'].includes(b.dataset.race)?b.dataset.race:'all';renderModal();return;}
  if(a==='rank-export'&&modal?.kind==='ranking'){exportLeaderboard();return;}
@@ -7799,15 +7804,15 @@ document.addEventListener('keydown',e=>{
  if(mapOpen&&e.key==='Tab'){const f=[...$('map-overlay').querySelectorAll('button:not(:disabled)')],first=f[0],last=f.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}return;}
  if(frontPage&&!modal&&e.key==='Tab'){const f=[...$('entry-root').querySelectorAll('button:not(:disabled),input,summary')];if(f.length){const first=f[0],last=f.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}return;}
  if(modal&&e.key==='Tab'){const f=[...$('modal-root').querySelectorAll('button:not(:disabled),input,[tabindex="0"]')];if(f.length){const first=f[0],last=f.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}return;}
- if(e.key==='Escape'){e.preventDefault();if(modal?.kind==='reward-ad'){closeModal();return;}if(modal&&['new-character-confirm','slot-migrate-confirm'].includes(modal.kind)){closeModal();return;}if(frontPage&&!modal){if(frontPage.kind==='birth-confirm'){showPage({kind:'birth',role:selectedRole,slot:draftSlot});return;}if(['birth','legacy','entry-import'].includes(frontPage.kind)){birthBack();}else if(frontPage.kind==='slots')showPage({kind:'characters'});else if(activeRole&&!deathBoot){frontPage=null;renderPage();render();}return;}if(modal?.kind==='permadeath')return;if(modal){if(modal.kind==='intro')game.act('guide',{mode:'skip'});closeModal();persist();}else if(mapOpen){setMap(false);}else if(travelOpen){travelOpen=false;render();}else if(panel){if(isQuestChild(panel)){leaveQuestChild();return;}if(['karma','mirror','rift','dao','estate','heaven'].includes(panel)){panel=null;render();return;}if(panel==='book'&&bookDetailKey){panelScroll.bookDetail=$('panel-body')?.scrollTop||0;bookDetailKey=null;render();if($('panel-body'))$('panel-body').scrollTop=panelScroll.book||0;}else if(['warehouse','cultivate','manuals','tribulation','hearttrial','lore','mirror','rift'].includes(panel)){const old=panel,parent=old==='lore'?'quest':['manuals','tribulation','hearttrial'].includes(old)?'cultivate':'camp';panelScroll[old]=$('panel-body')?.scrollTop||0;panel=parent;render();if($('panel-body'))$('panel-body').scrollTop=panelScroll[parent]||0;}else{panel=null;bookDetailKey=null;render();}}else if(game.s.guide.status==='active')run('guide',{mode:'pause'});else{stop();render();}return;}
+ if(e.key==='Escape'){e.preventDefault();if(modal?.kind==='reward-ad'){closeModal();return;}if(modal&&['new-character-confirm','slot-migrate-confirm'].includes(modal.kind)){closeModal();return;}if(frontPage&&!modal){if(frontPage.kind==='birth-confirm'){showPage({kind:'birth',role:selectedRole,slot:draftSlot});return;}if(frontPage.kind==='characters'){showPage({kind:'modes'});return;}if(['birth','legacy','entry-import'].includes(frontPage.kind)){birthBack();}else if(frontPage.kind==='slots')showPage({kind:'characters'});else if(activeRole&&!deathBoot){frontPage=null;renderPage();render();}return;}if(modal?.kind==='permadeath')return;if(modal){if(modal.kind==='intro')game.act('guide',{mode:'skip'});closeModal();persist();}else if(mapOpen){setMap(false);}else if(travelOpen){travelOpen=false;render();}else if(panel){if(isQuestChild(panel)){leaveQuestChild();return;}if(['karma','mirror','rift','dao','estate','heaven'].includes(panel)){panel=null;render();return;}if(panel==='book'&&bookDetailKey){panelScroll.bookDetail=$('panel-body')?.scrollTop||0;bookDetailKey=null;render();if($('panel-body'))$('panel-body').scrollTop=panelScroll.book||0;}else if(['warehouse','cultivate','manuals','tribulation','hearttrial','lore','mirror','rift'].includes(panel)){const old=panel,parent=old==='lore'?'quest':['manuals','tribulation','hearttrial'].includes(old)?'cultivate':'camp';panelScroll[old]=$('panel-body')?.scrollTop||0;panel=parent;render();if($('panel-body'))$('panel-body').scrollTop=panelScroll[parent]||0;}else{panel=null;bookDetailKey=null;render();}}else if(game.s.guide.status==='active')run('guide',{mode:'pause'});else{stop();render();}return;}
  if(frontPage||modal||mapOpen||panel||travelOpen||game.s.combat||e.target.closest('input,textarea,select,button'))return;
  const moves={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],s:[0,1],a:[-1,0],d:[1,0]};if(moves[e.key]){e.preventDefault();stop();const [dx,dy]=moves[e.key];run('move',{x:game.s.pos.x+dx,y:game.s.pos.y+dy});}
 });
 window.addEventListener('resize',()=>{renderTravel();renderCoach();});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){stop();persist();}});
 window.addEventListener('pagehide',()=>{stop();persist();});
-load();render();showPage({kind:'characters'});if(bootMessage)setTimeout(()=>notify(bootMessage,saveAvailable?'ok':'warn'),300);
-window.QinglanDemo={getState:()=>activeRole?game.state():null,getSlots:()=>slots.list(),getSlotPage:(role,page=0)=>slots.listSlots(role,page*20+1,20),getActiveSlot:()=>activeSlot,getActiveRole:()=>activeRole,metadata:{version:15,saveKeyPrefix:D.SLOT_PREFIX,width:8,height:8,regions:D.ZONES.map(z=>({name:z.name,need:z.need,boss:z.boss})),recipes:D.RECIPES.map(r=>r.id),bookTotal:bookRows().length},getNode:i=>({kind:game.resource(i),left:game.left(i),condition:game.resource(i)?game.requirement(game.resource(i)):null}),getBirthDraft:()=>draftBirth?JSON.parse(JSON.stringify(draftBirth)):null,getUI:()=>({panel,travelOpen,mapOpen,modal:modal?.kind||null,frontPage:frontPage?.kind||null,route:route.length,saveStatus,deathBoot,activeRole})};
+load();render();showPage({kind:'modes'});if(bootMessage)setTimeout(()=>notify(bootMessage,saveAvailable?'ok':'warn'),300);
+window.QinglanDemo={getState:()=>activeRole?game.state():null,getSlots:()=>slots.list(),getSlotPage:(role,page=0)=>slots.listSlots(role,page*20+1,20),getActiveSlot:()=>activeSlot,getActiveRole:()=>activeRole,getDifficulty:()=>selectedDifficulty,metadata:{version:15,saveKeyPrefix:D.SLOT_PREFIX,width:8,height:8,regions:D.ZONES.map(z=>({name:z.name,need:z.need,boss:z.boss})),recipes:D.RECIPES.map(r=>r.id),bookTotal:bookRows().length},getNode:i=>({kind:game.resource(i),left:game.left(i),condition:game.resource(i)?game.requirement(game.resource(i)):null}),getBirthDraft:()=>draftBirth?JSON.parse(JSON.stringify(draftBirth)):null,getUI:()=>({panel,travelOpen,mapOpen,modal:modal?.kind||null,frontPage:frontPage?.kind||null,route:route.length,saveStatus,deathBoot,activeRole})};
 })();
 
 </script>
