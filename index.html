@@ -7585,7 +7585,7 @@ function handle(a,b){
  if(a==='promo-copy'){copyPromoGroup();return;}
  if(a==='promo-close'){promoMark();closeModal();render();return;}
  if(a==='modal-close'&&modal){closeModal();return;}
- if(a==='characters'){showCharacters();return;}
+ if(a==='characters'){if(frontPage?.kind==='slots'){showPage({kind:'characters'});}else{showCharacters();}return;}
  if(a==='slot-back'&&activeRole&&!deathBoot){restorePlayingDifficulty();modal=null;frontPage=null;renderPage();renderModal();render();return;}
  if(a==='difficulty-choice'&&frontPage?.kind==='difficulty'){chooseDifficulty(b.dataset.mode);renderPage();$('entry-root').querySelector('[data-a="difficulty-choice"][data-mode="'+selectedDifficulty+'"]')?.focus({preventScroll:true});return;}
  if(a==='difficulty-next'&&frontPage?.kind==='difficulty'){if(!difficultyPicked)return;showPage({kind:'characters'});return;}
