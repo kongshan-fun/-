@@ -30,7 +30,7 @@ try:
     check(page.locator('[data-a="choose-role"]').count()==2,'races after '+mode)
     page.locator('[data-a="view-slots"]').click()
     check(page.locator('[data-a="slot-open"]').count()==20,'slots after '+mode)
-    page.locator('[data-a="characters"]').click()
+    page.locator('[data-a="characters"]').last.click()
     page.locator('[data-a="difficulty-back"]').click()
    check(not errors,'no JS errors '+str(errors[:3]))
    context.close()
