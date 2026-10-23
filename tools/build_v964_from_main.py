@@ -17,7 +17,12 @@ def main():
  for start,old,new in reversed(EDITS):
   if lines[start:start+len(old)]!=old:raise SystemExit("ABORT: source hunk drift at line "+str(start+1))
   lines[start:start+len(old)]=new
- result="\n".join(lines).encode("utf-8")
+ text="\n".join(lines)
+ # V90.64 UI navigation: archive -> race; race -> difficulty.
+ old=" if(a==='characters'){showCharacters();return;}"
+ new=" if(a==='characters'&&frontPage?.kind==='slots'){showPage({kind:'characters'});return;}\n if(a==='characters'){showCharacters();return;}"
+ if text.count(old)!=1:raise SystemExit("ABORT: navigation patch anchor drift")
+ result=text.replace(old,new,1).encode("utf-8")
  frozen=RELEASES/OUT_NAME
  if frozen.exists() and frozen.read_bytes()!=result:
   raise SystemExit("ABORT: V90.64 frozen release changed; refusing overwrite")
