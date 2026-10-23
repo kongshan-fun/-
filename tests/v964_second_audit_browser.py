@@ -36,8 +36,11 @@ def make_character(page,mode,race,slot):
  check(page.evaluate("window.QinglanDemo.getPlayingDifficulty()")==mode,"playing difficulty readback")
  return state
 def close_intro(page):
- buttons=page.locator('[data-a="modal-close"]')
- if buttons.count(): buttons.first.click()
+ skip=page.locator('[data-a="guide"][data-mode="skip"]')
+ if skip.count(): skip.first.click()
+ else:
+  buttons=page.locator('[data-a="modal-close"]')
+  if buttons.count(): buttons.first.click()
 def data(page,key):
  return page.evaluate("key=>localStorage.getItem(key)",key)
 
