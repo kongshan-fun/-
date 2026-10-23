@@ -46,6 +46,19 @@ jobs:
         run: python3 tests/v964_difficulty_browser.py
       - name: Six viewport responsive validation
         run: python3 tests/browser_responsive.py
+      - name: Upload offline playable V90.64 H5 candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: v964-playable-h5-${{ github.run_id }}
+          path: |
+            index.html
+            releases/山野修仙记_V90.64_难度分级版.html
+            docs/V9064_三档难度与独立排行榜_设计验收.md
+            tests/v964_difficulty_modes.cjs
+            tests/v964_difficulty_browser.py
+            platform/taptap-difficulty-ranks-v964.js
+          if-no-files-found: error
+          retention-days: 30
       - name: Upload screenshots
         if: always()
         uses: actions/upload-artifact@v4
