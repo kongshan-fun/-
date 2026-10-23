@@ -38,4 +38,23 @@ for(const other of ['easy','standard']){
 }
 mode='challenge';slots.setDifficulty('challenge');
 assert.equal(db.get(initialChallengeSlot),base,'old challenge untouched');pass++;
+// Standard and challenge have independent records; easy never records.
+for(const diff of ['standard','challenge']){
+ mode=diff;slots.setDifficulty(diff);
+ const g=slots.read('human',2).game;g.s.ascended=true;
+ g.s.ascensionRecord={race:'human',runId:'v964-'+diff,elapsedMinutes:120000,defeats:1,remainingLifeMinutes:1000};
+ const rec=slots.recordAscension('human',2,g);
+ assert.equal(rec.difficulty,diff,'record carries difficulty');pass++;
+ assert.equal(slots.leaderboard().records.length,1,'one record in '+diff);pass++;
+}
+mode='standard';slots.setDifficulty('standard');
+assert.equal(slots.leaderboard().records[0].runId,'v964-standard');pass++;
+mode='challenge';slots.setDifficulty('challenge');
+assert.equal(slots.leaderboard().records[0].runId,'v964-challenge');pass++;
+mode='easy';slots.setDifficulty('easy');
+const g=slots.read('human',2).game;g.s.ascended=true;
+g.s.ascensionRecord={race:'human',runId:'v964-easy',elapsedMinutes:100,defeats:0,remainingLifeMinutes:1000};
+assert.equal(slots.recordAscension('human',2,g),null);pass++;
+assert.equal(slots.leaderboard().records.length,0);pass++;
+
 console.log('V90.64 ALL 600 SLOTS PASS '+pass+' assertions');
