@@ -44,6 +44,8 @@ jobs:
           python3 -m playwright install --with-deps chromium
       - name: First-entry difficulty flow, old saves, two ranked boards
         run: python3 tests/v964_difficulty_browser.py
+      - name: Independent second review - real character creation, reload, cross-mode import
+        run: python3 tests/v964_second_audit_browser.py
       - name: Six viewport responsive validation
         run: python3 tests/browser_responsive.py
       - name: Upload offline playable V90.64 H5 candidate
@@ -67,5 +69,6 @@ jobs:
           path: |
             artifacts/browser-responsive/
             artifacts/v964-difficulty/
+            artifacts/v964-second-review/
           if-no-files-found: warn
           retention-days: 14
