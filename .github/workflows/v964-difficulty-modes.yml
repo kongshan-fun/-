@@ -18,6 +18,11 @@ jobs:
           python-version: '3.12'
       - name: V90.64 difficulty rules, combat and isolated slots
         run: node tests/v964_difficulty_modes.cjs
+      - name: Candidate reproducible build
+        run: |
+          python3 tools/check_entry_consistency.py
+          python3 tools/check_entry_consistency.py --rebuild
+          git diff --exit-code -- index.html releases/
       - name: V90.62 save and combat regression
         run: |
           node tests/v962_p0_save_integrity.cjs
