@@ -3272,7 +3272,7 @@ function majorOfLevel(level){
  return idx>=12?8:idx<=5?0:idx-5;
 }
 function fresh(seed=261014,character='human',birth=null){const born=birth?B.validate(birth,character):B.roll(character,(Number(seed)>>>0)||1);const c=B.profile(born);return {
- version:14,character,race:character,birth:born,xpCarry:0,seed:integer(seed,1,4294967295),zone:0,unlocked:1,ritual:Array(D.ZONES.length).fill(false),cleared:Array(D.ZONES.length).fill(false),ascensionRecord:null,
+ version:14,character,race:character,difficulty:'challenge',birth:born,xpCarry:0,seed:integer(seed,1,4294967295),zone:0,unlocked:1,ritual:Array(D.ZONES.length).fill(false),cleared:Array(D.ZONES.length).fill(false),ascensionRecord:null,
  secretRealm:null,secretVisited:{},pos:{x:1,y:5},last:{x:1,y:5},minutes:420,seen:{},visited:{},scouted:{},nodeHarvest:{},encounters:{},events:{},highEvents:{},survival:{debt:0},sites:{},campRests:{},bossDaily:{},
  hp:c.hp,maxHp:c.hp,hunger:84,water:81,spirit:c.spirit-8,maxSpirit:c.spirit,attack:c.attack,level:1,xp:0,
  settlements:Array(D.ZONES.length).fill(null),major:0,daoXp:0,ascended:false,rebuilt:1,caches:{},pillDaily:{day:1,uses:0},life:{left:c.years*D.LIFE.yearMinutes,losses:0,elixirs:0,adYearsClaimed:false,rescued:false},ended:false,
@@ -3294,6 +3294,7 @@ function normalize(raw,requestedCharacter='human'){
  if(o.version>=11&&character!==requestedCharacter)throw Error('存档角色与当前分支不符');
  const born=o.version>=14?B.validate(o.birth,character):B.legacy(o.character,o.seed);
  const n=fresh(o.seed,character,born),c=B.profile(born),legacy=o.version<7;
+ n.difficulty=Object.hasOwn(D.DIFFICULTIES,o.difficulty)?o.difficulty:'challenge';
  // 功法按当前档位独立保存：未知 ID / 非法进度 / 伪造种族功法均不加载。
  if(obj(o.manuals)){
   n.manuals.sect=['sword','herb','thunder','beast'].includes(o.manuals.sect)?o.manuals.sect:null;
@@ -3577,10 +3578,11 @@ function normalize(raw,requestedCharacter='human'){
    const _gap=Math.max(0,_zr-_self);
    const _boost=1+0.10*_gap,_damp=Math.max(0.20,1-0.08*_gap);
    /* V90.61 优先沿用存档里的对手数值（云端 V90.59 口径）：避免刷新后数值漂移 */
-   const expectedMaxHp=Math.round(e.hp*(repeat?1.25:1)/_damp);
+   const _factor=training?1:D.DIFFICULTIES[n.difficulty].factor;
+   const expectedMaxHp=Math.max(1,Math.round(e.hp*(repeat?1.25:1)/_damp*_factor));
    const maxHp=(Number.isSafeInteger(o.combat.maxHp)&&o.combat.maxHp>=1&&o.combat.maxHp<=100000000)?o.combat.maxHp:expectedMaxHp;
-   const savedAtk=(Number.isSafeInteger(o.combat.atk)&&o.combat.atk>=0&&o.combat.atk<=100000000)?o.combat.atk:Math.round(e.atk*(repeat?1.25:1)*_boost);
-   n.combat={type:t,hp:integer(o.combat.hp,1,maxHp),maxHp,atk:savedAtk,armor:e.armor,turn:integer(o.combat.turn,1,1000),riposte:integer(o.combat.riposte,0,1000),intent:['heavy','attack','recover',...(t.startsWith('boss')?['skill']:[]),...(D.HIGH_TRAITS[t]?['trait']:[])].includes(o.combat.intent)?o.combat.intent:'attack',charge:['delay','storm'].includes(o.combat.charge)&&D.HIGH_TRAITS[t]?.id===o.combat.charge?o.combat.charge:null,barrier:D.HIGH_TRAITS[t]?.id==='barrier'&&o.combat.barrier===true,training,repeat,virtualHeals:integer(o.combat.virtualHeals,0,3),manualShield:integer(o.combat.manualShield,0,75),cooldowns:{}};for(const id of Object.keys(MANUALS))if(n.manuals.equipped[MANUALS[id].slot]===id)n.combat.cooldowns[id]=integer(o.combat.cooldowns?.[id],0,1000);
+   const savedAtk=(Number.isSafeInteger(o.combat.atk)&&o.combat.atk>=0&&o.combat.atk<=100000000)?o.combat.atk:Math.max(1,Math.round(e.atk*(repeat?1.25:1)*_boost*_factor));
+   n.combat={type:t,hp:integer(o.combat.hp,1,maxHp),maxHp,atk:savedAtk,armor:Math.max(0,Math.round(e.armor*_factor)),turn:integer(o.combat.turn,1,1000),riposte:integer(o.combat.riposte,0,1000),intent:['heavy','attack','recover',...(t.startsWith('boss')?['skill']:[]),...(D.HIGH_TRAITS[t]?['trait']:[])].includes(o.combat.intent)?o.combat.intent:'attack',charge:['delay','storm'].includes(o.combat.charge)&&D.HIGH_TRAITS[t]?.id===o.combat.charge?o.combat.charge:null,barrier:D.HIGH_TRAITS[t]?.id==='barrier'&&o.combat.barrier===true,training,repeat,virtualHeals:integer(o.combat.virtualHeals,0,3),manualShield:integer(o.combat.manualShield,0,75),cooldowns:{}};for(const id of Object.keys(MANUALS))if(n.manuals.equipped[MANUALS[id].slot]===id)n.combat.cooldowns[id]=integer(o.combat.cooldowns?.[id],0,1000);
    if(training){const before=obj(o.combat.before)?o.combat.before:n;n.combat.before={hp:integer(before.hp,1,n.maxHp),spirit:integer(before.spirit,0,n.maxSpirit),hunger:integer(before.hunger,0,100),water:integer(before.water,0,100)};}
    if(Number.isInteger(o.combat.secretCell)&&o.combat.secretCell>=0&&o.combat.secretCell<9&&n.secretRealm)n.combat.secretCell=o.combat.secretCell;
    const pending=o.combat.siteReward;if(obj(pending)&&D.SITES[pending.key]?.choices?.[pending.choice])n.combat.siteReward={key:pending.key,choice:integer(pending.choice,0,1)};
@@ -3617,6 +3619,7 @@ const spiritRetry=Object.create(null);
 function spiritRetryCount(g){return g?Math.min(6,spiritRetry[g.id]||0):0;}
 function spiritRetryBump(g){if(g)spiritRetry[g.id]=Math.min(6,(spiritRetry[g.id]||0)+1);}
 function spiritRetryReset(){for(const k of Object.keys(spiritRetry))delete spiritRetry[k];}
+D.DIFFICULTIES=Object.freeze({easy:{name:'简单模式',factor:0.5,ranked:false},standard:{name:'标准模式',factor:0.8,ranked:true},challenge:{name:'挑战模式',factor:1,ranked:true}});
 class Game{
  constructor(raw=null,seed=261014,character='human',birth=null){this.s=raw?normalize(raw,character):fresh(seed,character,birth);this.effects=[];this.reveal();if(!raw){for(const [k,n] of Object.entries(this.s.inv))if(n)this.s.codex.items[k]=1;this.log('抵达废弃营坪。先备工具，择地筑庐。','good');}}
  get data(){return D;} state(){return copy(this.s);} get zone(){return D.ZONES[this.s.zone];}
@@ -3647,7 +3650,7 @@ class Game{
 
  get realmBaseXp(){return D.REALM_BASE[this.realmIndex-1];}
  /* 修为需求 = 境基础 × 三阶系数（docs §三） */
- get required(){return Math.round(this.realmBaseXp*D.STAGE_MULT[this.stageIndex-1]);}
+ get required(){return Math.max(1,Math.round(this.realmBaseXp*D.STAGE_MULT[this.stageIndex-1]*D.DIFFICULTIES[this.s.difficulty||'challenge'].factor));}
  /* 修为产出：按当前境序取「境基础 ÷ 分母」 */
  xpRatio(kind){const d=D.XP_RATE[kind]||40;return Math.max(1,Math.round(this.realmBaseXp/d));}
  get zoneGap(){
@@ -3656,6 +3659,7 @@ class Game{
   return Math.max(0,zoneRealm-self);}
  get enemyBoost(){return 1+0.10*this.zoneGap;}
  get playerDampen(){return Math.max(0.20,1-0.08*this.zoneGap);}
+ get difficultyFactor(){return D.DIFFICULTIES[this.s.difficulty||'challenge'].factor;}
  get tribPills(){return Math.min(2,Math.max(0,Math.round(Number((this.s.inv||{}).guardPill)||0)));}
  get tribReduce(){return this.tribPills*.15;}
  /* V90.56 渡劫伤害改用 docs §七 的**绝对表**（按「从哪个境出发」取，境序 1..12）；
@@ -5237,7 +5241,7 @@ const batches=this.farmBatches,loot=Object.fromEntries(Object.entries(D.FARM_LOO
   if(!b.training&&this.battleTrait(b)&&b.turn%4===3)return 'trait';
   return b.turn%3===0?'heavy':b.turn%5===0?'recover':'attack';
  }
- startBattle(type,repeat=false){if(this.s.combat)return this.fail('已经在斗法');const e=D.ENEMIES[type];if(!e)return this.fail('未知对手');const training=!!e.training,maxHp=Math.round(e.hp*(repeat?1.25:1)/this.playerDampen);this.s.combat={type,hp:maxHp,maxHp,atk:Math.round(e.atk*(repeat?1.25:1)*this.enemyBoost),armor:e.armor,turn:1,intent:training?'heavy':'attack',riposte:0,training,repeat,virtualHeals:3,cooldowns:{},manualShield:0};
+ startBattle(type,repeat=false){if(this.s.combat)return this.fail('已经在斗法');const e=D.ENEMIES[type];if(!e)return this.fail('未知对手');const training=!!e.training,factor=training?1:this.difficultyFactor,maxHp=Math.max(1,Math.round(e.hp*(repeat?1.25:1)/this.playerDampen*factor));this.s.combat={type,hp:maxHp,maxHp,atk:Math.max(1,Math.round(e.atk*(repeat?1.25:1)*this.enemyBoost*factor)),armor:Math.max(0,Math.round(e.armor*factor)),turn:1,intent:training?'heavy':'attack',riposte:0,training,repeat,virtualHeals:3,cooldowns:{},manualShield:0};
   if(training)this.s.combat.before={hp:this.s.hp,spirit:this.s.spirit,hunger:this.s.hunger,water:this.s.water};else this.s.codex.enemies[type]||=1;
   this.log(e.name+'拦住去路。');if(this.s.combat)this.s.combat.logFrom=(this.s.logs[0]&&this.s.logs[0].seq)||0;return this.note(training?'安全试剑 · 重击先防守':'遭遇'+e.name,'warn','battle');
  }
