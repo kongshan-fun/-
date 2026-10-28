@@ -1,7 +1,7 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
-const blocks=[...html.matchAll(/<script\\b[^>]*>([\\s\\S]*?)<\\/script>/gi)].map(x=>x[1]);
+const blocks=[...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map(x=>x[1]);
 assert.equal(blocks.length,10,'script count');
 const ctx=vm.createContext({console});ctx.globalThis=ctx;ctx.window=ctx;
 for(let i=0;i<6;i++)vm.runInContext(blocks[i],ctx,{timeout:10000});
