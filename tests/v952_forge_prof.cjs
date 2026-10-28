@@ -1,3 +1,4 @@
+// V90.75 fixture migration: unique homestead + explicit home context; numerical assertions retained.
 'use strict';
 /* V90.52 验收：锻造熟练度（5 级 · 仙品出率 5%→30% · 本档独立不继承 · 出率可见）
  *
@@ -64,9 +65,10 @@ function mkState(o = {}) {
   s.cleared = Array(ZONES).fill(true); s.ritual = Array(ZONES).fill(true);
   const p = { x: 1, y: 5 };
   s.pos = { ...p }; s.last = { ...p };
-  s.settlements[0] = { pos: { ...p }, level: 3, buildings: { warehouse: 3, forge: 3, alchemy: 3, quiet: 3, farm: 3 },
+  s.homestead = { pos: { ...p }, level: 3, buildings: { warehouse: 3, forge: 3, alchemy: 3, quiet: 3, farm: 3 },
     stash: {}, storedGears: [], foundedAt: s.minutes, farmAt: s.minutes };
   s.inv.wood = 20; s.inv.stone = 20; s.inv.fiber = 20;
+  s.atHome=true;
   return s;
 }
 const mk = (o) => new G(mkState(o));

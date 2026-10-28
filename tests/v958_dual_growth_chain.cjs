@@ -1,4 +1,5 @@
-﻿'use strict';
+// V90.75 fixture migration: unique homestead + explicit home context; numerical assertions retained.
+'use strict';
 /* V90.58 验收③：人族 / 妖族 从第一境到第十二境、再到飞升的完整成长链
    全程走真实状态转移（xp() 升级 + breakthrough() 渡劫 + ascend() 飞升），不直接改 level */
 const fs = require('fs');
@@ -28,7 +29,7 @@ function born(race) {
   g.s.unlocked = ZONES;
   const camp = { x: 1, y: 5 };
   g.s.pos = { ...camp }; g.s.last = { ...camp };
-  g.s.settlements = Array.from({ length: ZONES }, (_, z) => ({ pos: z ? { x: 0, y: 5 } : camp, level: 1, buildings: {} }));
+  g.s.homestead={version:1,pos:{x:1,y:5},level:1,buildings:{},stash:{},storedGears:[],foundedAt:g.s.minutes,farmAt:g.s.minutes};g.s.atHome=true;
   g.s.maxHp = 200000; g.s.hp = 200000;
   g.s.spirit = 100000; g.s.maxSpirit = 100000;
   g.s.hunger = 100; g.s.water = 100;

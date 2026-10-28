@@ -1,0 +1,30 @@
+/* V90.75 keeps the existing quiet text-first palette; no image substitutes. */
+#panel-root .home975-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+#panel-root .home975-heading strong{display:block;font:600 18px/1.3 "Songti SC",serif}
+#panel-root .home975-heading small{display:block;font-size:10px;color:var(--muted);margin-top:3px}
+#panel-root .home975 .camp-func-row{margin:7px 0;gap:4px}
+#panel-root .home975 .camp-func-row .btn{min-height:31px}
+#panel-root .home975 .farm-strip{margin:5px 0;padding:3px 7px;min-height:31px}
+#panel-root .home975-grid .home975-card{padding:7px;min-height:0;height:84px;border-radius:5px;background:var(--panel-bg,#fff);justify-content:space-between}
+.home975-card-head,.home975-card-foot{display:flex;align-items:center;justify-content:space-between;gap:4px}
+.home975-card-head strong{font-size:12px}.home975-card-head span,.home975-card-foot small{font-size:10px;color:var(--muted);white-space:nowrap}
+.home975-cost{font-size:10px;line-height:1.4;max-height:28px;overflow:hidden;overflow-wrap:anywhere}
+.home975-cost .missing{color:var(--danger,#955)}
+.home975-card-foot .btn{min-height:27px;padding:2px 8px;font-size:11px}
+#panel-root .home975-note{font-size:10px;margin:6px 0 0;color:var(--muted)}
+.home975-ritual{display:flex;align-items:center;justify-content:space-between;margin-top:6px;font-size:11px}
+.home975-empty{padding:16px 6px}.home975-empty h2{font:600 25px "Songti SC",serif;margin:14px 0}
+.home975-empty .btn{width:100%;min-height:42px;margin-top:16px}
+.quick975-row{border-bottom:1px solid var(--line);padding:12px 0}
+.quick975-row label{display:flex;justify-content:space-between;font-weight:600;margin-bottom:8px}
+.quick975-row label small{font-weight:400;font-size:10px;color:var(--muted)}
+.quick975-row select{width:100%;min-height:39px;background:var(--panel-bg,#fff);color:var(--ink)}
+.quick975-row p{font-size:11px!important;color:var(--muted);margin:6px 0!important}
+.supplies button{display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.25;padding:2px 0!important}
+.supplies button span{display:block;font-size:10px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:100%}
+.supplies button small{margin-left:0;font-size:10px}.journey-controls{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.journey-controls button{font-size:10px!important;min-width:0}
+.spirit975-balance{padding:10px;border:1px solid var(--line);margin-bottom:10px;display:flex;flex-wrap:wrap;gap:6px 14px}
+.spirit975-balance strong,.spirit975-balance span{font-size:12px}.spirit975-balance small{width:100%;font-size:10px;color:var(--muted)}
+.q975-cult{padding:12px 0;border-bottom:1px solid var(--line)}.q975-cult strong{font-size:13px}
+@media(max-height:650px){#panel-root .home975-grid .home975-card{height:75px;padding:5px}#panel-root .home975-heading{padding-bottom:5px}#panel-root .home975 .camp-func-row{margin:5px 0}#panel-root .home975 .camp-build-title{margin:5px 0 4px}.home975-card-foot .btn{min-height:25px}}

@@ -1,3 +1,4 @@
+// V90.75 fixture migration: unique homestead + explicit home context; numerical assertions retained.
 'use strict';
 /*
  * P0-5 装备经济复核：四条来源的真实产出 + 采集→炼制闭环 + 不重复发放
@@ -34,7 +35,8 @@ function fresh(zone = 0, major = 0) {
   for (let i = 0; i <= zone; i++) { s.cleared[i] = true; s.ritual[i] = true; }
   const p = { x: 1, y: 5 };
   s.pos = { ...p }; s.last = { ...p };
-  s.settlements[zone] = { pos: { ...p }, level: 3, buildings: { warehouse: 3, forge: 3, alchemy: 3, quiet: 3, farm: 3 }, stash: {}, storedGears: [], foundedAt: s.minutes, farmAt: s.minutes };
+  s.homestead = { pos: { ...p }, level: 3, buildings: { warehouse: 3, forge: 3, alchemy: 3, quiet: 3, farm: 3 }, stash: {}, storedGears: [], foundedAt: s.minutes, farmAt: s.minutes };
+  s.atHome=true;
   return s;
 }
 
@@ -98,9 +100,9 @@ ok(!!siteWithGear, '存在带成品掉落的奇遇');
   g.s.inv.stone = 20;
   const recipe = D.RECIPES.find((r) => r.gear === 'weapon' && r.zone === 5);
   ok(!!recipe, 'zone5 有可炼武器配方');
-  /* 高阶配方要求更高阶炼器室（金丹道剑需 4 阶），这里把洞府拉到 5 阶 */
-  g.s.settlements[5].level = 5;
-  g.s.settlements[5].buildings.forge = 5;
+  /* 高阶配方要求更高阶炼器室（金丹道剑对应第6图，需6阶），这里把洞府设置为6阶 */
+  g.s.homestead.level = 6;
+  g.s.homestead.buildings.forge = 6;
   const gearsBefore = g.s.gears.length;
   const r = g.craft(recipe.id);
   ok(r && r.ok, `炼制 ${recipe.name} 成功：${JSON.stringify(r && r.msg || '')}`);
