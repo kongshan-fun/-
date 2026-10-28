@@ -75,7 +75,7 @@ function serve(root) {
     await send('Runtime.enable'); await send('Page.enable');
     await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 2, mobile: true });
     await send('Page.navigate', { url: `http://127.0.0.1:${srv.address().port}/index.html` });
-    for (let i = 0; i < 40; i++) { await sleep(300); if (await ev(`!document.querySelector('[data-a="view-slots"]')`).catch(() => false)) break; }
+    for (let i = 0; i < 40; i++) { await sleep(300); if (await ev(`document.body.innerText.includes('气血') && !!document.querySelector('.top-buttons button')`).catch(() => false)) break; }
     await sleep(800);
 
     console.log('=== 0. 设置父页六入口 ===');

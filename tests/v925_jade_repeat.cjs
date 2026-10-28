@@ -63,16 +63,29 @@ function serve(root) {
     const btn = () => ev(`(function(){var b=document.querySelector('[data-a="birth-jade-ad"]');return b?{text:b.textContent.trim(),disabled:!!b.disabled}:null;})()`);
     const boot = async () => {
       await send('Page.navigate', { url: `http://127.0.0.1:${srv.address().port}/index.html` });
-      for (let i = 0; i < 40; i++) { await sleep(300); if (await ev(`!document.querySelector('[data-a="view-slots"]')`).catch(() => false)) break; }
+      for (let i = 0; i < 40; i++) { await sleep(300); if (await ev(`document.body.innerText.includes('气血') && !!document.querySelector('.top-buttons button')`).catch(() => false)) break; }
       await sleep(800);
     };
     const openSlot = async (slot) => {
-      await click('[data-a="panel"][data-name="settings"]'); await sleep(500);
-      await click('[data-a="panel-step"][data-name="set-char"]'); await sleep(500);
-      await click('[data-a="characters"]'); await sleep(600);
-      await click('[data-a="choose-role"][data-role="human"]'); await sleep(500);
-      await click('[data-a="view-slots"]'); await sleep(600);
-      const opened = await click(`[data-a="slot-open"][data-slot="${slot}"]`); await sleep(800);
+      /* V90.64+：设置 → 角色与档案 → 难度页 → 种族 → 档位列表 → 档位 → 命格确认 */
+      if (await ev(`!!document.querySelector('[data-a="panel"][data-name="settings"]')`)) {
+        await click('[data-a="panel"][data-name="settings"]'); await sleep(400);
+        await click('[data-a="panel-step"][data-name="set-char"]'); await sleep(400);
+        await click('[data-a="characters"]'); await sleep(700);
+      }
+      if (await ev(`!!document.querySelector('[data-a="difficulty-next"]')`)) {
+        await click('[data-a="difficulty-choice"][data-mode="challenge"]'); await sleep(300);
+        await click('[data-a="difficulty-next"]'); await sleep(600);
+      }
+      if (await ev(`!!document.querySelector('[data-a="choose-role"]')`)) {
+        await click('[data-a="choose-role"][data-role="human"]'); await sleep(400);
+      }
+      if (await ev(`!!document.querySelector('[data-a="view-slots"]')`)) {
+        await click('[data-a="view-slots"]'); await sleep(600);
+      }
+      const opened = await click(`[data-a="slot-open"][data-role="human"][data-slot="${slot}"]`)
+        || await click(`[data-a="slot-open"][data-slot="${slot}"]`);
+      await sleep(800);
       const next = await click('[data-a="birth-next"]'); await sleep(800);
       return opened && next;
     };

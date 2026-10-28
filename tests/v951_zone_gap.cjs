@@ -42,8 +42,8 @@ ok(Math.abs(far.playerDampen - 0.20) < 1e-9, '压制下限 0.20（我方输出�
 ok(mk(1, 0, 0).zoneGap === 1, '凡人打青岚：zoneRealm=2 → gap=1');
 
 /* 源码层：开局确实套用了两个系数 */
-ok(/atk:Math\.round\(e\.atk\*\(repeat\?1\.25:1\)\*this\.enemyBoost\)/.test(html), '开局对手攻击 × enemyBoost');
-ok(/maxHp=Math\.round\(e\.hp\*\(repeat\?1\.25:1\)\/this\.playerDampen\)/.test(html), '开局对手气血 ÷ playerDampen');
+ok(/atk:Math\.max\(1,Math\.round\(e\.atk\*\(repeat\?1\.25:1\)\*this\.enemyBoost\*scale\)\)/.test(html), '开局对手攻击 × enemyBoost × 难度系数');
+ok(/maxHp=Math\.max\(1,Math\.round\(e\.hp\*\(repeat\?1\.25:1\)\/this\.playerDampen\*scale\)\)/.test(html), '开局对手气血 ÷ playerDampen × 难度系数');
 
 console.log(`\n合计 ${pass + fail} 项：${pass} 通过 / ${fail} 失败`);
 process.exitCode = fail === 0 ? 0 : 1;

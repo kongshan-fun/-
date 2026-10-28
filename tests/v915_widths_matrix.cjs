@@ -68,7 +68,7 @@ function serve(root) {
     for (const [w, h] of WIDTHS) {
       await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 2, mobile: true });
       await send('Page.navigate', { url: `http://127.0.0.1:${srv.address().port}/index.html` });
-      for (let i = 0; i < 40; i++) { await sleep(250); if (await ev(`!document.querySelector('[data-a="view-slots"]')`).catch(() => false)) break; }
+      for (let i = 0; i < 40; i++) { await sleep(250); if (await ev(`document.body.innerText.includes('气血') && !!document.querySelector('.top-buttons button')`).catch(() => false)) break; }
       await sleep(600);
       const line = [];
       for (const [name, label] of PANELS) {
