@@ -1,4 +1,5 @@
-﻿'use strict';
+// V90.75 fixture migration: unique homestead + explicit home context; numerical assertions retained.
+'use strict';
 /* V90.60 验收：
    A 凡人~筑基（境1→5）破境不渡劫：不掉血、不耗护劫丹
    B 金丹起（进入境6..12）仍需渡劫：扣固定伤害
@@ -35,7 +36,7 @@ function makeGame(race, level) {
   g.s.hunger = 100; g.s.water = 100;
   const camp = { x: 1, y: 5 };
   g.s.pos = { ...camp }; g.s.last = { ...camp };
-  g.s.settlements = Array.from({ length: D.ZONES.length }, (_, z) => ({ pos: z ? { x: 0, y: 5 } : camp, level: 1, buildings: {} }));
+  g.s.homestead={version:1,pos:{x:1,y:5},level:1,buildings:{},stash:{},storedGears:[],foundedAt:g.s.minutes,farmAt:g.s.minutes};g.s.atHome=true;
   g.s.combat = null;
   g.s.xp = g.required;
   return g;

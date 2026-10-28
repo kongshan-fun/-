@@ -1,3 +1,4 @@
+// V90.75 fixture migration: unique homestead + explicit home context; numerical assertions retained.
 'use strict';
 /* V90.53 验收：精炼经济闭环 + 战力境界系数按境序
  *
@@ -29,9 +30,10 @@ function mkState(o = {}) {
   s.cleared = Array(D.ZONES.length).fill(true); s.ritual = Array(D.ZONES.length).fill(true);
   const p = { x: 1, y: 5 };
   s.pos = { ...p }; s.last = { ...p };
-  s.settlements[0] = { pos: { ...p }, level: 5, buildings: { warehouse: 5, forge: 5, alchemy: 5, quiet: 5, farm: 5 },
+  s.homestead = { pos: { ...p }, level: 5, buildings: { warehouse: 5, forge: 5, alchemy: 5, quiet: 5, farm: 5 },
     stash: {}, storedGears: [], foundedAt: s.minutes, farmAt: s.minutes };
   s.inv = { wood: 99, stone: 99, fiber: 99, dust: 5000, ore: 99 };
+  s.atHome=true;
   return s;
 }
 const mk = (o) => new G(mkState(o));

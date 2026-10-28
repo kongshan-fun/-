@@ -1,4 +1,5 @@
-﻿'use strict';
+// V90.75 fixture migration: unique homestead + explicit home context; numerical assertions retained.
+'use strict';
 /* V90.58 缺陷复现：渡劫成功后未立即解锁下一境（必须刷新才生效）
    覆盖人族 / 妖族 × 6 个境边界 = 12 组
    映射：zone i 的玩家处于 idx=i+2 境（major=i-3），渡劫后 idx+1、major+1 */
@@ -43,7 +44,7 @@ function stageAt(race, zone) {
   const camp = zone ? { x: 0, y: 5 } : { x: 1, y: 5 };
   g.s.pos = { ...camp };
   g.s.last = { ...camp };
-  g.s.settlements = Array.from({ length: ZONES }, (_, z) => ({ pos: z ? { x: 0, y: 5 } : { x: 1, y: 5 }, level: 1, buildings: {} }));
+  g.s.homestead={version:1,pos:{x:1,y:5},level:1,buildings:{},stash:{},storedGears:[],foundedAt:g.s.minutes,farmAt:g.s.minutes};g.s.atHome=true;
   g.s.maxHp = Math.max(g.s.maxHp, 60000);
   g.s.hp = g.s.maxHp;
   g.s.spirit = g.s.maxSpirit;

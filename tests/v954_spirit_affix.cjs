@@ -1,3 +1,4 @@
+// V90.75 fixture migration: unique homestead + explicit home context; numerical assertions retained.
 'use strict';
 /* V90.54 验收：赋灵词条（docs §五之二）
  *
@@ -30,10 +31,11 @@ function mkState(o = {}) {
   s.cleared = Array(D.ZONES.length).fill(true); s.ritual = Array(D.ZONES.length).fill(true);
   const p = { x: 1, y: 5 };
   s.pos = { ...p }; s.last = { ...p };
-  s.settlements[0] = { pos: { ...p }, level: 5, buildings: { warehouse: 5, forge: 5, alchemy: 5, quiet: 5, farm: 5 },
+  s.homestead = { pos: { ...p }, level: 5, buildings: { warehouse: 5, forge: 5, alchemy: 5, quiet: 5, farm: 5 },
     stash: {}, storedGears: [], foundedAt: s.minutes, farmAt: s.minutes };
   s.inv = { wood: 99, stone: 999, fiber: 99, dust: 5000, ore: 99 };
-  s.xp = 999; s.daoXp = 99999;
+  s.xp = 999; s.daoXp = 0;
+  s.atHome=true;
   return s;
 }
 const mk = (o) => new G(mkState(o));
@@ -112,7 +114,7 @@ const gearAt = (g, quality, recipe) => { const r = recipe || WEAPON; g.s.gears.p
 /* ---------- 6. 池与不重复 ---------- */
 {
   const g = mk({ level: 19, major: 2 });
-  g.s.inv.stone = 9999; g.s.daoXp = 99999;
+  g.s.inv.stone = 9999; g.s.xp = 99999; g.s.daoXp = 0;
   const w = gearAt(g, 4);
   const res = g.spirit(w.id);
   ok(res && res.ok, '仙器武器赋灵成功', String((res && res.msg) || ''));
@@ -142,7 +144,7 @@ const gearAt = (g, quality, recipe) => { const r = recipe || WEAPON; g.s.gears.p
 /* ---------- 8. 记账、本档独立、存盘往返 ---------- */
 {
   const g = mk({ level: 19, major: 2 });
-  g.s.daoXp = 99999;
+  g.s.xp = 99999; g.s.daoXp = 0;
   const w = gearAt(g, 4);
   const before = g.spiritPoints, beforeN = g.s.prof.spirited;
   g.spirit(w.id);
@@ -160,7 +162,7 @@ const gearAt = (g, quality, recipe) => { const r = recipe || WEAPON; g.s.gears.p
 /* ---------- 9. 修为不足时不动账 ---------- */
 {
   const g = mk({ level: 19, major: 2 });
-  g.s.daoXp = 10;                        // 远不够 449
+  g.s.xp = 10; g.s.daoXp = 0;                        // 远不够 449
   const w = gearAt(g, 4);
   const stone = g.s.inv.stone, pts = g.spiritPoints;
   const r = g.spirit(w.id);

@@ -1,3 +1,4 @@
+// V90.75 fixture migration: unique homestead + explicit home context; numerical assertions retained.
 'use strict';
 /* V90.55 验收：36 段修为轴（docs §三）
  *   level 1..36 唯一真源；境序=ceil(level/3)；阶序=(level-1)%3+1
@@ -63,7 +64,7 @@ const at = (lv) => { const g = new G(G.fresh(9701, 'human')); g.s.level = lv; g.
   let gained = 0, cross = 0, daoBroken = false;
   const campHere = () => {
     const z = g.s.zone;
-    g.s.settlements[z] = { pos: { ...g.s.pos }, level: 3, buildings: { warehouse: 3, forge: 3, alchemy: 3, quiet: 3, farm: 3 }, stash: {}, storedGears: [], foundedAt: g.s.minutes, farmAt: g.s.minutes };
+    g.s.homestead = { pos: { ...g.s.pos }, level: 3, buildings: { warehouse: 3, forge: 3, alchemy: 3, quiet: 3, farm: 3 }, stash: {}, storedGears: [], foundedAt: g.s.minutes, farmAt: g.s.minutes }; g.s.atHome=true;
   };
   for (let i = 0; i < 400 && g.s.level < 36; i++) {
     const lv = g.s.level, idx = g.realmIndex;
