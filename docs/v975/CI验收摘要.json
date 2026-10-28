@@ -1,0 +1,1578 @@
+{
+  "version": "V90.75",
+  "verifiedSourceCommit": "60aaa1178169ffa17981f914aad651969ff94582",
+  "workflowRun": "40714390726",
+  "entrySha256": "123c4a9c5e709020c72a2568432609c0d8c570e1c7d748341c6e84a94975c202",
+  "engine": {
+    "version": "V90.75",
+    "source": "index.html",
+    "pass": true,
+    "suites": [
+      {
+        "test": "syntax_check.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.038
+      },
+      {
+        "test": "v907-ascension-lifecycle.test.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.099
+      },
+      {
+        "test": "v907-interrupted-settlement.test.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.06
+      },
+      {
+        "test": "v975_storage_bags.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.123
+      },
+      {
+        "test": "v923_gear_drop.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.062
+      },
+      {
+        "test": "v927_gear_economy.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.062
+      },
+      {
+        "test": "v955_realm_axis.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.083
+      },
+      {
+        "test": "v952_forge_prof.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.105
+      },
+      {
+        "test": "v953_refine_rating.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.066
+      },
+      {
+        "test": "v954_spirit_affix.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.077
+      },
+      {
+        "test": "v957_attr_pills.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.049
+      },
+      {
+        "test": "v958_dual_growth_chain.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.056
+      },
+      {
+        "test": "v958_cross_realm_unlock.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.06
+      },
+      {
+        "test": "v959_combat_save.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.102
+      },
+      {
+        "test": "v960_breakthrough_split.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.064
+      },
+      {
+        "test": "v974_p0_faults.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.065
+      },
+      {
+        "test": "v962_p0_save_integrity.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.076
+      },
+      {
+        "test": "v962_200slots_faults.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.261
+      },
+      {
+        "test": "v975_features.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 2.493
+      },
+      {
+        "test": "v975_100slots.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 18.1
+      }
+    ]
+  },
+  "browser": {
+    "version": "V90.75",
+    "mode": "HTTP origin + real localStorage",
+    "checks": [
+      {
+        "name": "cold launch version",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "four quick slots on fresh game",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "unique home introduction",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "build home through UI",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "existing home no duplicate construction",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "home return preserves location",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "six home facilities",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "twelve-tier capacity visible",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "high-realm enchant spends current xp",
+        "pass": true,
+        "details": {
+          "before": 554979,
+          "after": 553834
+        }
+      },
+      {
+        "name": "obsolete dao pool stays zero",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "enchant back works without ReferenceError",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "four chosen items saved",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "chosen potion survives reload",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "current quest follows actual high realm",
+        "pass": true,
+        "details": "渡劫圆满\n已平定 11/12 图\n下一步\n完成应九霄天劫\n\n携带仪式材料前往渡劫天门问道坛，完成后开放首领。\n\n劫雷晶 0/4 · 天门符 0/2\n前往祭坛 →\n修行目标 · 准备飞升天门\n\n当前修为 553834/54979；飞升还须平定十二图并携带天门材料。\n\n洞府修行\n十二图进度\n地图进度与角色境界分别记录\n›\n可选见闻\n不作为晋升、渡劫或飞升前置\n›"
+      },
+      {
+        "name": "all twelve map statuses visible",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "optional stories not fabricated",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "breakthrough readiness uses real stage getter",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "actual UI breakthrough advances level18 to19",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "failed backup blocks UI import primary overwrite",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "successful import updates active game",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "successful import retains exact previous primary",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "legacy two-home warehouse sum",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "legacy primary immutable upgrade archive",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "upgrade rollback export entry visible",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "downloaded archive contains complete original historical state",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "lifespan rescue dialog appears",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "rescue pagehide leaves prior save intact",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "rescue pagehide creates no tombstone",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "rescue completion persisted",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "rescued character survives reload",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "functional UI has no uncaught exceptions",
+        "pass": true,
+        "details": []
+      },
+      {
+        "name": "world horizontal bounds 320",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "home no horizontal overflow 320",
+        "pass": true,
+        "details": {
+          "scroll": 446,
+          "client": 446,
+          "width": 304,
+          "scrollWidth": 304,
+          "name": "home",
+          "viewport": [
+            320,
+            568
+          ]
+        }
+      },
+      {
+        "name": "home bounds .panel-head320",
+        "pass": true,
+        "details": {
+          "x": 8,
+          "y": 6,
+          "width": 304,
+          "height": 43
+        }
+      },
+      {
+        "name": "home bounds .panel-close320",
+        "pass": true,
+        "details": {
+          "x": 264,
+          "y": 9,
+          "width": 36,
+          "height": 36
+        }
+      },
+      {
+        "name": "gear twelve tier categories 320",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "tier12 no horizontal overflow 320",
+        "pass": true,
+        "details": {
+          "scroll": 446,
+          "client": 446,
+          "width": 304,
+          "scrollWidth": 304,
+          "name": "tier12",
+          "viewport": [
+            320,
+            568
+          ]
+        }
+      },
+      {
+        "name": "tier12 bounds .panel-head320",
+        "pass": true,
+        "details": {
+          "x": 8,
+          "y": 6,
+          "width": 304,
+          "height": 43
+        }
+      },
+      {
+        "name": "tier12 bounds .panel-close320",
+        "pass": true,
+        "details": {
+          "x": 264,
+          "y": 9,
+          "width": 36,
+          "height": 36
+        }
+      },
+      {
+        "name": "quicksetup no horizontal overflow 320",
+        "pass": true,
+        "details": {
+          "scroll": 616,
+          "client": 450,
+          "width": 304,
+          "scrollWidth": 304,
+          "name": "quicksetup",
+          "viewport": [
+            320,
+            568
+          ]
+        }
+      },
+      {
+        "name": "quicksetup bounds .panel-head320",
+        "pass": true,
+        "details": {
+          "x": 8,
+          "y": 6,
+          "width": 304,
+          "height": 43
+        }
+      },
+      {
+        "name": "quicksetup bounds .panel-close320",
+        "pass": true,
+        "details": {
+          "x": 264,
+          "y": 9,
+          "width": 36,
+          "height": 36
+        }
+      },
+      {
+        "name": "progress no horizontal overflow 320",
+        "pass": true,
+        "details": {
+          "scroll": 446,
+          "client": 446,
+          "width": 304,
+          "scrollWidth": 304,
+          "name": "progress",
+          "viewport": [
+            320,
+            568
+          ]
+        }
+      },
+      {
+        "name": "progress bounds .panel-head320",
+        "pass": true,
+        "details": {
+          "x": 8,
+          "y": 6,
+          "width": 304,
+          "height": 43
+        }
+      },
+      {
+        "name": "progress bounds .panel-close320",
+        "pass": true,
+        "details": {
+          "x": 264,
+          "y": 9,
+          "width": 36,
+          "height": 36
+        }
+      },
+      {
+        "name": "world horizontal bounds 360",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "home no horizontal overflow 360",
+        "pass": true,
+        "details": {
+          "scroll": 516,
+          "client": 516,
+          "width": 344,
+          "scrollWidth": 344,
+          "name": "home",
+          "viewport": [
+            360,
+            640
+          ]
+        }
+      },
+      {
+        "name": "home bounds .panel-head360",
+        "pass": true,
+        "details": {
+          "x": 8,
+          "y": 6,
+          "width": 344,
+          "height": 42
+        }
+      },
+      {
+        "name": "home bounds .panel-close360",
+        "pass": true,
+        "details": {
+          "x": 304,
+          "y": 8.5,
+          "width": 36,
+          "height": 36
+        }
+      },
+      {
+        "name": "home one screen 360x640",
+        "pass": true,
+        "details": {
+          "scroll": 516,
+          "client": 516,
+          "width": 344,
+          "scrollWidth": 344,
+          "name": "home",
+          "viewport": [
+            360,
+            640
+          ]
+        }
+      },
+      {
+        "name": "gear twelve tier categories 360",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "tier12 no horizontal overflow 360",
+        "pass": true,
+        "details": {
+          "scroll": 516,
+          "client": 516,
+          "width": 344,
+          "scrollWidth": 344,
+          "name": "tier12",
+          "viewport": [
+            360,
+            640
+          ]
+        }
+      },
+      {
+        "name": "tier12 bounds .panel-head360",
+        "pass": true,
+        "details": {
+          "x": 8,
+          "y": 6,
+          "width": 344,
+          "height": 42
+        }
+      },
+      {
+        "name": "tier12 bounds .panel-close360",
+        "pass": true,
+        "details": {
+          "x": 304,
+          "y": 8.5,
+          "width": 36,
+          "height": 36
+        }
+      },
+      {
+        "name": "quicksetup no horizontal overflow 360",
+        "pass": true,
+        "details": {
+          "scroll": 616,
+          "client": 518,
+          "width": 344,
+          "scrollWidth": 344,
+          "name": "quicksetup",
+          "viewport": [
+            360,
+            640
+          ]
+        }
+      },
+      {
+        "name": "quicksetup bounds .panel-head360",
+        "pass": true,
+        "details": {
+          "x": 8,
+          "y": 6,
+          "width": 344,
+          "height": 42
+        }
+      },
+      {
+        "name": "quicksetup bounds .panel-close360",
+        "pass": true,
+        "details": {
+          "x": 304,
+          "y": 8.5,
+          "width": 36,
+          "height": 36
+        }
+      },
+      {
+        "name": "progress no horizontal overflow 360",
+        "pass": true,
+        "details": {
+          "scroll": 516,
+          "client": 516,
+          "width": 344,
+          "scrollWidth": 344,
+          "name": "progress",
+          "viewport": [
+            360,
+            640
+          ]
+        }
+      },
+      {
+        "name": "progress bounds .panel-head360",
+        "pass": true,
+        "details": {
+          "x": 8,
+          "y": 6,
+          "width": 344,
+          "height": 42
+        }
+      },
+      {
+        "name": "progress bounds .panel-close360",
+        "pass": true,
+        "details": {
+          "x": 304,
+          "y": 8.5,
+          "width": 36,
+          "height": 36
+        }
+      },
+      {
+        "name": "world horizontal bounds 390",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "home no horizontal overflow 390",
+        "pass": true,
+        "details": {
+          "scroll": 716,
+          "client": 716,
+          "width": 374,
+          "scrollWidth": 374,
+          "name": "home",
+          "viewport": [
+            390,
+            844
+          ]
+        }
+      },
+      {
+        "name": "home bounds .panel-head390",
+        "pass": true,
+        "details": {
+          "x": 8,
+          "y": 6,
+          "width": 374,
+          "height": 42
+        }
+      },
+      {
+        "name": "home bounds .panel-close390",
+        "pass": true,
+        "details": {
+          "x": 334,
+          "y": 8.5,
+          "width": 36,
+          "height": 36
+        }
+      },
+      {
+        "name": "home one screen 390x844",
+        "pass": true,
+        "details": {
+          "scroll": 716,
+          "client": 716,
+          "width": 374,
+          "scrollWidth": 374,
+          "name": "home",
+          "viewport": [
+            390,
+            844
+          ]
+        }
+      },
+      {
+        "name": "gear twelve tier categories 390",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "tier12 no horizontal overflow 390",
+        "pass": true,
+        "details": {
+          "scroll": 716,
+          "client": 716,
+          "width": 374,
+          "scrollWidth": 374,
+          "name": "tier12",
+          "viewport": [
+            390,
+            844
+          ]
+        }
+      },
+      {
+        "name": "tier12 bounds .panel-head390",
+        "pass": true,
+        "details": {
+          "x": 8,
+          "y": 6,
+          "width": 374,
+          "height": 42
+        }
+      },
+      {
+        "name": "tier12 bounds .panel-close390",
+        "pass": true,
+        "details": {
+          "x": 334,
+          "y": 8.5,
+          "width": 36,
+          "height": 36
+        }
+      },
+      {
+        "name": "quicksetup no horizontal overflow 390",
+        "pass": true,
+        "details": {
+          "scroll": 716,
+          "client": 716,
+          "width": 374,
+          "scrollWidth": 374,
+          "name": "quicksetup",
+          "viewport": [
+            390,
+            844
+          ]
+        }
+      },
+      {
+        "name": "quicksetup bounds .panel-head390",
+        "pass": true,
+        "details": {
+          "x": 8,
+          "y": 6,
+          "width": 374,
+          "height": 42
+        }
+      },
+      {
+        "name": "quicksetup bounds .panel-close390",
+        "pass": true,
+        "details": {
+          "x": 334,
+          "y": 8.5,
+          "width": 36,
+          "height": 36
+        }
+      },
+      {
+        "name": "progress no horizontal overflow 390",
+        "pass": true,
+        "details": {
+          "scroll": 716,
+          "client": 716,
+          "width": 374,
+          "scrollWidth": 374,
+          "name": "progress",
+          "viewport": [
+            390,
+            844
+          ]
+        }
+      },
+      {
+        "name": "progress bounds .panel-head390",
+        "pass": true,
+        "details": {
+          "x": 8,
+          "y": 6,
+          "width": 374,
+          "height": 42
+        }
+      },
+      {
+        "name": "progress bounds .panel-close390",
+        "pass": true,
+        "details": {
+          "x": 334,
+          "y": 8.5,
+          "width": 36,
+          "height": 36
+        }
+      },
+      {
+        "name": "world horizontal bounds 412",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "home no horizontal overflow 412",
+        "pass": true,
+        "details": {
+          "scroll": 786,
+          "client": 786,
+          "width": 384,
+          "scrollWidth": 384,
+          "name": "home",
+          "viewport": [
+            412,
+            915
+          ]
+        }
+      },
+      {
+        "name": "home bounds .panel-head412",
+        "pass": true,
+        "details": {
+          "x": 14,
+          "y": 6,
+          "width": 384,
+          "height": 42
+        }
+      },
+      {
+        "name": "home bounds .panel-close412",
+        "pass": true,
+        "details": {
+          "x": 350,
+          "y": 8.5,
+          "width": 36,
+          "height": 36
+        }
+      },
+      {
+        "name": "home one screen 412x915",
+        "pass": true,
+        "details": {
+          "scroll": 786,
+          "client": 786,
+          "width": 384,
+          "scrollWidth": 384,
+          "name": "home",
+          "viewport": [
+            412,
+            915
+          ]
+        }
+      },
+      {
+        "name": "gear twelve tier categories 412",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "tier12 no horizontal overflow 412",
+        "pass": true,
+        "details": {
+          "scroll": 786,
+          "client": 786,
+          "width": 384,
+          "scrollWidth": 384,
+          "name": "tier12",
+          "viewport": [
+            412,
+            915
+          ]
+        }
+      },
+      {
+        "name": "tier12 bounds .panel-head412",
+        "pass": true,
+        "details": {
+          "x": 14,
+          "y": 6,
+          "width": 384,
+          "height": 42
+        }
+      },
+      {
+        "name": "tier12 bounds .panel-close412",
+        "pass": true,
+        "details": {
+          "x": 350,
+          "y": 8.5,
+          "width": 36,
+          "height": 36
+        }
+      },
+      {
+        "name": "quicksetup no horizontal overflow 412",
+        "pass": true,
+        "details": {
+          "scroll": 786,
+          "client": 786,
+          "width": 384,
+          "scrollWidth": 384,
+          "name": "quicksetup",
+          "viewport": [
+            412,
+            915
+          ]
+        }
+      },
+      {
+        "name": "quicksetup bounds .panel-head412",
+        "pass": true,
+        "details": {
+          "x": 14,
+          "y": 6,
+          "width": 384,
+          "height": 42
+        }
+      },
+      {
+        "name": "quicksetup bounds .panel-close412",
+        "pass": true,
+        "details": {
+          "x": 350,
+          "y": 8.5,
+          "width": 36,
+          "height": 36
+        }
+      },
+      {
+        "name": "progress no horizontal overflow 412",
+        "pass": true,
+        "details": {
+          "scroll": 786,
+          "client": 786,
+          "width": 384,
+          "scrollWidth": 384,
+          "name": "progress",
+          "viewport": [
+            412,
+            915
+          ]
+        }
+      },
+      {
+        "name": "progress bounds .panel-head412",
+        "pass": true,
+        "details": {
+          "x": 14,
+          "y": 6,
+          "width": 384,
+          "height": 42
+        }
+      },
+      {
+        "name": "progress bounds .panel-close412",
+        "pass": true,
+        "details": {
+          "x": 350,
+          "y": 8.5,
+          "width": 36,
+          "height": 36
+        }
+      },
+      {
+        "name": "world horizontal bounds 768",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "home no horizontal overflow 768",
+        "pass": true,
+        "details": {
+          "scroll": 751,
+          "client": 751,
+          "width": 384,
+          "scrollWidth": 384,
+          "name": "home",
+          "viewport": [
+            768,
+            1024
+          ]
+        }
+      },
+      {
+        "name": "home bounds .panel-head768",
+        "pass": true,
+        "details": {
+          "x": 192,
+          "y": 78,
+          "width": 384,
+          "height": 42
+        }
+      },
+      {
+        "name": "home bounds .panel-close768",
+        "pass": true,
+        "details": {
+          "x": 528,
+          "y": 80.5,
+          "width": 36,
+          "height": 36
+        }
+      },
+      {
+        "name": "home one screen 768x1024",
+        "pass": true,
+        "details": {
+          "scroll": 751,
+          "client": 751,
+          "width": 384,
+          "scrollWidth": 384,
+          "name": "home",
+          "viewport": [
+            768,
+            1024
+          ]
+        }
+      },
+      {
+        "name": "gear twelve tier categories 768",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "tier12 no horizontal overflow 768",
+        "pass": true,
+        "details": {
+          "scroll": 751,
+          "client": 751,
+          "width": 384,
+          "scrollWidth": 384,
+          "name": "tier12",
+          "viewport": [
+            768,
+            1024
+          ]
+        }
+      },
+      {
+        "name": "tier12 bounds .panel-head768",
+        "pass": true,
+        "details": {
+          "x": 192,
+          "y": 78,
+          "width": 384,
+          "height": 42
+        }
+      },
+      {
+        "name": "tier12 bounds .panel-close768",
+        "pass": true,
+        "details": {
+          "x": 528,
+          "y": 80.5,
+          "width": 36,
+          "height": 36
+        }
+      },
+      {
+        "name": "quicksetup no horizontal overflow 768",
+        "pass": true,
+        "details": {
+          "scroll": 751,
+          "client": 751,
+          "width": 384,
+          "scrollWidth": 384,
+          "name": "quicksetup",
+          "viewport": [
+            768,
+            1024
+          ]
+        }
+      },
+      {
+        "name": "quicksetup bounds .panel-head768",
+        "pass": true,
+        "details": {
+          "x": 192,
+          "y": 78,
+          "width": 384,
+          "height": 42
+        }
+      },
+      {
+        "name": "quicksetup bounds .panel-close768",
+        "pass": true,
+        "details": {
+          "x": 528,
+          "y": 80.5,
+          "width": 36,
+          "height": 36
+        }
+      },
+      {
+        "name": "progress no horizontal overflow 768",
+        "pass": true,
+        "details": {
+          "scroll": 751,
+          "client": 751,
+          "width": 384,
+          "scrollWidth": 384,
+          "name": "progress",
+          "viewport": [
+            768,
+            1024
+          ]
+        }
+      },
+      {
+        "name": "progress bounds .panel-head768",
+        "pass": true,
+        "details": {
+          "x": 192,
+          "y": 78,
+          "width": 384,
+          "height": 42
+        }
+      },
+      {
+        "name": "progress bounds .panel-close768",
+        "pass": true,
+        "details": {
+          "x": 528,
+          "y": 80.5,
+          "width": 36,
+          "height": 36
+        }
+      },
+      {
+        "name": "world horizontal bounds 1280",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "home no horizontal overflow 1280",
+        "pass": true,
+        "details": {
+          "scroll": 751,
+          "client": 751,
+          "width": 384,
+          "scrollWidth": 384,
+          "name": "home",
+          "viewport": [
+            1280,
+            900
+          ]
+        }
+      },
+      {
+        "name": "home bounds .panel-head1280",
+        "pass": true,
+        "details": {
+          "x": 448,
+          "y": 16,
+          "width": 384,
+          "height": 42
+        }
+      },
+      {
+        "name": "home bounds .panel-close1280",
+        "pass": true,
+        "details": {
+          "x": 784,
+          "y": 18.5,
+          "width": 36,
+          "height": 36
+        }
+      },
+      {
+        "name": "home one screen 1280x900",
+        "pass": true,
+        "details": {
+          "scroll": 751,
+          "client": 751,
+          "width": 384,
+          "scrollWidth": 384,
+          "name": "home",
+          "viewport": [
+            1280,
+            900
+          ]
+        }
+      },
+      {
+        "name": "gear twelve tier categories 1280",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "tier12 no horizontal overflow 1280",
+        "pass": true,
+        "details": {
+          "scroll": 751,
+          "client": 751,
+          "width": 384,
+          "scrollWidth": 384,
+          "name": "tier12",
+          "viewport": [
+            1280,
+            900
+          ]
+        }
+      },
+      {
+        "name": "tier12 bounds .panel-head1280",
+        "pass": true,
+        "details": {
+          "x": 448,
+          "y": 16,
+          "width": 384,
+          "height": 42
+        }
+      },
+      {
+        "name": "tier12 bounds .panel-close1280",
+        "pass": true,
+        "details": {
+          "x": 784,
+          "y": 18.5,
+          "width": 36,
+          "height": 36
+        }
+      },
+      {
+        "name": "quicksetup no horizontal overflow 1280",
+        "pass": true,
+        "details": {
+          "scroll": 751,
+          "client": 751,
+          "width": 384,
+          "scrollWidth": 384,
+          "name": "quicksetup",
+          "viewport": [
+            1280,
+            900
+          ]
+        }
+      },
+      {
+        "name": "quicksetup bounds .panel-head1280",
+        "pass": true,
+        "details": {
+          "x": 448,
+          "y": 16,
+          "width": 384,
+          "height": 42
+        }
+      },
+      {
+        "name": "quicksetup bounds .panel-close1280",
+        "pass": true,
+        "details": {
+          "x": 784,
+          "y": 18.5,
+          "width": 36,
+          "height": 36
+        }
+      },
+      {
+        "name": "progress no horizontal overflow 1280",
+        "pass": true,
+        "details": {
+          "scroll": 751,
+          "client": 751,
+          "width": 384,
+          "scrollWidth": 384,
+          "name": "progress",
+          "viewport": [
+            1280,
+            900
+          ]
+        }
+      },
+      {
+        "name": "progress bounds .panel-head1280",
+        "pass": true,
+        "details": {
+          "x": 448,
+          "y": 16,
+          "width": 384,
+          "height": 42
+        }
+      },
+      {
+        "name": "progress bounds .panel-close1280",
+        "pass": true,
+        "details": {
+          "x": 784,
+          "y": 18.5,
+          "width": 36,
+          "height": 36
+        }
+      },
+      {
+        "name": "entire viewport matrix zero JS errors",
+        "pass": true,
+        "details": []
+      }
+    ],
+    "errors": [],
+    "screenshots": [
+      "320x568-world.png",
+      "320x568-home.png",
+      "320x568-tier12.png",
+      "320x568-quicksetup.png",
+      "320x568-progress.png",
+      "360x640-world.png",
+      "360x640-home.png",
+      "360x640-tier12.png",
+      "360x640-quicksetup.png",
+      "360x640-progress.png",
+      "390x844-world.png",
+      "390x844-home.png",
+      "390x844-tier12.png",
+      "390x844-quicksetup.png",
+      "390x844-progress.png",
+      "412x915-world.png",
+      "412x915-home.png",
+      "412x915-tier12.png",
+      "412x915-quicksetup.png",
+      "412x915-progress.png",
+      "768x1024-world.png",
+      "768x1024-home.png",
+      "768x1024-tier12.png",
+      "768x1024-quicksetup.png",
+      "768x1024-progress.png",
+      "1280x900-world.png",
+      "1280x900-home.png",
+      "1280x900-tier12.png",
+      "1280x900-quicksetup.png",
+      "1280x900-progress.png"
+    ],
+    "metrics": [
+      {
+        "scroll": 446,
+        "client": 446,
+        "width": 304,
+        "scrollWidth": 304,
+        "name": "home",
+        "viewport": [
+          320,
+          568
+        ]
+      },
+      {
+        "scroll": 446,
+        "client": 446,
+        "width": 304,
+        "scrollWidth": 304,
+        "name": "tier12",
+        "viewport": [
+          320,
+          568
+        ]
+      },
+      {
+        "scroll": 616,
+        "client": 450,
+        "width": 304,
+        "scrollWidth": 304,
+        "name": "quicksetup",
+        "viewport": [
+          320,
+          568
+        ]
+      },
+      {
+        "scroll": 446,
+        "client": 446,
+        "width": 304,
+        "scrollWidth": 304,
+        "name": "progress",
+        "viewport": [
+          320,
+          568
+        ]
+      },
+      {
+        "scroll": 516,
+        "client": 516,
+        "width": 344,
+        "scrollWidth": 344,
+        "name": "home",
+        "viewport": [
+          360,
+          640
+        ]
+      },
+      {
+        "scroll": 516,
+        "client": 516,
+        "width": 344,
+        "scrollWidth": 344,
+        "name": "tier12",
+        "viewport": [
+          360,
+          640
+        ]
+      },
+      {
+        "scroll": 616,
+        "client": 518,
+        "width": 344,
+        "scrollWidth": 344,
+        "name": "quicksetup",
+        "viewport": [
+          360,
+          640
+        ]
+      },
+      {
+        "scroll": 516,
+        "client": 516,
+        "width": 344,
+        "scrollWidth": 344,
+        "name": "progress",
+        "viewport": [
+          360,
+          640
+        ]
+      },
+      {
+        "scroll": 716,
+        "client": 716,
+        "width": 374,
+        "scrollWidth": 374,
+        "name": "home",
+        "viewport": [
+          390,
+          844
+        ]
+      },
+      {
+        "scroll": 716,
+        "client": 716,
+        "width": 374,
+        "scrollWidth": 374,
+        "name": "tier12",
+        "viewport": [
+          390,
+          844
+        ]
+      },
+      {
+        "scroll": 716,
+        "client": 716,
+        "width": 374,
+        "scrollWidth": 374,
+        "name": "quicksetup",
+        "viewport": [
+          390,
+          844
+        ]
+      },
+      {
+        "scroll": 716,
+        "client": 716,
+        "width": 374,
+        "scrollWidth": 374,
+        "name": "progress",
+        "viewport": [
+          390,
+          844
+        ]
+      },
+      {
+        "scroll": 786,
+        "client": 786,
+        "width": 384,
+        "scrollWidth": 384,
+        "name": "home",
+        "viewport": [
+          412,
+          915
+        ]
+      },
+      {
+        "scroll": 786,
+        "client": 786,
+        "width": 384,
+        "scrollWidth": 384,
+        "name": "tier12",
+        "viewport": [
+          412,
+          915
+        ]
+      },
+      {
+        "scroll": 786,
+        "client": 786,
+        "width": 384,
+        "scrollWidth": 384,
+        "name": "quicksetup",
+        "viewport": [
+          412,
+          915
+        ]
+      },
+      {
+        "scroll": 786,
+        "client": 786,
+        "width": 384,
+        "scrollWidth": 384,
+        "name": "progress",
+        "viewport": [
+          412,
+          915
+        ]
+      },
+      {
+        "scroll": 751,
+        "client": 751,
+        "width": 384,
+        "scrollWidth": 384,
+        "name": "home",
+        "viewport": [
+          768,
+          1024
+        ]
+      },
+      {
+        "scroll": 751,
+        "client": 751,
+        "width": 384,
+        "scrollWidth": 384,
+        "name": "tier12",
+        "viewport": [
+          768,
+          1024
+        ]
+      },
+      {
+        "scroll": 751,
+        "client": 751,
+        "width": 384,
+        "scrollWidth": 384,
+        "name": "quicksetup",
+        "viewport": [
+          768,
+          1024
+        ]
+      },
+      {
+        "scroll": 751,
+        "client": 751,
+        "width": 384,
+        "scrollWidth": 384,
+        "name": "progress",
+        "viewport": [
+          768,
+          1024
+        ]
+      },
+      {
+        "scroll": 751,
+        "client": 751,
+        "width": 384,
+        "scrollWidth": 384,
+        "name": "home",
+        "viewport": [
+          1280,
+          900
+        ]
+      },
+      {
+        "scroll": 751,
+        "client": 751,
+        "width": 384,
+        "scrollWidth": 384,
+        "name": "tier12",
+        "viewport": [
+          1280,
+          900
+        ]
+      },
+      {
+        "scroll": 751,
+        "client": 751,
+        "width": 384,
+        "scrollWidth": 384,
+        "name": "quicksetup",
+        "viewport": [
+          1280,
+          900
+        ]
+      },
+      {
+        "scroll": 751,
+        "client": 751,
+        "width": 384,
+        "scrollWidth": 384,
+        "name": "progress",
+        "viewport": [
+          1280,
+          900
+        ]
+      }
+    ],
+    "fatal": null,
+    "pass": true
+  }
+}
