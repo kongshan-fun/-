@@ -40,7 +40,7 @@ PATCHES = [
 
 def main():
     source = BASE.read_bytes().replace(b"\r\n", b"\n")
-    digest = hashlib.sha256(source.replace(b"\\n", b"\\r\\n")).hexdigest().upper()
+    digest = hashlib.sha256(source.replace(b"\n", b"\r\n")).hexdigest().upper()
     if digest != BASE_SHA:
         raise SystemExit(f"V90.73 baseline SHA mismatch: {digest}")
     text = source.decode("utf-8")
