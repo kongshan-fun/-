@@ -1,0 +1,32 @@
+name: V90.75 Candidate Build
+on:
+  push:
+    branches: [feat/v90.75-global-home-progression]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build candidate if available
+        run: |
+          if [ -f tools/build_v975_from_main.py ]; then python3 tools/build_v975_from_main.py; fi
+          if [ -f tests/v975_features.cjs ]; then node tests/v975_features.cjs; fi
+      - name: Export exact source snapshot for independent testing
+        run: |
+          mkdir -p dist
+          git archive --format=zip --output=dist/source-snapshot.zip HEAD
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v975-source-snapshot
+          path: dist/source-snapshot.zip
+          retention-days: 14
