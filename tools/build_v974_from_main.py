@@ -9,7 +9,7 @@ import hashlib
 ROOT = Path(__file__).resolve().parents[1]
 RELEASES = ROOT / "releases"
 BASE = RELEASES / "山野修仙记_V90.73_整数年榜二.html"
-BASE_SHA = "AB0A70851FCC86E4E980F7DBE8F15F76B694E6DA0406F198DB0456E47B49DD60"
+BASE_SHA = "728EC0CE11C0C6829C9150A6DB79A5B46F688D6DA36F5F6647701EEEF22D6D93"
 OUT_NAME = "山野修仙记_V90.74_存档安全修复版.html"
 PATCHES = [
     ("<title>山野修仙记 V90.73 · 整数年榜</title>", "<title>山野修仙记 V90.74 · 存档安全修复</title>"),  # V90.74 document title
@@ -40,7 +40,7 @@ PATCHES = [
 
 def main():
     source = BASE.read_bytes().replace(b"\r\n", b"\n")
-    digest = hashlib.sha256(source).hexdigest().upper()
+    digest = hashlib.sha256(source.replace(b"\\n", b"\\r\\n")).hexdigest().upper()
     if digest != BASE_SHA:
         raise SystemExit(f"V90.73 baseline SHA mismatch: {digest}")
     text = source.decode("utf-8")
