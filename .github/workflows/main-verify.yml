@@ -1,89 +1,46 @@
 name: Main Verify (current release)
-
-# P0-1：旧工作流把 V90.8 的文件名、标题、哈希全部写死在 YAML 里，发版即红。
-# 现在改成「按当前版本反查」：版本号从 index.html 标题读，发布文件靠字节比对找，
-# 构建器靠 OUT_NAME 反查 —— 以后升版本不需要动这个文件。
-
 on:
   push:
-    branches: [main, release/v90.62-integration-20261023]
-    paths:
-      - 'index.html'
-      - 'releases/**'
-      - 'tools/**'
-      - 'tests/**'
-      - 'docs/**'
-      - '.github/workflows/main-verify.yml'
+    branches: [main]
+    paths: ['index.html', 'releases/**', 'src/v975/**', 'tools/**', 'tests/**', 'docs/**', '.github/workflows/main-verify.yml']
   workflow_dispatch:
-
 permissions:
   contents: read
-
 jobs:
   verify:
     runs-on: ubuntu-latest
-    # 界面层要起 7 个 Chromium 会话（软件渲染），实测在 runner 上要 15 分钟以上，
-    # 再加引擎回归与两次 playwright 安装，25 分钟会被 cancel（6731672 就是这么挂的）。
-    timeout-minutes: 45
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-
-      - name: 默认入口 / 发布文件 / 构建器 三者一致
-        run: python3 tools/check_entry_consistency.py
-
-      - name: 版本链可复现（从冻结基线重建，产物必须字节一致）
-        run: python3 tools/check_entry_consistency.py --rebuild
-
-      - name: 旧 V90.61 跨平台换行重建一致性
-        run: python3 tests/v961_build_eol_regression.py
-
-      - name: 重建产物与仓库内文件必须零差异
-        run: git diff --exit-code -- index.html releases/
-
-      - name: 语法与引擎回归（不需要浏览器）
+      - name: Current entry, frozen release and deterministic rebuild
         run: |
-          node tests/syntax_check.cjs
-          node tests/run_v908_regression.cjs
-          node tests/v923_gear_drop.cjs
-          node tests/v926_realm_guide.cjs
-          node tests/v927_gear_economy.cjs
-          node tests/v908-character-gear-layout.test.cjs
-      - name: 中文字体（布局测量必须用真实字形）
+          python3 tools/check_entry_consistency.py --rebuild
+          git diff --exit-code -- index.html releases/
+      - name: Current-entry engine, 600-slot migration and 100-run progression
         run: |
-          # ubuntu runner 默认没有中文字体：CJK 会退化成 tofu，字宽/行高全错，
-          # 界面层的 1.02 屏断言就会假红。装思源黑体 + 文泉驿兜底。
+          set -o pipefail
+          mkdir -p artifacts/v975
+          node tests/run_v975_acceptance.cjs | tee artifacts/v975/acceptance.log
+      - name: Install Chinese layout fonts and Chromium
+        run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq fonts-noto-cjk fonts-wqy-zenhei
-
-      - name: 安装 Playwright 与 Chromium
-        run: |
           python3 -m pip install --disable-pip-version-check playwright==1.56.0
           python3 -m playwright install --with-deps chromium
-
-      - name: 全 H5 Chromium 响应式验收（含截图）
-        run: python3 tests/browser_responsive.py
-
-      # 说明：手写 CDP 的界面层套件（tests/v9*.cjs）**不放进 CI**。
-      # 它们在 GitHub runner 上要么挂死、要么 Chromium 拉不起来（已排查到 --no-sandbox、
-      # 进程回收、字体三处，仍无法稳定），而 CI 里已经有了更强的等价覆盖：
-      #   - tests/browser_responsive.py：6 视口 × 12 面板，真实 DOM 高度/滚动断言 + 截图
-      #   - tests/run_v908_regression.cjs 等：引擎与存档规则
-      # 完整 16 层（含 7 个 CDP 界面套件）在本地跑，**发版前必须跑一遍**：
-      #   node tests/run_full_regression.cjs
-
-      - name: 上传截图与 metrics
+      - name: Native HTTP localStorage, downloads and six-viewport UI
+        run: |
+          set -o pipefail
+          python3 tests/v975_browser.py | tee artifacts/v975/browser-native.log
+      - uses: actions/upload-artifact@v4
         if: always()
-        uses: actions/upload-artifact@v4
         with:
-          name: browser-responsive-${{ github.run_id }}
-          path: artifacts/browser-responsive/
+          name: current-release-evidence-${{ github.run_id }}
+          path: artifacts/v975/
           retention-days: 14
-          if-no-files-found: warn
+          if-no-files-found: error
