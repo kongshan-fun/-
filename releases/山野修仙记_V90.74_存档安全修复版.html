@@ -6029,7 +6029,6 @@ function selectCharacter(id,mode='open',n=1){
     draftBirth.name=B.nameOf($('birth-name')?.value??draftBirth.name,id);
     normalizeBirthAdds(draftBirth);
     next=slots.newGameWithPayment(id,draftBirth.seed,n,draftBirth);
-   }
   }else{const found=slots.read(id,n);if(!found){beginBirth(id,n);return;}
    if(found.reset){showModal({kind:'rebuild-reset',race:id,slot:n,tier:found.reset.tier});render();return;}
    next=found.game;}
