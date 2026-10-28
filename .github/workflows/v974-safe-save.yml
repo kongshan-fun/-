@@ -1,0 +1,32 @@
+name: V90.74 Safe-Save Candidate
+on:
+  push:
+    branches: [fix/v90.74-save-rescue-ranking-ci]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Deterministic V90.74 build and byte-for-byte comparison
+        run: |
+          python3 tools/check_entry_consistency.py
+          python3 tools/check_entry_consistency.py --rebuild
+          git diff --exit-code -- index.html releases/
+      - name: Scripts and core engine regression
+        run: |
+          node tests/syntax_check.cjs
+          node tests/run_v908_regression.cjs
+          node tests/v962_p0_save_integrity.cjs
+          node tests/v962_200slots_faults.cjs
+      - name: V90.74 transaction, archive and rankings fault injection
+        run: node tests/v974_p0_faults.cjs
