@@ -2,7 +2,7 @@ name: V90.75 Candidate Acceptance
 on:
   push:
     branches: [feat/v90.75-global-home-progression]
-    paths: ['_delivery/v975.ready', 'src/v975/**', 'tests/**', 'tools/**', 'README.md', 'docs/v975/**']
+    paths: ['index.html', 'src/v975/**', 'tests/**', 'tools/**', 'README.md', 'docs/v975/**', '.github/workflows/v975-candidate.yml']
   workflow_dispatch:
 permissions:
   contents: write
@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -21,41 +21,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Import hash-locked reviewed source transfer when present
+      - name: Check frozen release and deterministic source reconstruction
         run: |
-          python - <<'PY'
-          import pathlib,base64,lzma,json,hashlib,subprocess
-          marker=pathlib.Path('_delivery/v975.ready')
-          if marker.exists():
-              expected=marker.read_text().strip()
-              packed=base64.b64decode(''.join(p.read_text().strip() for p in sorted(pathlib.Path('_delivery').glob('v975-input-*.b64'))),validate=True)
-              assert hashlib.sha256(packed).hexdigest()==expected,'Source transfer integrity mismatch'
-              data=json.loads(lzma.decompress(packed))
-              def check(name):
-                  p=pathlib.PurePosixPath(name)
-                  assert not p.is_absolute() and '..' not in p.parts and '\\' not in name
-                  assert name=='README.md' or name.startswith(('src/v975/','docs/v975/','tests/','tools/'))
-                  assert not pathlib.Path(name).is_symlink()
-              for name,patch in data['patches'].items():
-                  check(name)
-                  subprocess.run(['git','apply','--check','-'],input=patch,text=True,check=True)
-                  subprocess.run(['git','apply','-'],input=patch,text=True,check=True)
-              for name,text in data['files'].items():
-                  check(name);p=pathlib.Path(name);p.parent.mkdir(parents=True,exist_ok=True);p.write_text(text,encoding='utf-8')
-              print('Imported reviewed files:',len(data['files'])+len(data['patches']))
-          PY
-      - name: Build exact candidate and persist sources only to feature branch
-        run: |
-          python tools/build_v975_from_main.py
           python tools/check_entry_consistency.py --rebuild
-          git config user.name 'Development verification bot'
-          git config user.email 'development-verification@users.noreply.github.com'
-          git add README.md src/v975 tests tools/build_v975_from_main.py tools/package_v975.py docs/v975 index.html releases/山野修仙记_V90.75_洞天十二阶完整版.html
-          if [ -f _delivery/v975.ready ]; then git rm -- _delivery/v975.ready _delivery/v975-input-*.b64; fi
-          if ! git diff --cached --quiet; then
-            git commit -m 'feat(V90.75): materialize reviewed global-home, twelve-tier and supply changes [skip ci]'
-            git push origin HEAD:feat/v90.75-global-home-progression
-          fi
+          git diff --exit-code -- index.html releases/
           git rev-parse HEAD > /tmp/v975-source-sha
       - name: Current-entry engine, migration and failure regression
         run: |
@@ -84,6 +53,8 @@ jobs:
         run: python tools/package_v975.py
       - name: Publish verification summary to feature branch only
         run: |
+          git config user.name 'Development verification bot'
+          git config user.email 'development-verification@users.noreply.github.com'
           git add docs/v975/CI验收摘要.json
           if ! git diff --cached --quiet; then
             git commit -m 'docs(V90.75): retain exact native-browser and current-source acceptance [skip ci]'
