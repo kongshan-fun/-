@@ -11,7 +11,7 @@ function eq(a,b,label){assert.equal(a,b,label);assertions++}
 function ok(v,label){assert.ok(v,label);assertions++}
 function store(){const m=new Map();return {m,failKey:null,getItem(k){return m.get(k)||null},setItem(k,v){if(this.failKey===k)throw Error('QuotaExceeded simulated '+k);m.set(k,String(v))},removeItem(k){m.delete(k)}}}
 function born(seed=1234567){return Birth.roll('human',seed,'归档测试')}
-function flight(s,role,n,seed,years){const g=s.newGame(role,seed,n);g.s.ascended=true;g.s.major=9;g.s.cleared.fill(true);g.s.ascensionRecord={version:1,race:role,runId:role+':'+seed+':'+seed+':'+(420+5760*years),elapsedMinutes:5760*years,remainingLifeMinutes:5760*30,defeats:0,difficulty:s.difficulty};return g}
+function flight(s,role,n,seed,years){const g=s.newGame(role,seed,n);g.s.ascended=true;g.s.major=9;g.s.cleared.fill(true);g.s.minutes=420+5760*(years+1);g.s.ascensionRecord={version:1,race:role,runId:role+':'+seed+':'+seed+':'+(420+5760*years),elapsedMinutes:5760*years,remainingLifeMinutes:5760*30,defeats:0,difficulty:s.difficulty};return g}
 {
  const disk=store(),slots=new Slots(disk),b=born();b.adds={hp:4,spirit:0,attack:0,years:0,spent:10};const ledger=slots.legacy('human',1);ledger.balance=50;ledger.total=50;slots.putLegacy('human',1,ledger);
  disk.failKey=slots.key('human',1);assert.throws(()=>slots.newGameWithPayment('human',b.seed,1,b),/QuotaExceeded/);assertions++;
