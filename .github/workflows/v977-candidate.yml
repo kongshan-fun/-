@@ -1,0 +1,102 @@
+name: V90.77 Bigu Release Candidate
+on:
+  push:
+    branches: [feat/v90.77-bigu-release]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Import checksum-locked reviewed source
+        run: |
+          python - <<'PY'
+          import pathlib,base64,lzma,json,hashlib
+          marker=pathlib.Path('_delivery/v977.ready')
+          if marker.exists():
+              packed=base64.b64decode(''.join(p.read_text().strip() for p in sorted(pathlib.Path('_delivery').glob('v977-input-*.b64'))),validate=True)
+              assert hashlib.sha256(packed).hexdigest()==marker.read_text().strip(),'Source transfer checksum mismatch'
+              payload=json.loads(lzma.decompress(packed))
+              for name,text in payload['files'].items():
+                  p=pathlib.Path(name)
+                  assert not p.is_absolute() and '..' not in p.parts and '\\' not in name
+                  assert name=='README.md' or name.startswith(('src/v976/','src/v977/','docs/v977/','tests/','tools/'))
+                  assert not p.is_symlink()
+                  p.parent.mkdir(parents=True,exist_ok=True);p.write_text(text,encoding='utf-8')
+              print('Imported reviewed source files:',len(payload['files']))
+          PY
+      - name: Frozen-source build and entry consistency
+        run: |
+          python tools/build_v976_from_main.py
+          python tools/build_v977_from_main.py
+          python tools/check_entry_consistency.py --rebuild
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          digest=hashlib.sha256(Path('index.html').read_bytes()).hexdigest().upper()
+          assert digest=='3F81C645D72C7DFC8FC848B150C7006527FED868487A1D21E057784CF6CE64B1',digest
+          print('Reviewed exact source confirmed',digest)
+          PY
+      - name: Current release engine and save failure regression
+        run: |
+          set -o pipefail
+          mkdir -p artifacts/v977
+          node tests/run_v977_acceptance.cjs | tee artifacts/v977/acceptance.log
+      - name: Install real Chromium and Chinese layout fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-noto-cjk fonts-wqy-zenhei
+          python -m pip install --disable-pip-version-check playwright==1.56.0
+          python -m playwright install --with-deps chromium
+      - name: Native HTTP localStorage and six-viewport feature acceptance
+        run: |
+          set -o pipefail
+          python tests/v977_browser.py | tee artifacts/v977/native-browser.log
+          python tests/v977_rescue_browser.py | tee artifacts/v977/native-rescue.log
+      - name: Natural-resource player simulations - record actual outcomes
+        run: |
+          for mode in easy standard challenge; do
+            SIM_BIGU=1 node tests/v977_player_sim.cjs "$mode" > "artifacts/v977/player-${mode}.log" 2>&1
+          done
+      - name: Record tested content and persist source to candidate branch only
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json,datetime
+          root=Path('.');b=json.loads((root/'artifacts/v977/browser/results.json').read_text())
+          a=json.loads((root/'artifacts/v977/acceptance.json').read_text())
+          record={'version':'V90.77','sourceSha256':hashlib.sha256((root/'index.html').read_bytes()).hexdigest().upper(),'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'engine':a,'nativeBrowser':b,'platformSDK':'NOT_VERIFIED','productionChanged':False}
+          (root/'docs/v977/云端验收.json').write_text(json.dumps(record,ensure_ascii=False,indent=2),encoding='utf-8')
+          PY
+          git config user.name 'Development verification bot'
+          git config user.email 'development-verification@users.noreply.github.com'
+          git add README.md src/v976 src/v977 docs/v977 tests tools/build_v976_from_main.py tools/build_v977_from_main.py tools/package_v977.py index.html releases/山野修仙记_V90.76_稳定性修复与通关验收.html releases/山野修仙记_V90.77_灵息辟谷.html
+          if [ -f _delivery/v977.ready ]; then git rm -- _delivery/v977.ready _delivery/v977-input-*.b64; fi
+          if ! git diff --cached --quiet; then
+            git commit -m 'feat(V90.77): persist native-browser-verified bigu and V90.76 safety sources [skip ci]'
+            git push origin HEAD:feat/v90.77-bigu-release
+          fi
+          git rev-parse HEAD > artifacts/v977/verified-source-commit.txt
+      - name: Package verified standalone H5 and source evidence
+        run: python tools/package_v977.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v977-evidence-${{ github.run_id }}
+          path: artifacts/v977/
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: v977-delivery-${{ github.run_id }}
+          path: dist/v977/
+          retention-days: 30
