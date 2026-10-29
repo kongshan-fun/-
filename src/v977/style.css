@@ -1,0 +1,33 @@
+/* V90.77: typography and border-only additions, inherits all three themes. */
+.cult977{display:flex;flex-direction:column;gap:10px;color:var(--ink)}
+.cult977-head,.cult977-stats{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.cult977-head strong{font:650 18px/1.4 "Noto Serif CJK SC","Songti SC",serif}.cult977-head span{font-size:10px;color:var(--muted)}
+.cult977-stats{font-size:11px;font-variant-numeric:tabular-nums;line-height:1.6}.cult977-stats b{font-weight:650}
+.cult977-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.cult977-actions .btn{padding:5px 3px;min-height:34px}
+.bigu977-card{border:1px solid var(--line-strong,var(--line));border-radius:8px;padding:11px 12px;background:var(--panel-subtle,var(--surface))}
+.bigu977-top,.bigu977-metrics,.bigu977-foot{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.bigu977-top>div{display:flex;align-items:center;gap:8px}.bigu977-top strong{font:650 15px/1.4 "Noto Serif CJK SC","Songti SC",serif}
+.bigu977-glyph{border:1px solid var(--line-strong,var(--line));width:24px;height:24px;display:grid;place-items:center;font:600 14px/1 serif;border-radius:4px}
+.bigu977-switch{display:flex;align-items:center;gap:7px;border:0;background:transparent;padding:4px 0 4px 6px;font-size:10px;min-height:32px;flex:none}
+.bigu977-switch i{width:30px;height:18px;background:var(--line-strong,#aaa);border-radius:20px;position:relative}
+.bigu977-switch i:after{content:"";position:absolute;left:3px;top:3px;height:12px;width:12px;background:var(--panel-bg,#fff);border-radius:50%}
+.bigu977-switch[aria-checked="true"] i{background:var(--ink,#294538)}.bigu977-switch[aria-checked="true"] i:after{left:15px}
+.bigu977-metrics{font-size:11px;padding-top:8px}.bigu977-metrics b{font-size:17px;font-variant-numeric:tabular-nums;margin-left:4px}.bigu977-state{font-size:10px;color:var(--muted);text-align:right}.bigu977-state.is-paused{color:var(--danger,var(--ink));font-weight:600}
+.panel-body p.bigu977-explain{font-size:11px;line-height:1.7;margin:6px 0;color:var(--muted)}
+.bigu977-foot{padding-top:4px;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}.bigu977-foot small{font-size:10px;color:var(--muted)}
+.bigu977-link{border:0;background:transparent;padding:3px 0 3px 8px;text-decoration:underline;text-underline-offset:3px;font-size:11px;min-height:27px}
+.cult977-nav{margin:0!important}.cult977-nav .cult-nav-row{padding:8px 10px;min-height:49px}.cult977-nav .cult-nav-main{gap:1px}.cult977-nav .cult-nav-main b{font-size:12px}.cult977-nav .cult-nav-main small{font-size:10px;line-height:1.5}
+.bigu977-modal{max-width:366px!important;padding:22px!important;max-height:calc(100% - 24px)!important;overflow:auto!important;box-sizing:border-box}
+.bigu977-dialog{color:var(--ink)}.bigu977-dialog h2{margin:8px 0;font:650 27px/1.35 "Noto Serif CJK SC","Songti SC",serif;letter-spacing:.07em}.bigu977-dialog .kicker{font-size:10px;letter-spacing:.09em}
+.bigu977-dialog p{font-size:12px;line-height:1.8}.bigu977-dialog .bigu977-lead{color:var(--muted);margin:0 0 16px;font-size:12px}
+.bigu977-seal{float:right;border:1px solid var(--line-strong,var(--ink));padding:4px 6px;font:500 21px/1.2 "Noto Serif CJK SC",serif;border-radius:3px}
+.bigu977-gift{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 0;margin:0 0 12px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.bigu977-gift>span{font-size:12px}.bigu977-gift small{display:block;font-size:10px;color:var(--muted);margin-top:3px}.bigu977-gift strong{font:500 30px/1.1 Georgia,serif;font-variant-numeric:tabular-nums}
+.bigu977-rules p{font-size:11px;line-height:1.9;margin:7px 0;color:var(--muted)}
+.bigu977-choice{display:flex;align-items:flex-start;gap:9px;border:1px solid var(--line);border-radius:6px;padding:10px;margin-top:14px;cursor:pointer}
+.bigu977-choice input{margin:3px 0;min-width:16px;width:16px;height:16px;accent-color:var(--ink)}.bigu977-choice span{display:flex;flex-direction:column;gap:3px}.bigu977-choice b{font-size:12px;font-weight:600}.bigu977-choice small{font-size:10px;color:var(--muted)}
+.bigu977-dialog-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.bigu977-dialog-actions .btn{min-height:38px;font-size:12px}.bigu977-dialog-actions .primary{background:var(--ink);color:var(--page);border-color:var(--ink)}
+.bigu977-dialog p.bigu977-memo{font-size:10px;text-align:center;margin:10px 0 0;color:var(--muted)}
+.bigu977-stages{border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-bottom:12px}.bigu977-stages>div{display:flex;justify-content:space-between;padding:7px 10px;font-size:11px;border-bottom:1px solid var(--line)}.bigu977-stages>div:last-child{border:0}.bigu977-stages .current{background:var(--ink);color:var(--page)}
+.bigu977-confirm{width:100%;margin-top:10px;min-height:36px}.bigu977-combat-note{flex:none;text-align:center;padding:5px 8px;font-size:10px;line-height:1.5;border-bottom:1px solid var(--line);color:var(--muted)}
+@media(max-width:355px){.cult977{gap:7px}.cult977-head strong{font-size:16px}.bigu977-card{padding:8px 10px}.cult977-nav .cult-nav-row{min-height:44px;padding:6px 9px}.bigu977-modal{padding:16px!important}.bigu977-dialog h2{font-size:24px}.bigu977-gift{padding:10px 0}.bigu977-dialog .bigu977-lead{margin-bottom:12px}}
