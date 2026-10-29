@@ -1,0 +1,11 @@
+'use strict';
+const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path'),assert=require('node:assert/strict');
+const ROOT=path.resolve(__dirname,'../..');
+function load(file='index.html'){
+ const html=fs.readFileSync(path.join(ROOT,file),'utf8'),scripts=[...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map(x=>x[1]);assert.equal(scripts.length,10);scripts.forEach(s=>new vm.Script(s));
+ const c=vm.createContext({console});c.globalThis=c;c.window=c;for(let i=0;i<6;i++)vm.runInContext(scripts[i],c);return {...c,html};
+}
+function mem(){return{map:new Map(),fail:null,silent:false,getItem(k){return this.map.get(k)||null;},setItem(k,v){if(k===this.fail){if(this.silent)return;throw Error('quota injection');}this.map.set(k,String(v));},removeItem(k){this.map.delete(k);}};}
+function fixture(C,t=1,race='human',mode='challenge',seed=123456){const g=new C.QGame(null,seed,race,null,mode),D=C.QData;g.s.level=t*3;g.syncMajor();const st=D.statsForLevel(g.s.level);Object.assign(g.s,{hp:st.hp,maxHp:st.hp,spirit:st.spirit,maxSpirit:st.spirit,attack:st.atk,hunger:100,water:100});g.s.life.left=1000*D.LIFE.yearMinutes;g.s.cleared=Array.from({length:12},(_,i)=>i<t-1);g.s.ritual=g.s.cleared.slice();g.recalcUnlocked();g.s.guide.status='skipped';g.enterHome();Object.assign(g.s.inv,{wood:100,fiber:100,stone:100,water:100});assert.ok(g.act('settle').ok);g.camp.level=t;for(const id of D.HOME_ROOMS.filter(id=>id!=='residence'))g.camp.buildings[id]=t;g.s.hunger=g.s.water=100;if(g.s.garden)g.s.garden.plots=Array(D.gardenCapacity(t)).fill(null);return g;}
+function harness(name){let n=0;const rows=[];return{eq(a,b,msg){assert.equal(a,b,msg);n++;},ok(v,msg){assert.ok(v,msg);n++;},same(a,b,msg){assert.deepEqual(JSON.parse(JSON.stringify(a)),JSON.parse(JSON.stringify(b)),msg);n++;},throws(f,re,msg){assert.throws(f,re,msg);n++;},test(label,f){const k=n;f();rows.push({name:label,pass:true,assertions:n-k});console.log('PASS',label,n-k);},finish(extra={}){fs.mkdirSync(path.join(ROOT,'artifacts/v978'),{recursive:true});const report={suite:name,pass:true,assertions:n,rows,...extra};fs.writeFileSync(path.join(ROOT,'artifacts/v978',name+'.json'),JSON.stringify(report,null,2));console.log(name,'PASS',n,'assertions');return report;}};}
+module.exports={ROOT,load,mem,fixture,harness};

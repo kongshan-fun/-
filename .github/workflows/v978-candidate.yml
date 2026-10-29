@@ -1,0 +1,121 @@
+name: V90.78 Facility and Garden Acceptance
+on:
+  push:
+    branches: [feat/v90.78-facility-garden]
+    paths: ['_delivery/v978.ready']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: v978-facility-garden
+  cancel-in-progress: true
+jobs:
+  verify:
+    if: github.ref == 'refs/heads/feat/v90.78-facility-garden'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Import checksum-locked reviewed source
+        run: |
+          python - <<'PY'
+          from pathlib import Path,PurePosixPath
+          import json,lzma,hashlib,base64
+          marker=Path('_delivery/v978.ready')
+          if marker.exists():
+              raw=base64.b64decode(''.join(p.read_text().strip() for p in sorted(Path('_delivery').glob('v978-input-*.b64'))),validate=True)
+              assert hashlib.sha256(raw).hexdigest()==marker.read_text().splitlines()[0].strip(),'Source checksum mismatch'
+              data=json.loads(lzma.decompress(raw))
+              def check(name):
+                  p=PurePosixPath(name)
+                  assert not p.is_absolute() and '..' not in p.parts and '\\' not in name
+                  assert name=='README.md' or name.startswith(('src/v978/','docs/v978/','tests/','tools/'))
+                  assert Path(name).resolve().is_relative_to(Path('.').resolve())
+                  assert not Path(name).is_symlink()
+              for e in data.get('copies',[]):
+                  check(e['path']);check(e['base']);text=Path(e['base']).read_text(encoding='utf-8')
+                  assert hashlib.sha256(text.encode()).hexdigest()==e['baseSha'],e['base']
+                  lines=text.splitlines(True)
+                  for edit in reversed(e['edits']):lines[edit['from']:edit['to']]=edit['text'].splitlines(True)
+                  text=''.join(lines);assert hashlib.sha256(text.encode()).hexdigest()==e['sha'],e['path']
+                  p=Path(e['path']);p.parent.mkdir(parents=True,exist_ok=True);p.write_text(text,encoding='utf-8')
+              for name,text in data['files'].items():
+                  check(name);p=Path(name);p.parent.mkdir(parents=True,exist_ok=True);p.write_text(text,encoding='utf-8')
+              print('Reviewed source materialized:',len(data['files'])+len(data.get('copies',[])))
+          PY
+          if [ -f _delivery/v978-finalize.py ]; then python _delivery/v978-finalize.py; fi
+      - name: Stages 1 and 2 - facilities and unlevelled workbench
+        run: |
+          python tools/build_v978_from_main.py --stage 2
+          node tests/v978_stations.cjs
+          cp artifacts/v978/stations.json artifacts/v978/stage12.json
+      - name: Stages 3 and 4 - garden and legacy migration
+        run: |
+          python tools/build_v978_from_main.py --stage 4
+          node tests/v978_garden.cjs
+          cp artifacts/v978/garden.json artifacts/v978/stage34.json
+      - name: Frozen release and 26-suite regression
+        run: |
+          set -o pipefail
+          python tools/build_v978_from_main.py
+          python tools/check_entry_consistency.py --rebuild
+          node tests/run_v978_acceptance.cjs | tee artifacts/v978/acceptance.log
+      - name: Install native Chromium and Chinese fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-noto-cjk fonts-wqy-zenhei
+          python -m pip install --disable-pip-version-check playwright==1.56.0
+          python -m playwright install --with-deps chromium
+      - name: Actual HTTP, localStorage, downloads and six viewports
+        run: |
+          set -o pipefail
+          python tests/v978_browser.py | tee artifacts/v978/native-browser.log
+          python tests/v978_bigu_browser.py | tee artifacts/v978/native-bigu.log
+          python tests/v978_rescue_browser.py | tee artifacts/v978/native-rescue.log
+      - name: Natural-resource strategies - preserve actual outcomes
+        run: |
+          for mode in easy standard challenge; do
+            SIM_BIGU=1 SIM_ACTION_LIMIT=35000 node tests/v978_player_sim.cjs "$mode" > "artifacts/v978/player-${mode}.log" 2>&1
+          done
+      - name: Record and persist verified candidate only
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,hashlib
+          r=Path('.');a=json.loads((r/'artifacts/v978/acceptance.json').read_text());b=json.loads((r/'artifacts/v978/browser/results.json').read_text())
+          digest=hashlib.sha256((r/'index.html').read_bytes()).hexdigest().upper()
+          assert digest=='92A74E8E11CA671A40052988B5E00CD893B5D822574DEB2BBAC9FEF40993F794',digest
+          assert a['pass'] and a['sourceSha256']==digest
+          record={'version':'V90.78','sourceSha256':digest,'engine':a,'nativeBrowser':b,'TapTapSDK':'NOT_VERIFIED','productionChanged':False}
+          (r/'docs/v978/云端验收.json').write_text(json.dumps(record,ensure_ascii=False,indent=2),encoding='utf-8')
+          PY
+          git config user.name 'Development verification bot'
+          git config user.email 'development-verification@users.noreply.github.com'
+          git add README.md src/v978 docs/v978 tests/lib/v978.cjs tests/v978_* tests/run_v978_acceptance.cjs tools/build_v978_from_main.py tools/package_v978.py index.html releases/山野修仙记_V90.78_洞府百业与灵田.html
+          if [ -f _delivery/v978.ready ]; then git rm -- _delivery/v978.ready _delivery/v978-input-*.b64; fi
+          if [ -f _delivery/v978-finalize.py ]; then git rm -- _delivery/v978-finalize.py; fi
+          if ! git diff --cached --quiet; then
+            git commit -m 'feat(V90.78): persist verified facility navigation, workbench and planted garden [skip ci]'
+            git push origin HEAD:feat/v90.78-facility-garden
+          fi
+          git rev-parse HEAD > artifacts/v978/verified-source-commit.txt
+      - name: Verified H5 and complete source packages
+        run: python tools/package_v978.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v978-evidence-${{ github.run_id }}
+          path: artifacts/v978/
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: v978-delivery-${{ github.run_id }}
+          path: dist/v978/
+          retention-days: 30
