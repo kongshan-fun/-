@@ -7781,11 +7781,11 @@ function cultivateTrialBody(){const s=game.s;
  if(!s.ascended&&s.level<36){
   const full=game.stageIndex===3&&s.xp>=game.required;
   if(game.needsTribulation){
-   const dmg=game.tribDamage,maxHp=s.maxHp,left=Math.max(0,maxHp-dmg),pct=Math.round(left/maxHp*100);
+   const dmg=game.tribDamage,maxHp=s.maxHp,nextMaxHp=D.applyPills(D.statsForLevel(s.level+1),s).hp,left=Math.max(1,nextMaxHp-dmg),pct=Math.round(left/nextMaxHp*100);
    const ready=full&&game.atCamp&&s.hp>=dmg;
    advance=`<h3>渡劫 · 由${game.realm}入下一境</h3>`+
     `<div class="trib-hero">`+
-    `<div class="trib-hero-top"><span class="trib-tag">雷劫</span><span>渡劫后剩余 ${pct}%</span></div>`+
+    `<div class="trib-hero-top"><span class="trib-tag">雷劫</span><span>成功后约 ${pct}% 气血</span></div>`+
     `<div class="trib-big">${dmg}<small>本次伤害（${s.hp>=dmg?'气血够':'气血不足'}）</small></div>`+
     `<div class="trib-bar-row"><span>气血 ${s.hp} / ${maxHp}</span><b>需 ≥ ${dmg}</b></div>`+
     `<div class="trib-bar"><i class="${s.hp>=dmg?'ok':''}" style="width:${Math.min(100,Math.round(s.hp/maxHp*100))}%"></i><u style="left:${Math.min(99,Math.round(dmg/maxHp*100))}%"></u></div>`+

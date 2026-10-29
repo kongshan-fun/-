@@ -29,6 +29,12 @@ def main():
     patch('每回合自然消耗：灵力 ${roundSpirit} · 饱腹 1 · 饮水 ${1+game.extra(15).water}', '每回合：${game.character.energy} ${roundSpirit} · 饱腹 ${game.biguInfo().percent/100} · 饮水 ${game.biguInfo().percent/100+game.extra(15).water}（余量累计）',2)
     patch(' · 灵力 ${s.spirit}/${s.maxSpirit}</span>', ' · ${game.character.energy} ${s.spirit}/${s.maxSpirit}</span>')
 
+    # Use the post-breakthrough HP ceiling for the successful-result preview.
+    # The damage threshold still uses current HP; only the forecast is corrected.
+    patch('const dmg=game.tribDamage,maxHp=s.maxHp,left=Math.max(0,maxHp-dmg),pct=Math.round(left/maxHp*100);',
+          'const dmg=game.tribDamage,maxHp=s.maxHp,nextMaxHp=D.applyPills(D.statsForLevel(s.level+1),s).hp,left=Math.max(1,nextMaxHp-dmg),pct=Math.round(left/nextMaxHp*100);')
+    patch('渡劫后剩余 ${pct}%', '成功后约 ${pct}% 气血')
+
     # Isolate local speedrun scores: changed nutrition makes older records unfair
     # to compare, but their old keys and records are not deleted or modified.
     patch("'shanye-v975-local-ascension-board-v1'", "'shanye-v977-local-ascension-board-v1'")

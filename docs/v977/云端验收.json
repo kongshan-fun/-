@@ -1,37 +1,37 @@
 {
   "version": "V90.77",
-  "sourceSha256": "4F31E01C08EFA38F1BED90DD1F8A64565A740ECCA0785F5A7AD32598E2EA57B1",
-  "utc": "2026-10-29T02:23:25.522488+00:00",
+  "sourceSha256": "F73D2F9D68A2656C34B83BDDC2A9286154DC0ECCAD91A9E5B79D2A9E48981249",
+  "utc": "2026-10-29T02:45:19.814518+00:00",
   "engine": {
     "version": "V90.77",
-    "sourceSha256": "4f31e01c08efa38f1bed90dd1f8a64565a740ecca0785f5a7ad32598e2ea57b1",
+    "sourceSha256": "f73d2f9d68a2656c34b83bddc2a9286154dc0eccad91a9e5b79d2a9e48981249",
     "results": [
       {
         "name": "current 20-suite regression",
         "pass": true,
-        "seconds": 29.345
+        "seconds": 30.651
       },
       {
         "name": "V90.76 rescue and guide safety",
         "pass": true,
-        "seconds": 0.129
+        "seconds": 0.128
       },
       {
         "name": "V90.77 realm and energy arithmetic",
         "pass": true,
-        "seconds": 1.055
+        "seconds": 1.031
       },
       {
         "name": "Speedrun ruleset isolation",
         "pass": true,
-        "seconds": 0.071
+        "seconds": 0.072
       }
     ]
   },
   "nativeBrowser": {
     "version": "V90.77",
     "kind": "real HTTP origin + native localStorage + Chromium UI",
-    "sourceSha256": "4f31e01c08efa38f1bed90dd1f8a64565a740ecca0785f5a7ad32598e2ea57b1",
+    "sourceSha256": "f73d2f9d68a2656c34b83bddc2a9286154dc0eccad91a9e5b79d2a9e48981249",
     "checks": [
       {
         "name": "V90.77 actual release title",
@@ -52,6 +52,15 @@
         "name": "actual breakthrough reaches seventh realm",
         "pass": true,
         "detail": null
+      },
+      {
+        "name": "breakthrough HP forecast matches new realm result",
+        "pass": true,
+        "detail": {
+          "predicted": "雷劫\n成功后约 46% 气血",
+          "hp": 966,
+          "maxHp": 2100
+        }
       },
       {
         "name": "breakthrough opens learning dialog",
@@ -869,8 +878,8 @@
         "detail": []
       }
     ],
-    "passed": 104,
-    "total": 104,
+    "passed": 105,
+    "total": 105,
     "errors": [],
     "fatal": null,
     "metrics": [
