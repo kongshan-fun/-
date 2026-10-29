@@ -1,0 +1,106 @@
+name: V90.79 Real UI Polish
+on:
+  push:
+    branches: [feat/v90.79-paper-ink-ui]
+    paths: ['_delivery/v979.ready']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: v979-ui-polish
+  cancel-in-progress: true
+jobs:
+  verify:
+    if: github.ref == 'refs/heads/feat/v90.79-paper-ink-ui'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Materialize checksum-locked UI sources
+        run: |
+          python - <<'PY'
+          from pathlib import Path,PurePosixPath
+          import json,lzma,base64,hashlib
+          marker=Path('_delivery/v979.ready')
+          if marker.exists():
+              raw=base64.b64decode(''.join(p.read_text().strip() for p in sorted(Path('_delivery').glob('v979-input-*.b64'))),validate=True)
+              assert hashlib.sha256(raw).hexdigest()==marker.read_text().splitlines()[0].strip()
+              payload=json.loads(lzma.decompress(raw))
+              def check(name):
+                  p=PurePosixPath(name)
+                  assert not p.is_absolute() and '..' not in p.parts and '\\' not in name
+                  assert name.startswith(('src/v979/','docs/v979/','tests/','tools/'))
+                  assert Path(name).resolve().is_relative_to(Path('.').resolve()) and not Path(name).is_symlink()
+              for e in payload.get('copies',[]):
+                  check(e['base']);check(e['path']);text=Path(e['base']).read_text(encoding='utf-8')
+                  assert hashlib.sha256(text.encode()).hexdigest()==e['baseSha']
+                  lines=text.splitlines(True)
+                  for edit in reversed(e['edits']):lines[edit['from']:edit['to']]=edit['text'].splitlines(True)
+                  text=''.join(lines);assert hashlib.sha256(text.encode()).hexdigest()==e['sha']
+                  p=Path(e['path']);p.parent.mkdir(parents=True,exist_ok=True);p.write_text(text,encoding='utf-8')
+              for name,text in payload['files'].items():
+                  check(name);p=Path(name);p.parent.mkdir(parents=True,exist_ok=True);p.write_text(text,encoding='utf-8')
+          if Path('_delivery/v979-finalize.py').exists():exec(Path('_delivery/v979-finalize.py').read_text())
+          PY
+      - name: Exact frozen-base build and 27 suites
+        run: |
+          set -o pipefail
+          python tools/build_v979_from_main.py
+          mkdir -p artifacts/v979
+          node tests/run_v979_acceptance.cjs | tee artifacts/v979/acceptance.log
+      - name: Native Chromium, Chinese fonts and screenshot compositor
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-noto-cjk fonts-wqy-zenhei
+          python -m pip install --disable-pip-version-check playwright==1.56.0 pillow
+          python -m playwright install --with-deps chromium
+      - name: Actual UI, persistence, rescue and before-after captures
+        run: |
+          set -o pipefail
+          python tests/v979_browser.py | tee artifacts/v979/native-features.log
+          python tests/v979_bigu_browser.py | tee artifacts/v979/native-bigu.log
+          python tests/v979_rescue_browser.py | tee artifacts/v979/native-rescue.log
+          python tests/v979_visual.py | tee artifacts/v979/native-visual.log
+          python tools/compare_v979.py
+      - name: Record exact tested source and persist to candidate branch only
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json
+          p=Path('index.html');digest=hashlib.sha256(p.read_bytes()).hexdigest().upper()
+          assert digest=='F07260DD1CFC2AFB5B0219F811DE2B889F7269520E9409DB32EA39445C545EB9',digest
+          a=json.loads(Path('artifacts/v979/acceptance.json').read_text());v=json.loads(Path('artifacts/v979/visual/results.json').read_text())
+          assert a['pass'] and v['mode']=='native-http-localStorage' and v['passed']==v['total']
+          report={'version':'V90.79','sha256':digest,'engine':a,'visual':v,'productionChanged':False,'TapTapSDK':'NOT_VERIFIED'}
+          Path('docs/v979/云端验收.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')
+          PY
+          git config user.name 'Development verification bot'
+          git config user.email 'development-verification@users.noreply.github.com'
+          git add src/v979 docs/v979 tools/build_v979_from_main.py tools/compare_v979.py tools/package_v979.py tests/v979_* tests/run_v979_acceptance.cjs index.html releases/山野修仙记_V90.79_纸墨精修.html
+          if [ -f _delivery/v979.ready ]; then git rm -- _delivery/v979.ready _delivery/v979-input-*.b64; fi
+          if [ -f _delivery/v979-finalize.py ]; then git rm -- _delivery/v979-finalize.py; fi
+          if ! git diff --cached --quiet; then
+            git commit -m 'feat(V90.79): persist real-browser-verified paper-ink UI refinement [skip ci]'
+            git push origin HEAD:feat/v90.79-paper-ink-ui
+          fi
+          git rev-parse HEAD > artifacts/v979/verified-source-commit.txt
+      - name: Package exact H5, source, raw screenshots and comparisons
+        run: python tools/package_v979.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v979-evidence-${{ github.run_id }}
+          path: artifacts/v979/
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: v979-delivery-${{ github.run_id }}
+          path: dist/v979/
+          retention-days: 30
