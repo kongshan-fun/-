@@ -1,0 +1,146 @@
+name: V90.80 Square Ink Final Acceptance
+on:
+  push:
+    branches: [feat/v90.80-square-paper-ink]
+    paths: ['_delivery/v980.ready']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify and materialize exact reviewed source
+        run: |
+          python - <<'PY'
+          from pathlib import Path,PurePosixPath
+          import base64,lzma,json,hashlib
+          parts=sorted(Path('_delivery').glob('v980-delta-*.b64'))
+          assert len(parts)==2,len(parts)
+          raw=base64.b64decode(''.join(p.read_text().strip() for p in parts),validate=True)
+          assert hashlib.sha256(raw).hexdigest()==Path('_delivery/v980.ready').read_text().splitlines()[0].strip()
+          data=json.loads(lzma.decompress(raw))
+          approved={'README.md','docs/V90.80_方正纸墨精修说明.md','src/v980/style.css','tools/build_v980_from_v979.py','tools/check_entry_consistency.py','tests/run_v980_acceptance.cjs','tests/v980_presentation_isolation.cjs','tests/v980_visual.py','tests/v980_native_browser.py','tests/v980_native_rescue.py'}
+          expected=set(data['files'])|{e['path'] for e in data['copies']}
+          assert data['version']=='V90.80' and expected==approved
+          def safe(name):
+              p=PurePosixPath(name)
+              assert not p.is_absolute() and '..' not in p.parts and '\\' not in name
+              dst=Path(name);assert not dst.is_symlink()
+              return dst
+          for e in data['copies']:
+              assert e['path'] in approved
+              src=safe(e['base']);dst=safe(e['path'])
+              txt=src.read_text(encoding='utf-8')
+              assert hashlib.sha256(txt.encode()).hexdigest()==e['baseSha256'],e['base']
+              lines=txt.splitlines(True)
+              for edit in reversed(e['edits']):
+                  lines[edit['from']:edit['to']]=edit['text'].splitlines(True)
+              txt=''.join(lines)
+              assert hashlib.sha256(txt.encode()).hexdigest()==e['sha256'],e['path']
+              dst.parent.mkdir(parents=True,exist_ok=True);dst.write_text(txt,encoding='utf-8')
+          for name,content in data['files'].items():
+              target=safe(name)
+              target.parent.mkdir(parents=True,exist_ok=True)
+              target.write_text(content,encoding='utf-8')
+              assert target.read_text(encoding='utf-8')==content
+          print('SOURCE MATERIALIZED',len(approved))
+          PY
+          if [ -f _delivery/v980-finalize.py ]; then python _delivery/v980-finalize.py; fi
+      - name: Rebuild exact H5 and run 27 suites
+        run: |
+          set -o pipefail
+          mkdir -p artifacts/v980
+          python tools/build_v980_from_v979.py | tee artifacts/v980/build.log
+          python tools/check_entry_consistency.py --rebuild | tee artifacts/v980/entry.log
+          node tests/run_v980_acceptance.cjs | tee artifacts/v980/acceptance.log
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json
+          r=Path('.');b=(r/'index.html').read_bytes()
+          assert hashlib.sha256(b).hexdigest().upper()=='564CCD465E0278E1FDA4B097BFC01FE5789F5D986A3998ED355AF30A09764F17'
+          assert b==(r/'releases/山野修仙记_V90.80_方正纸墨.html').read_bytes()
+          j=json.loads((r/'artifacts/v980/acceptance.json').read_text())
+          assert j['pass'] and j['passed']==j['total']==27
+          print('EXACT RELEASE VERIFIED',len(b))
+          PY
+      - name: Native Chromium and Chinese fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-noto-cjk fonts-wqy-zenhei
+          python -m pip install --disable-pip-version-check playwright==1.56.0 pillow
+          python -m playwright install --with-deps chromium
+      - name: Native HTTP localStorage and real before-after screenshots
+        run: |
+          set -o pipefail
+          python tests/v980_visual.py | tee artifacts/v980/visual.log
+          python tests/v980_native_browser.py | tee artifacts/v980/native-browser.log
+          python tests/v980_native_rescue.py | tee artifacts/v980/native-rescue.log
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          for name in ['visual','browser','rescue-browser']:
+              f=Path('artifacts/v980')/name/'results.json'
+              d=json.loads(f.read_text())
+              assert d['version']=='V90.80' and d['mode']=='native-http-localStorage' and d['passed']==d['total'],(f,d.get('passed'),d.get('total'),d.get('mode'))
+              print('NATIVE PASS',name,d['passed'])
+          PY
+      - name: Persist only verified release on feature branch
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json,datetime
+          r=Path('.')
+          j={'version':'V90.80','sourceSha256':hashlib.sha256((r/'index.html').read_bytes()).hexdigest().upper(),'verifiedUtc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'tests':{},'platformSdk':'NOT_VERIFIED','productionChanged':False}
+          for n in ['visual','browser','rescue-browser']:
+              d=json.loads((r/'artifacts/v980'/n/'results.json').read_text());j['tests'][n]={k:d[k] for k in ['passed','total','mode']}
+          p=r/'docs/v980/云端复核.json';p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(j,ensure_ascii=False,indent=2))
+          PY
+          git config user.name 'Verification bot'
+          git config user.email 'verification-bot@users.noreply.github.com'
+          git add README.md docs/V90.80_方正纸墨精修说明.md docs/v980 src/v980 tests/v980_* tests/run_v980_acceptance.cjs tools/build_v980_from_v979.py tools/check_entry_consistency.py index.html releases/山野修仙记_V90.80_方正纸墨.html
+          git rm -- _delivery/v980.ready _delivery/v980-delta-*.b64 _delivery/v980-finalize.py
+          git commit -m 'feat(V90.80): verified square paper-ink UI [skip ci]'
+          git push origin HEAD:feat/v90.80-square-paper-ink
+          git rev-parse HEAD > artifacts/v980/verified-source-commit.txt
+      - name: Package verified H5 and source
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import zipfile,hashlib,shutil
+          r=Path('.');o=r/'dist/v980';o.mkdir(parents=True,exist_ok=True)
+          b=(r/'index.html').read_bytes()
+          shutil.copy2(r/'index.html',o/'山野修仙记_V90.80_方正纸墨.html')
+          with zipfile.ZipFile(o/'山野修仙记_V90.80_H5.zip','w',compression=zipfile.ZIP_DEFLATED,compresslevel=9) as z:
+              z.writestr('index.html',b);z.writestr('使用说明.txt','V90.80 方正纸墨。解压打开 index.html。更新前先导出JSON。未验证TapTap SDK。')
+          with zipfile.ZipFile(o/'山野修仙记_V90.80_源码与验收.zip','w',compression=zipfile.ZIP_DEFLATED,compresslevel=7) as z:
+              for folder in ['src','tests','tools','docs','releases','.github/workflows']:
+                  for p in (r/folder).rglob('*'):
+                      if p.is_file() and '__pycache__' not in p.parts and p.suffix!='.pyc':z.write(p,p.relative_to(r))
+              z.write(r/'index.html','index.html')
+              for p in (r/'artifacts/v980').rglob('*'):
+                  if p.is_file():z.write(p,p.relative_to(r))
+          assert zipfile.ZipFile(o/'山野修仙记_V90.80_H5.zip').read('index.html')==b
+          assert hashlib.sha256(b).hexdigest().upper()=='564CCD465E0278E1FDA4B097BFC01FE5789F5D986A3998ED355AF30A09764F17'
+          print('PACKAGING VERIFIED',[(p.name,p.stat().st_size) for p in o.iterdir()])
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v980-audit-evidence
+          path: artifacts/v980/
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: v980-final-delivery
+          path: dist/v980/
+          retention-days: 30

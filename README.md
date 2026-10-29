@@ -1,4 +1,18 @@
-# 山野修仙记 V90.78 · 洞府百业与灵田
+# 山野修仙记 V90.80 · 方正纸墨
+
+完整、自包含 H5 候选版。基于 V90.79 精修，黑白灰为主、低饱和点缀、方形零圆角；不改变存档和数值。
+
+详情：`docs/V90.80_方正纸墨精修说明.md`。
+
+运行：解压包后打开 `index.html`。更新前请导出 JSON 存档。
+
+复核：`python tools/build_v980_from_v979.py`、`python tools/check_entry_consistency.py --rebuild`、`node tests/run_v980_acceptance.cjs`、`python tests/v980_visual.py`、`python tests/v980_native_browser.py`、`python tests/v980_native_rescue.py`。后三项需要 Chromium、Playwright 和本地 HTTP 访问权限；不可访问 HTTP 时，`--offline-dom` 只能做视觉检查，不能替代原生存储验收。
+
+边界：不含已验收的 TapTap SDK 广告、云存档或官方排行榜。正式发布及合并 `main` 需额外审批。
+
+---
+
+## V90.78 功能历史（仍然保留）
 
 独立、自包含 H5 功能完整候选。基于冻结的 V90.77，保留 V90.74–77 存档安全、十二阶设施、快捷补给和辟谷规则。
 
