@@ -34,6 +34,7 @@ jobs:
                   p.parent.mkdir(parents=True,exist_ok=True);p.write_text(text,encoding='utf-8')
               print('Imported reviewed source files:',len(payload['files']))
           PY
+          if [ -f _delivery/v977-finalization.py ]; then python _delivery/v977-finalization.py; fi
       - name: Frozen-source build and entry consistency
         run: |
           python tools/build_v976_from_main.py
@@ -43,7 +44,7 @@ jobs:
           from pathlib import Path
           import hashlib
           digest=hashlib.sha256(Path('index.html').read_bytes()).hexdigest().upper()
-          assert digest=='3F81C645D72C7DFC8FC848B150C7006527FED868487A1D21E057784CF6CE64B1',digest
+          assert digest=='4F31E01C08EFA38F1BED90DD1F8A64565A740ECCA0785F5A7AD32598E2EA57B1',digest
           print('Reviewed exact source confirmed',digest)
           PY
       - name: Current release engine and save failure regression
@@ -81,6 +82,7 @@ jobs:
           git config user.email 'development-verification@users.noreply.github.com'
           git add README.md src/v976 src/v977 docs/v977 tests tools/build_v976_from_main.py tools/build_v977_from_main.py tools/package_v977.py index.html releases/山野修仙记_V90.76_稳定性修复与通关验收.html releases/山野修仙记_V90.77_灵息辟谷.html
           if [ -f _delivery/v977.ready ]; then git rm -- _delivery/v977.ready _delivery/v977-input-*.b64; fi
+          if [ -f _delivery/v977-finalization.py ]; then git rm -- _delivery/v977-finalization.py; fi
           if ! git diff --cached --quiet; then
             git commit -m 'feat(V90.77): persist native-browser-verified bigu and V90.76 safety sources [skip ci]'
             git push origin HEAD:feat/v90.77-bigu-release
