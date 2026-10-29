@@ -41,3 +41,14 @@ p2=root/'tests/v977_ruleset.cjs'
 p2.write_text("'use strict';\nconst fs=require('fs'),vm=require('vm'),assert=require('assert/strict');const h=fs.readFileSync('index.html','utf8');const ss=[...h.matchAll(/<script\\b[^>]*>([\\s\\S]*?)<\\/script>/gi)].map(x=>x[1]);const c=vm.createContext({console});c.globalThis=c;for(let i=0;i<6;i++)vm.runInContext(ss[i],c);const {QGame:G,QData:D,QCharacterSlots:S}=c;let count=0;const ok=(a,m)=>{assert.ok(a,m);count++},eq=(a,b,m)=>{assert.equal(a,b,m);count++};const storage=()=>{const m=new Map();return{getItem:k=>m.get(k)||null,setItem:(k,v)=>m.set(k,String(v)),removeItem:k=>m.delete(k)}};function fixture(){const g=new G();g.s.life.left=500*D.LIFE.yearMinutes;g.s.hunger=g.s.water=100;g.s.hp=g.s.maxHp;g.s.spirit=g.s.maxSpirit;return g;}\n"+new+"console.log('V90.77 ruleset isolation PASS',count);\n")
 p=root/'tests/run_v977_acceptance.cjs';s=p.read_text();old="['V90.77 realm and energy arithmetic','node',['tests/v977_bigu.cjs']]";assert s.count(old)==1;s=s.replace(old,old+",['Speedrun ruleset isolation','node',['tests/v977_ruleset.cjs']]");p.write_text(s)
 p=root/'tests/v977_browser.py';s=p.read_text();old="p.evaluate('Storage.prototype.setItem=window.origSet')";assert s.count(old)==1;s=s.replace(old,"p.evaluate('()=>{Storage.prototype.setItem=window.origSet;}')");p.write_text(s)
+# Each independent rescue scenario must seed from a non-playing landing page.
+# Otherwise pagehide persists the prior healed character over the new fixture.
+p=root/'tests/v977_rescue_browser.py';s=p.read_text();old='def fresh_seed(page,life=1,ended=False):\n return page.evaluate'
+assert s.count(old)==1
+s=s.replace(old,"def fresh_seed(page,life=1,ended=False):\n page.goto(url)\n page.wait_for_function(\"window.QinglanDemo && QinglanDemo.getUI().frontPage==='difficulty' && QinglanDemo.getActiveRole()===null\")\n return page.evaluate")
+s=s.replace("url='http://127.0.0.1:'+str(server.server_port)+'/index.html';checks=[];errors=[]", "url='http://127.0.0.1:'+str(server.server_port)+'/index.html';checks=[];errors=[];fatal=None")
+anchor='  context.close()\n finally:'
+assert s.count(anchor)==1
+s=s.replace(anchor,"  context.close()\n except Exception as exc:\n  fatal=str(exc);raise\n finally:")
+s=s.replace("'errors':errors};(OUT/'results.json')", "'errors':errors,'fatal':fatal};(OUT/'results.json')")
+p.write_text(s)
