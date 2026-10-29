@@ -44,7 +44,7 @@ jobs:
           from pathlib import Path
           import hashlib
           digest=hashlib.sha256(Path('index.html').read_bytes()).hexdigest().upper()
-          assert digest=='4F31E01C08EFA38F1BED90DD1F8A64565A740ECCA0785F5A7AD32598E2EA57B1',digest
+          assert digest=='F73D2F9D68A2656C34B83BDDC2A9286154DC0ECCAD91A9E5B79D2A9E48981249',digest
           print('Reviewed exact source confirmed',digest)
           PY
       - name: Current release engine and save failure regression
