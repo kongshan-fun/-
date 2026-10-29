@@ -1,0 +1,24 @@
+{
+  "version": "V90.80",
+  "sourceSha256": "564CCD465E0278E1FDA4B097BFC01FE5789F5D986A3998ED355AF30A09764F17",
+  "verifiedUtc": "2026-10-29T12:56:15.654744+00:00",
+  "tests": {
+    "visual": {
+      "passed": 129,
+      "total": 129,
+      "mode": "native-http-localStorage"
+    },
+    "browser": {
+      "passed": 82,
+      "total": 82,
+      "mode": "native-http-localStorage"
+    },
+    "rescue-browser": {
+      "passed": 19,
+      "total": 19,
+      "mode": "native-http-localStorage"
+    }
+  },
+  "platformSdk": "NOT_VERIFIED",
+  "productionChanged": false
+}

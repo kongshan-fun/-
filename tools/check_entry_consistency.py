@@ -66,27 +66,42 @@ def main() -> None:
     print(f"  发布文件 : {release.name}  ({len(data):,} B)")
     print(f"  SHA256   : {sha(data)}")
 
+    # Accept both historic build_vXX_from_main.py (OUT_NAME / BASE_SHA)
+    # and additive build_vXX_from_vYY.py (NEW / BASE / EXPECTED).
+    # Require exactly one matching builder; never merely match a filename token.
     builders = []
-    for p in sorted((ROOT / "tools").glob("build_v*_from_main.py")):
+    for p in sorted((ROOT / "tools").glob("build_v*.py")):
         src = p.read_text(encoding="utf-8")
         out = re.search(r'OUT_NAME\s*=\s*"([^"]+)"', src)
-        if out and out.group(1) == release.name:
+        candidate = out.group(1) if out else None
+        if candidate is None:
+            m = re.search(r"NEW\s*=\s*ROOT\s*/\s*['\"]releases/([^'\"]+)['\"]", src)
+            if m:
+                candidate = m.group(1)
+        if candidate == release.name:
             builders.append((p, src))
     if len(builders) != 1:
         fail(f"应恰好有一个构建器产出 {release.name}，实际 {len(builders)} 个：{[p.name for p, _ in builders]}")
     builder, bsrc = builders[0]
     base_name = re.search(r'BASE\s*=\s*RELEASES\s*/\s*"([^"]+)"', bsrc)
     base_sha = re.search(r'BASE_SHA\s*=\s*"([0-9A-Fa-f]{64})"', bsrc)
-    if not base_name or not base_sha:
-        fail(f"{builder.name} 里没有 BASE / BASE_SHA")
-    base_path = RELEASES / base_name.group(1)
-    if not base_path.exists():
-        fail(f"{builder.name} 声明的基线文件不存在：{base_name.group(1)}")
-    actual = canonical_sha(base_path.read_bytes())
-    if actual != base_sha.group(1).upper():
-        fail(f"{builder.name} 的 BASE_SHA 与基线文件实际哈希不符（按 CRLF 归一）\n"
-             f"        声明 {base_sha.group(1).upper()}\n        实际 {actual}")
-    print(f"  构建器   : {builder.name}  基线 {base_name.group(1)}（哈希校验通过）")
+    if base_name and base_sha:
+        # Legacy builders record the CRLF-canonicalized checksum.
+        base_path = RELEASES / base_name.group(1)
+        expected = base_sha.group(1).upper()
+        actual = canonical_sha(base_path.read_bytes()) if base_path.is_file() else None
+    else:
+        # New frozen-release builder records the exact byte checksum.
+        base_name = re.search(r"BASE\s*=\s*ROOT\s*/\s*['\"]releases/([^'\"]+)['\"]", bsrc)
+        base_sha = re.search(r"EXPECTED\s*=\s*['\"]([0-9A-Fa-f]{64})['\"]", bsrc)
+        if not base_name or not base_sha:
+            fail(f"{builder.name} 里没有可识别的 BASE / checksum")
+        base_path = RELEASES / base_name.group(1)
+        expected = base_sha.group(1).upper()
+        actual = sha(base_path.read_bytes()) if base_path.is_file() else None
+    if actual != expected:
+        fail(f"{builder.name} 的基线校验失败：{base_path.name}，声明 {expected}，实际 {actual}")
+    print(f"  构建器   : {builder.name}  基线 {base_path.name}（哈希校验通过）")
 
     print("ENTRY CONSISTENCY PASS")
 

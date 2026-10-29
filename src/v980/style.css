@@ -1,0 +1,188 @@
+/* V90.80 方正纸墨 — real UI refinement on top of verified V90.79.
+ * Dominantly black / white / gray. Keep only quiet green for progress and
+ * muted bronze for cultivation grade/ready markers. No rounded ornaments.
+ * Pure CSS presentation; no scene art, no SVG, no game data edits.
+ */
+body{
+ --p-bg:#f7f7f7;
+ --p-card:#ffffff;
+ --p-ink:#222222;
+ --p-muted:#606060;
+ --p-line:#d1d1d1;
+ --p-soft:#f0f0f0;
+ --p-accent:#4c6558;
+ --p-gold:#827049;
+ --p-warn:#88584a;
+ --p-ready:#ece8d9;
+ --p-primary:#242424;
+}
+body.theme-mono{
+ --p-bg:#f7f7f7;--p-card:#ffffff;--p-ink:#202020;
+ --p-muted:#626262;--p-line:#cecece;--p-soft:#efefef;
+ --p-accent:#303030;--p-gold:#595959;--p-warn:#606060;
+ --p-ready:#e7e7e7;--p-primary:#242424;
+}
+body.theme-immortal{
+ /* Optional dark theme remains opt-in, but now uses straight geometry. */
+ --p-bg:#172127;--p-card:#1d2a30;--p-ink:#edf2ef;
+ --p-muted:#b9c6c2;--p-line:#4a595b;--p-soft:#26343a;
+ --p-accent:#9ac4b0;--p-gold:#d0b988;--p-warn:#e0ae9a;
+ --p-ready:#50503e;--p-primary:#dce8e1;
+}
+
+/* Reset the surface geometry throughout the actual game, including modals,
+ * button states, town cards, tags, plot tiles, progress bars, and entry UI.
+ * The old pill-style close icon is a square, not a circle.
+ */
+#phone,#phone *:not(.v47-particle),#phone *::before,#phone *::after{
+ border-radius:0!important;
+}
+#phone .panel-close,
+#phone #panel-root[data-ui979=true] .panel-close,
+#phone .garden978-modal,
+#phone .garden978-modal .btn,
+#phone #panel-root[data-ui979=true] .btn{
+ border-radius:0!important;
+}
+#phone #panel-root[data-ui979=true] .panel,
+#phone #panel-root[data-ui979=true] .panel:after{
+ border-radius:0!important;
+}
+#phone #panel-root[data-ui979=true] .panel-close{
+ border-color:var(--p-line)!important;
+ background:var(--p-card)!important;
+ color:var(--p-ink)!important;
+ border-radius:0!important;
+}
+#phone .ui979-seal,
+#phone .ui979-tier,
+#phone .ui979-facility,
+#phone .ui979-recipe,
+#phone .ui979-home-summary,
+#phone .ui979-garden-counts,
+#phone .ui979-material,
+#phone .ui979-crop-progress,
+#phone .garden978-plot,
+#phone .garden978-pager button,
+#phone .facility978-tabs,
+#phone .facility978-tabs button,
+#phone .home978-nav,
+#phone .home978-nav button{
+ border-radius:0!important;
+}
+
+/* Flat black-white reading surfaces, one restrained accent only. */
+#phone.ui979-active{background:var(--p-bg)!important;border-color:var(--p-line)!important}
+#phone.ui979-active .quick-nav,
+#phone #panel-root[data-ui979=true] .panel-head,
+#phone #panel-root[data-ui979=true] .panel-mini-bar.ui979-vitals{
+ background:var(--p-card)!important;
+ border-color:var(--p-line)!important;
+}
+#phone #panel-root[data-ui979=true] .panel-overlay,
+#phone #panel-root[data-ui979=true] .panel-body{
+ background:var(--p-bg)!important;
+}
+#phone #panel-root[data-ui979=true] .panel-head strong{
+ color:var(--p-ink)!important;
+ letter-spacing:.045em;
+ font-weight:650;
+}
+#phone #panel-root[data-ui979=true] .btn.primary{
+ background:var(--p-primary)!important;
+ border-color:var(--p-primary)!important;
+ color:var(--p-card)!important;
+}
+body.theme-immortal #phone #panel-root[data-ui979=true] .btn.primary{
+ color:var(--p-bg)!important;
+}
+#phone #panel-root[data-ui979=true] .btn:not(.primary){
+ background:var(--p-card)!important;
+ border-color:var(--p-line)!important;
+ color:var(--p-ink)!important;
+}
+#phone #panel-root[data-ui979=true] .ui979-tier{
+ background:transparent!important;
+ color:var(--p-gold)!important;
+ border-color:var(--p-line)!important;
+}
+#phone #panel-root[data-ui979=true] .ui979-facility{
+ background:var(--p-card)!important;
+ box-shadow:none!important;
+ border-color:var(--p-line)!important;
+}
+#phone #panel-root[data-ui979=true] .ui979-facility.has-yield{border-color:var(--p-gold)!important}
+#phone #panel-root[data-ui979=true] .facility978-enter,
+#phone #panel-root[data-ui979=true] .ui979-facility .facility978-foot{
+ color:var(--p-ink)!important;
+ background:var(--p-card)!important;
+}
+#phone #panel-root[data-ui979=true] .ui979-facility .facility978-foot{
+ background:var(--p-bg)!important;
+ border-color:var(--p-line)!important;
+}
+#phone #panel-root[data-ui979=true] .home978-nav,
+#phone #panel-root[data-ui979=true] .facility978-tabs,
+#phone #panel-root[data-ui979=true] .ui979-home-summary,
+#phone #panel-root[data-ui979=true] .ui979-garden-counts{
+ background:var(--p-soft)!important;
+ border-color:var(--p-line)!important;
+}
+#phone #panel-root[data-ui979=true] .facility978-tabs button[aria-pressed=true]{
+ background:var(--p-card)!important;
+ border:1px solid var(--p-ink)!important;
+ color:var(--p-ink)!important;
+ box-shadow:none!important;
+}
+#phone #panel-root[data-ui979=true] .facility978-tabs button:not([aria-pressed=true]){
+ border:1px solid transparent!important;
+}
+#phone #panel-root[data-ui979=true] .ui979-recipe{
+ box-shadow:none!important;
+ background:var(--p-card)!important;
+ border-color:var(--p-line)!important;
+}
+#phone #panel-root[data-ui979=true] .ui979-recipe.recipe-ready{
+ border-color:var(--p-accent)!important;
+}
+#phone #panel-root[data-ui979=true] .ui979-garden-counts i{
+ /* status markers are square, not circular */
+ border-radius:0!important;
+}
+#phone #panel-root[data-ui979=true] .garden978-plot{
+ background:var(--p-card)!important;
+ border-color:var(--p-line)!important;
+ box-shadow:none!important;
+}
+#phone #panel-root[data-ui979=true] .garden978-plot.empty{
+ background:var(--p-card)!important;
+ border-style:dashed!important;
+}
+#phone #panel-root[data-ui979=true] .garden978-plot.growing{
+ background:var(--p-soft)!important;
+ border-color:var(--p-accent)!important;
+}
+#phone #panel-root[data-ui979=true] .garden978-plot.ready{
+ background:var(--p-ready)!important;
+ border-color:var(--p-gold)!important;
+}
+#phone .garden978-modal,
+#phone .garden978-modal .garden978-preview{
+ background:var(--p-card)!important;
+ color:var(--p-ink)!important;
+ border-color:var(--p-line)!important;
+ box-shadow:none!important;
+}
+#phone .garden978-modal .btn.primary{
+ background:var(--p-primary)!important;
+ border-color:var(--p-primary)!important;
+ color:var(--p-card)!important;
+}
+/* Preserve clear keyboard focus even when a border coincides with the edge. */
+#phone button:focus-visible,#phone select:focus-visible,#phone input:focus-visible{
+ outline:2px solid var(--p-accent)!important;
+ outline-offset:-2px!important;
+}
+@media(max-width:355px){
+ #phone #panel-root[data-ui979=true] .panel-head{padding:0 11px}
+}
