@@ -23,18 +23,32 @@ jobs:
           python - <<'PY'
           from pathlib import Path,PurePosixPath
           import base64,lzma,json,hashlib
-          parts=sorted(Path('_delivery').glob('v980-source-*.b64'))
-          assert len(parts)==4,len(parts)
+          parts=sorted(Path('_delivery').glob('v980-delta-*.b64'))
+          assert len(parts)==2,len(parts)
           raw=base64.b64decode(''.join(p.read_text().strip() for p in parts),validate=True)
           assert hashlib.sha256(raw).hexdigest()==Path('_delivery/v980.ready').read_text().splitlines()[0].strip()
           data=json.loads(lzma.decompress(raw))
           approved={'README.md','docs/V90.80_方正纸墨精修说明.md','src/v980/style.css','tools/build_v980_from_v979.py','tools/check_entry_consistency.py','tests/run_v980_acceptance.cjs','tests/v980_presentation_isolation.cjs','tests/v980_visual.py','tests/v980_native_browser.py','tests/v980_native_rescue.py'}
-          assert data['version']=='V90.80' and set(data['files'])==approved
-          for name,content in data['files'].items():
+          expected=set(data['files'])|{e['path'] for e in data['copies']}
+          assert data['version']=='V90.80' and expected==approved
+          def safe(name):
               p=PurePosixPath(name)
               assert not p.is_absolute() and '..' not in p.parts and '\\' not in name
-              target=Path(name)
-              assert not target.is_symlink()
+              dst=Path(name);assert not dst.is_symlink()
+              return dst
+          for e in data['copies']:
+              assert e['path'] in approved
+              src=safe(e['base']);dst=safe(e['path'])
+              txt=src.read_text(encoding='utf-8')
+              assert hashlib.sha256(txt.encode()).hexdigest()==e['baseSha256'],e['base']
+              lines=txt.splitlines(True)
+              for edit in reversed(e['edits']):
+                  lines[edit['from']:edit['to']]=edit['text'].splitlines(True)
+              txt=''.join(lines)
+              assert hashlib.sha256(txt.encode()).hexdigest()==e['sha256'],e['path']
+              dst.parent.mkdir(parents=True,exist_ok=True);dst.write_text(txt,encoding='utf-8')
+          for name,content in data['files'].items():
+              target=safe(name)
               target.parent.mkdir(parents=True,exist_ok=True)
               target.write_text(content,encoding='utf-8')
               assert target.read_text(encoding='utf-8')==content
@@ -92,7 +106,7 @@ jobs:
           git config user.name 'Verification bot'
           git config user.email 'verification-bot@users.noreply.github.com'
           git add README.md docs/V90.80_方正纸墨精修说明.md docs/v980 src/v980 tests/v980_* tests/run_v980_acceptance.cjs tools/build_v980_from_v979.py tools/check_entry_consistency.py index.html releases/山野修仙记_V90.80_方正纸墨.html
-          git rm -- _delivery/v980.ready _delivery/v980-source-*.b64
+          git rm -- _delivery/v980.ready _delivery/v980-delta-*.b64
           git commit -m 'feat(V90.80): verified square paper-ink UI [skip ci]'
           git push origin HEAD:feat/v90.80-square-paper-ink
           git rev-parse HEAD > artifacts/v980/verified-source-commit.txt
