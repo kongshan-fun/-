@@ -1,26 +1,38 @@
-# 山野修仙记 V90.77 · 灵息辟谷
+# 山野修仙记 V90.78 · 洞府百业与灵田
 
-当前为独立 H5 上线候选，不自动替换 TapTap 生产包。
+独立、自包含 H5 功能完整候选。基于冻结的 V90.77，保留 V90.74–77 存档安全、十二阶设施、快捷补给和辟谷规则。
 
-本轮基于 V90.76 的寿尽救援、图鉴和帮助修复，接入十二境自然食水减耗、可选真元／妖元抵扣、突破领悟提示与修炼管理界面。沿用V90.75的全地图唯一洞府、十二阶设施与快捷补给。
+## 本轮内容
+- 底栏炼制改功法。野外查看资料不自动入府，参悟仍有原有条件。
+- 炼器室、丹房、工作台、仓房、静室、灵田分页面，图鉴配方准确跳转。
+- 工作台随建府启用、不升级；储物袋保留地图、境界、材料门槛，不再要求炼器室阶数。
+- 洞府内原功法快捷位改为赋灵；不新增建筑，只需一阶炼器室。
+- 灵田一阶4块、每级+2、十二阶26块；13种种子，真实采集掉落、播种、游戏时钟成长、批量收获和满仓留田。
+- 旧自动灵田最多3轮收益及未完成周期分别保留；原档独立归档与下载，重复加载不会重复赠种。
+- 修订旧剧情、饥渴、寿尽、初始寿元、药品阶数和新手引导；图鉴225项包含13种种子与自动工作台。
 
-## 运行
-解压独立H5包，打开 `index.html`。正式持久存档建议使用固定HTTP/HTTPS来源；升级前导出JSON。无外部脚本、图片或CDN依赖。
+## 运行与备份
+解压H5包，打开 `index.html` 即可。长期存档请固定HTTP/HTTPS来源，升级前导出旧JSON；不要用旧版覆盖保存已升级的种植档。
+种植只按游戏内时间成长；修改系统时间或离线等候不会催熟。
 
-## 构建与验证
+## 分阶段构建与验证
 ```bash
-python tools/build_v976_from_main.py
-python tools/build_v977_from_main.py
+python tools/build_v978_from_main.py --stage 2
+node tests/v978_stations.cjs
+python tools/build_v978_from_main.py --stage 4
+node tests/v978_garden.cjs
+python tools/build_v978_from_main.py
 python tools/check_entry_consistency.py --rebuild
-node tests/run_v977_acceptance.cjs
-python tests/v977_browser.py
-python tests/v977_rescue_browser.py
-SIM_ACTION_LIMIT=100000 SIM_BIGU=1 node tests/v977_player_sim.cjs easy
-python tools/package_v977.py
+node tests/run_v978_acceptance.cjs
+python tests/v978_browser.py
+python tests/v978_bigu_browser.py
+python tests/v978_rescue_browser.py
+SIM_BIGU=1 SIM_ACTION_LIMIT=35000 node tests/v978_player_sim.cjs easy
+python tools/package_v978.py
 ```
-浏览器脚本默认真实HTTP/原生localStorage。`--offline-dom`只供明确标注的离线渲染复核，不可作为原生存储验收的替代。
+Node.js22、Python3.12；浏览器验收依赖Playwright与Chromium。默认浏览器测试使用真实HTTP来源、原生localStorage与下载；`--offline-dom`仅为显式标注的离线Storage适配测试，不冒充原生存储。
 
-## 发行状态
-功能数据与截图测试分别记录于 `artifacts/v977/`。高境截图使用隔离测试档；自然模拟不注入资源。正式TapTap广告、云存档、平台榜分期与真机验证仍为上线门禁。旧版平台包与main本轮不自动改动。
-
-详见 `docs/v977/功能与上线边界.md`。
+## 交付边界
+源码与游戏包可运行、可独立重建。测试档的加速通关不等于自然玩家通关率；自然资源策略脚本如实保留失败。
+没有自动合并main、修改线上或提交TapTap审核。真实平台广告、云存档、在线排行榜与真机尚须独立验收；本包不是APK或生产SDK适配包。
+详见 `docs/v978/` 与 `artifacts/v978/`。

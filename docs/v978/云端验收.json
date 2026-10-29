@@ -1,0 +1,898 @@
+{
+  "version": "V90.78",
+  "sourceSha256": "92A74E8E11CA671A40052988B5E00CD893B5D822574DEB2BBAC9FEF40993F794",
+  "engine": {
+    "version": "V90.78",
+    "source": "index.html",
+    "sourceSha256": "92A74E8E11CA671A40052988B5E00CD893B5D822574DEB2BBAC9FEF40993F794",
+    "pass": true,
+    "passed": 26,
+    "total": 26,
+    "suites": [
+      {
+        "test": "syntax_check.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.106
+      },
+      {
+        "test": "v907-ascension-lifecycle.test.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.084
+      },
+      {
+        "test": "v907-interrupted-settlement.test.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.065
+      },
+      {
+        "test": "v978_storage_bags.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.126
+      },
+      {
+        "test": "v923_gear_drop.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.073
+      },
+      {
+        "test": "v927_gear_economy.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.065
+      },
+      {
+        "test": "v955_realm_axis.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.091
+      },
+      {
+        "test": "v952_forge_prof.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.118
+      },
+      {
+        "test": "v953_refine_rating.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.069
+      },
+      {
+        "test": "v954_spirit_affix.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.08
+      },
+      {
+        "test": "v957_attr_pills.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.051
+      },
+      {
+        "test": "v958_dual_growth_chain.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.06
+      },
+      {
+        "test": "v958_cross_realm_unlock.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.065
+      },
+      {
+        "test": "v959_combat_save.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.108
+      },
+      {
+        "test": "v960_breakthrough_split.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.068
+      },
+      {
+        "test": "v978_prior_p0.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.067
+      },
+      {
+        "test": "v962_p0_save_integrity.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.083
+      },
+      {
+        "test": "v962_200slots_faults.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.293
+      },
+      {
+        "test": "v978_prior_features.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 2.708
+      },
+      {
+        "test": "v975_100slots.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 28.103
+      },
+      {
+        "test": "v978_rescue_and_guides.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.108
+      },
+      {
+        "test": "v977_bigu.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.811
+      },
+      {
+        "test": "v978_ruleset.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.062
+      },
+      {
+        "test": "v978_stations.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.072
+      },
+      {
+        "test": "v978_garden.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 1.844
+      },
+      {
+        "test": "v978_upgrade_safety.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.125
+      }
+    ]
+  },
+  "nativeBrowser": {
+    "version": "V90.78",
+    "sourceSha256": "92A74E8E11CA671A40052988B5E00CD893B5D822574DEB2BBAC9FEF40993F794",
+    "mode": "native-http-localStorage",
+    "checks": [
+      {
+        "name": "实际入口版本正确",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "底栏炼制改功法",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "野外功法只读不传送",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "建府前可随身手作",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "粗木斧可见",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "六设施均有独立入口",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "工作台自动启用无等级",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "洞府功法位替换赋灵",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "十二阶装备可见",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "炼器室不混杂丹药工具",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "丹房不混杂装备",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "丹药页",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "食品灵饮独立页",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "工作台说明无等级",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "十二阶储物袋仍可查看",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "储物袋不再要求炼器室等级",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "赋灵真实扣修为",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "田地分页12格",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "十二阶共26格",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "真实播种",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "播种耗时5分钟",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "扣除一粒种子",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "游戏刷新后种植时钟与种子记录不变",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "取消清理不伤作物",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "批量播种实际生效",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "收获实际入仓",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "收获后清田",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "不重复发放",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "满仓不丢收成",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "旧田保留产出可领取",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "旧田剩余生长折算一次",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "旧产出领完无重复",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "升级前原始存档有导出入口",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "下载的是升级前原档",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "写盘失败播种回滚",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "失败不吞种子",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "辟谷管理保留",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "无横向溢出 洞府320",
+        "pass_": true,
+        "detail": {
+          "w": 304,
+          "sw": 304,
+          "h": 446,
+          "sh": 446
+        }
+      },
+      {
+        "name": "一页收揽 洞府[320, 568]",
+        "pass_": true,
+        "detail": {
+          "w": 304,
+          "sw": 304,
+          "h": 446,
+          "sh": 446
+        }
+      },
+      {
+        "name": "关闭按钮可达 洞府",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "无横向溢出 灵田320",
+        "pass_": true,
+        "detail": {
+          "w": 304,
+          "sw": 304,
+          "h": 446,
+          "sh": 446
+        }
+      },
+      {
+        "name": "一页收揽 灵田[320, 568]",
+        "pass_": true,
+        "detail": {
+          "w": 304,
+          "sw": 304,
+          "h": 446,
+          "sh": 446
+        }
+      },
+      {
+        "name": "关闭按钮可达 灵田",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "播种弹窗边界 320",
+        "pass_": true,
+        "detail": {
+          "x": 18,
+          "y": 132,
+          "width": 284,
+          "height": 303.984375
+        }
+      },
+      {
+        "name": "无横向溢出 洞府360",
+        "pass_": true,
+        "detail": {
+          "w": 344,
+          "sw": 344,
+          "h": 516,
+          "sh": 516
+        }
+      },
+      {
+        "name": "一页收揽 洞府[360, 640]",
+        "pass_": true,
+        "detail": {
+          "w": 344,
+          "sw": 344,
+          "h": 516,
+          "sh": 516
+        }
+      },
+      {
+        "name": "关闭按钮可达 洞府",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "无横向溢出 灵田360",
+        "pass_": true,
+        "detail": {
+          "w": 344,
+          "sw": 344,
+          "h": 516,
+          "sh": 516
+        }
+      },
+      {
+        "name": "一页收揽 灵田[360, 640]",
+        "pass_": true,
+        "detail": {
+          "w": 344,
+          "sw": 344,
+          "h": 516,
+          "sh": 516
+        }
+      },
+      {
+        "name": "关闭按钮可达 灵田",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "播种弹窗边界 360",
+        "pass_": true,
+        "detail": {
+          "x": 18,
+          "y": 168,
+          "width": 324,
+          "height": 303.984375
+        }
+      },
+      {
+        "name": "无横向溢出 洞府390",
+        "pass_": true,
+        "detail": {
+          "w": 374,
+          "sw": 374,
+          "h": 716,
+          "sh": 716
+        }
+      },
+      {
+        "name": "一页收揽 洞府[390, 844]",
+        "pass_": true,
+        "detail": {
+          "w": 374,
+          "sw": 374,
+          "h": 716,
+          "sh": 716
+        }
+      },
+      {
+        "name": "关闭按钮可达 洞府",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "无横向溢出 灵田390",
+        "pass_": true,
+        "detail": {
+          "w": 374,
+          "sw": 374,
+          "h": 716,
+          "sh": 716
+        }
+      },
+      {
+        "name": "一页收揽 灵田[390, 844]",
+        "pass_": true,
+        "detail": {
+          "w": 374,
+          "sw": 374,
+          "h": 716,
+          "sh": 716
+        }
+      },
+      {
+        "name": "关闭按钮可达 灵田",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "播种弹窗边界 390",
+        "pass_": true,
+        "detail": {
+          "x": 18,
+          "y": 270,
+          "width": 354,
+          "height": 303.984375
+        }
+      },
+      {
+        "name": "无横向溢出 洞府430",
+        "pass_": true,
+        "detail": {
+          "w": 384,
+          "sw": 384,
+          "h": 803,
+          "sh": 803
+        }
+      },
+      {
+        "name": "一页收揽 洞府[430, 932]",
+        "pass_": true,
+        "detail": {
+          "w": 384,
+          "sw": 384,
+          "h": 803,
+          "sh": 803
+        }
+      },
+      {
+        "name": "关闭按钮可达 洞府",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "无横向溢出 灵田430",
+        "pass_": true,
+        "detail": {
+          "w": 384,
+          "sw": 384,
+          "h": 803,
+          "sh": 803
+        }
+      },
+      {
+        "name": "一页收揽 灵田[430, 932]",
+        "pass_": true,
+        "detail": {
+          "w": 384,
+          "sw": 384,
+          "h": 803,
+          "sh": 803
+        }
+      },
+      {
+        "name": "关闭按钮可达 灵田",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "播种弹窗边界 430",
+        "pass_": true,
+        "detail": {
+          "x": 33,
+          "y": 314,
+          "width": 364,
+          "height": 303.984375
+        }
+      },
+      {
+        "name": "无横向溢出 洞府768",
+        "pass_": true,
+        "detail": {
+          "w": 384,
+          "sw": 384,
+          "h": 751,
+          "sh": 751
+        }
+      },
+      {
+        "name": "一页收揽 洞府[768, 1024]",
+        "pass_": true,
+        "detail": {
+          "w": 384,
+          "sw": 384,
+          "h": 751,
+          "sh": 751
+        }
+      },
+      {
+        "name": "关闭按钮可达 洞府",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "无横向溢出 灵田768",
+        "pass_": true,
+        "detail": {
+          "w": 384,
+          "sw": 384,
+          "h": 751,
+          "sh": 751
+        }
+      },
+      {
+        "name": "一页收揽 灵田[768, 1024]",
+        "pass_": true,
+        "detail": {
+          "w": 384,
+          "sw": 384,
+          "h": 751,
+          "sh": 751
+        }
+      },
+      {
+        "name": "关闭按钮可达 灵田",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "播种弹窗边界 768",
+        "pass_": true,
+        "detail": {
+          "x": 202,
+          "y": 360,
+          "width": 364,
+          "height": 303.984375
+        }
+      },
+      {
+        "name": "无横向溢出 洞府1280",
+        "pass_": true,
+        "detail": {
+          "w": 384,
+          "sw": 384,
+          "h": 751,
+          "sh": 751
+        }
+      },
+      {
+        "name": "一页收揽 洞府[1280, 900]",
+        "pass_": true,
+        "detail": {
+          "w": 384,
+          "sw": 384,
+          "h": 751,
+          "sh": 751
+        }
+      },
+      {
+        "name": "关闭按钮可达 洞府",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "无横向溢出 灵田1280",
+        "pass_": true,
+        "detail": {
+          "w": 384,
+          "sw": 384,
+          "h": 751,
+          "sh": 751
+        }
+      },
+      {
+        "name": "一页收揽 灵田[1280, 900]",
+        "pass_": true,
+        "detail": {
+          "w": 384,
+          "sw": 384,
+          "h": 751,
+          "sh": 751
+        }
+      },
+      {
+        "name": "关闭按钮可达 灵田",
+        "pass_": true,
+        "detail": null
+      },
+      {
+        "name": "播种弹窗边界 1280",
+        "pass_": true,
+        "detail": {
+          "x": 458,
+          "y": 298,
+          "width": 364,
+          "height": 303.984375
+        }
+      },
+      {
+        "name": "无浏览器运行错误",
+        "pass_": true,
+        "detail": []
+      }
+    ],
+    "passed": 80,
+    "total": 80,
+    "errors": [],
+    "metrics": [
+      {
+        "viewport": [
+          320,
+          568
+        ],
+        "panel": "洞府",
+        "w": 304,
+        "sw": 304,
+        "h": 446,
+        "sh": 446
+      },
+      {
+        "viewport": [
+          320,
+          568
+        ],
+        "panel": "灵田",
+        "w": 304,
+        "sw": 304,
+        "h": 446,
+        "sh": 446
+      },
+      {
+        "viewport": [
+          360,
+          640
+        ],
+        "panel": "洞府",
+        "w": 344,
+        "sw": 344,
+        "h": 516,
+        "sh": 516
+      },
+      {
+        "viewport": [
+          360,
+          640
+        ],
+        "panel": "灵田",
+        "w": 344,
+        "sw": 344,
+        "h": 516,
+        "sh": 516
+      },
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "panel": "洞府",
+        "w": 374,
+        "sw": 374,
+        "h": 716,
+        "sh": 716
+      },
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "panel": "灵田",
+        "w": 374,
+        "sw": 374,
+        "h": 716,
+        "sh": 716
+      },
+      {
+        "viewport": [
+          430,
+          932
+        ],
+        "panel": "洞府",
+        "w": 384,
+        "sw": 384,
+        "h": 803,
+        "sh": 803
+      },
+      {
+        "viewport": [
+          430,
+          932
+        ],
+        "panel": "灵田",
+        "w": 384,
+        "sw": 384,
+        "h": 803,
+        "sh": 803
+      },
+      {
+        "viewport": [
+          768,
+          1024
+        ],
+        "panel": "洞府",
+        "w": 384,
+        "sw": 384,
+        "h": 751,
+        "sh": 751
+      },
+      {
+        "viewport": [
+          768,
+          1024
+        ],
+        "panel": "灵田",
+        "w": 384,
+        "sw": 384,
+        "h": 751,
+        "sh": 751
+      },
+      {
+        "viewport": [
+          1280,
+          900
+        ],
+        "panel": "洞府",
+        "w": 384,
+        "sw": 384,
+        "h": 751,
+        "sh": 751
+      },
+      {
+        "viewport": [
+          1280,
+          900
+        ],
+        "panel": "灵田",
+        "w": 384,
+        "sw": 384,
+        "h": 751,
+        "sh": 751
+      }
+    ],
+    "screenshots": [
+      "01_无洞府也能随身手作.png",
+      "02_洞府百业_建筑入口.png",
+      "03_炼器室_装备独立.png",
+      "04_丹房_灵膳灵饮.png",
+      "05_工作台_十二阶储物袋.png",
+      "06_独立赋灵入口.png",
+      "07_十二阶灵田_地块总览.png",
+      "08_播种后_生长状态.png",
+      "09_成熟收获_一次结算.png",
+      "10_满仓作物保留.png",
+      "11_旧灵田无损迁移.png",
+      "12_修炼与辟谷保持可用.png",
+      "320x568_洞府.png",
+      "320x568_灵田.png",
+      "320x568_播种.png",
+      "360x640_洞府.png",
+      "360x640_灵田.png",
+      "360x640_播种.png",
+      "390x844_洞府.png",
+      "390x844_灵田.png",
+      "390x844_播种.png",
+      "430x932_洞府.png",
+      "430x932_灵田.png",
+      "430x932_播种.png",
+      "768x1024_洞府.png",
+      "768x1024_灵田.png",
+      "768x1024_播种.png",
+      "1280x900_洞府.png",
+      "1280x900_灵田.png",
+      "1280x900_播种.png"
+    ]
+  },
+  "TapTapSDK": "NOT_VERIFIED",
+  "productionChanged": false
+}
