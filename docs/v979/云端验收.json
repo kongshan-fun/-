@@ -1,0 +1,1579 @@
+{
+  "version": "V90.79",
+  "sha256": "F07260DD1CFC2AFB5B0219F811DE2B889F7269520E9409DB32EA39445C545EB9",
+  "engine": {
+    "version": "V90.79",
+    "source": "index.html",
+    "sourceSha256": "F07260DD1CFC2AFB5B0219F811DE2B889F7269520E9409DB32EA39445C545EB9",
+    "pass": true,
+    "passed": 27,
+    "total": 27,
+    "suites": [
+      {
+        "test": "syntax_check.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.033
+      },
+      {
+        "test": "v907-ascension-lifecycle.test.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.079
+      },
+      {
+        "test": "v907-interrupted-settlement.test.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.056
+      },
+      {
+        "test": "v978_storage_bags.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.098
+      },
+      {
+        "test": "v923_gear_drop.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.056
+      },
+      {
+        "test": "v927_gear_economy.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.055
+      },
+      {
+        "test": "v955_realm_axis.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.07
+      },
+      {
+        "test": "v952_forge_prof.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.091
+      },
+      {
+        "test": "v953_refine_rating.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.058
+      },
+      {
+        "test": "v954_spirit_affix.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.069
+      },
+      {
+        "test": "v957_attr_pills.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.045
+      },
+      {
+        "test": "v958_dual_growth_chain.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.049
+      },
+      {
+        "test": "v958_cross_realm_unlock.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.051
+      },
+      {
+        "test": "v959_combat_save.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.083
+      },
+      {
+        "test": "v960_breakthrough_split.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.061
+      },
+      {
+        "test": "v978_prior_p0.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.055
+      },
+      {
+        "test": "v962_p0_save_integrity.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.072
+      },
+      {
+        "test": "v962_200slots_faults.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.201
+      },
+      {
+        "test": "v978_prior_features.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 1.811
+      },
+      {
+        "test": "v975_100slots.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 13.858
+      },
+      {
+        "test": "v978_rescue_and_guides.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.088
+      },
+      {
+        "test": "v977_bigu.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.552
+      },
+      {
+        "test": "v978_ruleset.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.051
+      },
+      {
+        "test": "v978_stations.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.062
+      },
+      {
+        "test": "v978_garden.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 1.302
+      },
+      {
+        "test": "v978_upgrade_safety.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.109
+      },
+      {
+        "test": "v979_presentation_isolation.cjs",
+        "status": "PASS",
+        "exit": 0,
+        "seconds": 0.081
+      }
+    ]
+  },
+  "visual": {
+    "version": "V90.79",
+    "mode": "native-http-localStorage",
+    "sourceSha256": "F07260DD1CFC2AFB5B0219F811DE2B889F7269520E9409DB32EA39445C545EB9",
+    "baselineSha256": "92A74E8E11CA671A40052988B5E00CD893B5D822574DEB2BBAC9FEF40993F794",
+    "checks": [
+      {
+        "name": "taking screenshot does not mutate game homebefore",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "taking screenshot does not mutate game homeafter",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow home(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 689
+        }
+      },
+      {
+        "name": "single-screen content home(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 689
+        }
+      },
+      {
+        "name": "close reachable home",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "same player data before/after home",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "taking screenshot does not mutate game forgebefore",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "taking screenshot does not mutate game forgeafter",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow forge(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 1064
+        }
+      },
+      {
+        "name": "close reachable forge",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "same player data before/after forge",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "taking screenshot does not mutate game alchemybefore",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "taking screenshot does not mutate game alchemyafter",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow alchemy(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 796
+        }
+      },
+      {
+        "name": "close reachable alchemy",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "same player data before/after alchemy",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "taking screenshot does not mutate game workbenchbefore",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "taking screenshot does not mutate game workbenchafter",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow workbench(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 689
+        }
+      },
+      {
+        "name": "close reachable workbench",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "same player data before/after workbench",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "taking screenshot does not mutate game spiritbefore",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "taking screenshot does not mutate game spiritafter",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow spirit(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 689
+        }
+      },
+      {
+        "name": "close reachable spirit",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "same player data before/after spirit",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "taking screenshot does not mutate game gardenbefore",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "taking screenshot does not mutate game gardenafter",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow garden(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 689
+        }
+      },
+      {
+        "name": "single-screen content garden(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 689
+        }
+      },
+      {
+        "name": "close reachable garden",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "same player data before/after garden",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "taking screenshot does not mutate game garden-growingbefore",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "taking screenshot does not mutate game garden-growingafter",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow garden-growing(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 689
+        }
+      },
+      {
+        "name": "single-screen content garden-growing(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 689
+        }
+      },
+      {
+        "name": "close reachable garden-growing",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "same player data before/after garden-growing",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "taking screenshot does not mutate game garden-readybefore",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "taking screenshot does not mutate game garden-readyafter",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow garden-ready(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 689
+        }
+      },
+      {
+        "name": "single-screen content garden-ready(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 689
+        }
+      },
+      {
+        "name": "close reachable garden-ready",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "same player data before/after garden-ready",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "taking screenshot does not mutate game garden-sowbefore",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "taking screenshot does not mutate game garden-sowafter",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow garden-sow(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 689
+        }
+      },
+      {
+        "name": "close reachable garden-sow",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "same player data before/after garden-sow",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow home(320, 568)",
+        "pass": true,
+        "detail": {
+          "width": 318,
+          "scrollWidth": 318,
+          "height": 424,
+          "scrollHeight": 424
+        }
+      },
+      {
+        "name": "single-screen content home(320, 568)",
+        "pass": true,
+        "detail": {
+          "width": 318,
+          "scrollWidth": 318,
+          "height": 424,
+          "scrollHeight": 424
+        }
+      },
+      {
+        "name": "close reachable home",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow workbench(320, 568)",
+        "pass": true,
+        "detail": {
+          "width": 318,
+          "scrollWidth": 318,
+          "height": 424,
+          "scrollHeight": 646
+        }
+      },
+      {
+        "name": "close reachable workbench",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow garden(320, 568)",
+        "pass": true,
+        "detail": {
+          "width": 318,
+          "scrollWidth": 318,
+          "height": 424,
+          "scrollHeight": 424
+        }
+      },
+      {
+        "name": "single-screen content garden(320, 568)",
+        "pass": true,
+        "detail": {
+          "width": 318,
+          "scrollWidth": 318,
+          "height": 424,
+          "scrollHeight": 424
+        }
+      },
+      {
+        "name": "close reachable garden",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "sow modal inside viewport (320, 568)",
+        "pass": true,
+        "detail": {
+          "x": 18,
+          "y": 133.859375,
+          "width": 284,
+          "height": 300.28125
+        }
+      },
+      {
+        "name": "no horizontal overflow home(360, 640)",
+        "pass": true,
+        "detail": {
+          "width": 358,
+          "scrollWidth": 358,
+          "height": 492,
+          "scrollHeight": 492
+        }
+      },
+      {
+        "name": "single-screen content home(360, 640)",
+        "pass": true,
+        "detail": {
+          "width": 358,
+          "scrollWidth": 358,
+          "height": 492,
+          "scrollHeight": 492
+        }
+      },
+      {
+        "name": "close reachable home",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow workbench(360, 640)",
+        "pass": true,
+        "detail": {
+          "width": 358,
+          "scrollWidth": 358,
+          "height": 492,
+          "scrollHeight": 628
+        }
+      },
+      {
+        "name": "close reachable workbench",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow garden(360, 640)",
+        "pass": true,
+        "detail": {
+          "width": 358,
+          "scrollWidth": 358,
+          "height": 492,
+          "scrollHeight": 492
+        }
+      },
+      {
+        "name": "single-screen content garden(360, 640)",
+        "pass": true,
+        "detail": {
+          "width": 358,
+          "scrollWidth": 358,
+          "height": 492,
+          "scrollHeight": 492
+        }
+      },
+      {
+        "name": "close reachable garden",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "sow modal inside viewport (360, 640)",
+        "pass": true,
+        "detail": {
+          "x": 18,
+          "y": 169.859375,
+          "width": 324,
+          "height": 300.28125
+        }
+      },
+      {
+        "name": "no horizontal overflow home(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 689
+        }
+      },
+      {
+        "name": "single-screen content home(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 689
+        }
+      },
+      {
+        "name": "close reachable home",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow workbench(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 689
+        }
+      },
+      {
+        "name": "close reachable workbench",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow garden(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 689
+        }
+      },
+      {
+        "name": "single-screen content garden(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 689
+        }
+      },
+      {
+        "name": "close reachable garden",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "sow modal inside viewport (390, 844)",
+        "pass": true,
+        "detail": {
+          "x": 18,
+          "y": 266.859375,
+          "width": 354,
+          "height": 310.28125
+        }
+      },
+      {
+        "name": "no horizontal overflow home(430, 932)",
+        "pass": true,
+        "detail": {
+          "width": 398,
+          "scrollWidth": 398,
+          "height": 777,
+          "scrollHeight": 777
+        }
+      },
+      {
+        "name": "single-screen content home(430, 932)",
+        "pass": true,
+        "detail": {
+          "width": 398,
+          "scrollWidth": 398,
+          "height": 777,
+          "scrollHeight": 777
+        }
+      },
+      {
+        "name": "close reachable home",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow workbench(430, 932)",
+        "pass": true,
+        "detail": {
+          "width": 398,
+          "scrollWidth": 398,
+          "height": 777,
+          "scrollHeight": 777
+        }
+      },
+      {
+        "name": "close reachable workbench",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow garden(430, 932)",
+        "pass": true,
+        "detail": {
+          "width": 398,
+          "scrollWidth": 398,
+          "height": 777,
+          "scrollHeight": 777
+        }
+      },
+      {
+        "name": "single-screen content garden(430, 932)",
+        "pass": true,
+        "detail": {
+          "width": 398,
+          "scrollWidth": 398,
+          "height": 777,
+          "scrollHeight": 777
+        }
+      },
+      {
+        "name": "close reachable garden",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "sow modal inside viewport (430, 932)",
+        "pass": true,
+        "detail": {
+          "x": 33,
+          "y": 310.859375,
+          "width": 364,
+          "height": 310.28125
+        }
+      },
+      {
+        "name": "no horizontal overflow home(768, 1024)",
+        "pass": true,
+        "detail": {
+          "width": 398,
+          "scrollWidth": 398,
+          "height": 725,
+          "scrollHeight": 725
+        }
+      },
+      {
+        "name": "single-screen content home(768, 1024)",
+        "pass": true,
+        "detail": {
+          "width": 398,
+          "scrollWidth": 398,
+          "height": 725,
+          "scrollHeight": 725
+        }
+      },
+      {
+        "name": "close reachable home",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow workbench(768, 1024)",
+        "pass": true,
+        "detail": {
+          "width": 398,
+          "scrollWidth": 398,
+          "height": 725,
+          "scrollHeight": 725
+        }
+      },
+      {
+        "name": "close reachable workbench",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow garden(768, 1024)",
+        "pass": true,
+        "detail": {
+          "width": 398,
+          "scrollWidth": 398,
+          "height": 725,
+          "scrollHeight": 725
+        }
+      },
+      {
+        "name": "single-screen content garden(768, 1024)",
+        "pass": true,
+        "detail": {
+          "width": 398,
+          "scrollWidth": 398,
+          "height": 725,
+          "scrollHeight": 725
+        }
+      },
+      {
+        "name": "close reachable garden",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "sow modal inside viewport (768, 1024)",
+        "pass": true,
+        "detail": {
+          "x": 202,
+          "y": 356.859375,
+          "width": 364,
+          "height": 310.28125
+        }
+      },
+      {
+        "name": "no horizontal overflow home(1280, 900)",
+        "pass": true,
+        "detail": {
+          "width": 398,
+          "scrollWidth": 398,
+          "height": 725,
+          "scrollHeight": 725
+        }
+      },
+      {
+        "name": "single-screen content home(1280, 900)",
+        "pass": true,
+        "detail": {
+          "width": 398,
+          "scrollWidth": 398,
+          "height": 725,
+          "scrollHeight": 725
+        }
+      },
+      {
+        "name": "close reachable home",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow workbench(1280, 900)",
+        "pass": true,
+        "detail": {
+          "width": 398,
+          "scrollWidth": 398,
+          "height": 725,
+          "scrollHeight": 725
+        }
+      },
+      {
+        "name": "close reachable workbench",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow garden(1280, 900)",
+        "pass": true,
+        "detail": {
+          "width": 398,
+          "scrollWidth": 398,
+          "height": 725,
+          "scrollHeight": 725
+        }
+      },
+      {
+        "name": "single-screen content garden(1280, 900)",
+        "pass": true,
+        "detail": {
+          "width": 398,
+          "scrollWidth": 398,
+          "height": 725,
+          "scrollHeight": 725
+        }
+      },
+      {
+        "name": "close reachable garden",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "sow modal inside viewport (1280, 900)",
+        "pass": true,
+        "detail": {
+          "x": 458,
+          "y": 294.859375,
+          "width": 364,
+          "height": 310.28125
+        }
+      },
+      {
+        "name": "no horizontal overflow monohome(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 689
+        }
+      },
+      {
+        "name": "single-screen content monohome(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 689
+        }
+      },
+      {
+        "name": "close reachable monohome",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow monoworkbench(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 689
+        }
+      },
+      {
+        "name": "close reachable monoworkbench",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow monogarden(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 689
+        }
+      },
+      {
+        "name": "single-screen content monogarden(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 689
+        }
+      },
+      {
+        "name": "close reachable monogarden",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow immortalhome(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 689
+        }
+      },
+      {
+        "name": "single-screen content immortalhome(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 689
+        }
+      },
+      {
+        "name": "close reachable immortalhome",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow immortalworkbench(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 689
+        }
+      },
+      {
+        "name": "close reachable immortalworkbench",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no horizontal overflow immortalgarden(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 689
+        }
+      },
+      {
+        "name": "single-screen content immortalgarden(390, 844)",
+        "pass": true,
+        "detail": {
+          "width": 388,
+          "scrollWidth": 388,
+          "height": 689,
+          "scrollHeight": 689
+        }
+      },
+      {
+        "name": "close reachable immortalgarden",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "last plot can be planted in full-grid view",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "compact pagination keeps original plot index",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "resize back preserves last plot",
+        "pass": true,
+        "detail": null
+      },
+      {
+        "name": "no browser runtime exceptions",
+        "pass": true,
+        "detail": []
+      }
+    ],
+    "passed": 123,
+    "total": 123,
+    "pairs": [
+      {
+        "scenario": "home",
+        "before": "01_洞府_before.png",
+        "after": "01_洞府_after.png",
+        "stateSha256": "f3853c4a91245fd8708ccf2c1acba97e09218a833a4ab6f0fc69f0d0912dcd3a",
+        "sameState": true
+      },
+      {
+        "scenario": "forge",
+        "before": "02_炼器室_before.png",
+        "after": "02_炼器室_after.png",
+        "stateSha256": "f3853c4a91245fd8708ccf2c1acba97e09218a833a4ab6f0fc69f0d0912dcd3a",
+        "sameState": true
+      },
+      {
+        "scenario": "alchemy",
+        "before": "03_丹房_before.png",
+        "after": "03_丹房_after.png",
+        "stateSha256": "f3853c4a91245fd8708ccf2c1acba97e09218a833a4ab6f0fc69f0d0912dcd3a",
+        "sameState": true
+      },
+      {
+        "scenario": "workbench",
+        "before": "04_工作台_before.png",
+        "after": "04_工作台_after.png",
+        "stateSha256": "f3853c4a91245fd8708ccf2c1acba97e09218a833a4ab6f0fc69f0d0912dcd3a",
+        "sameState": true
+      },
+      {
+        "scenario": "spirit",
+        "before": "05_赋灵_before.png",
+        "after": "05_赋灵_after.png",
+        "stateSha256": "f3853c4a91245fd8708ccf2c1acba97e09218a833a4ab6f0fc69f0d0912dcd3a",
+        "sameState": true
+      },
+      {
+        "scenario": "garden",
+        "before": "06_灵田_before.png",
+        "after": "06_灵田_after.png",
+        "stateSha256": "f3853c4a91245fd8708ccf2c1acba97e09218a833a4ab6f0fc69f0d0912dcd3a",
+        "sameState": true
+      },
+      {
+        "scenario": "garden-growing",
+        "before": "07_生长_before.png",
+        "after": "07_生长_after.png",
+        "stateSha256": "40bbb8d9adea65beda81c15f429a7dee8559277f6f59b365d20a66df5d88ae86",
+        "sameState": true
+      },
+      {
+        "scenario": "garden-ready",
+        "before": "08_成熟_before.png",
+        "after": "08_成熟_after.png",
+        "stateSha256": "787aa2b9e564c728493620986400d8ca5fae02c31b78b8fcd591dde9e62c79e2",
+        "sameState": true
+      },
+      {
+        "scenario": "garden-sow",
+        "before": "09_播种确认_before.png",
+        "after": "09_播种确认_after.png",
+        "stateSha256": "f3853c4a91245fd8708ccf2c1acba97e09218a833a4ab6f0fc69f0d0912dcd3a",
+        "sameState": true
+      }
+    ],
+    "metrics": [
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "screen": "home",
+        "width": 388,
+        "scrollWidth": 388,
+        "height": 689,
+        "scrollHeight": 689
+      },
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "screen": "forge",
+        "width": 388,
+        "scrollWidth": 388,
+        "height": 689,
+        "scrollHeight": 1064
+      },
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "screen": "alchemy",
+        "width": 388,
+        "scrollWidth": 388,
+        "height": 689,
+        "scrollHeight": 796
+      },
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "screen": "workbench",
+        "width": 388,
+        "scrollWidth": 388,
+        "height": 689,
+        "scrollHeight": 689
+      },
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "screen": "spirit",
+        "width": 388,
+        "scrollWidth": 388,
+        "height": 689,
+        "scrollHeight": 689
+      },
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "screen": "garden",
+        "width": 388,
+        "scrollWidth": 388,
+        "height": 689,
+        "scrollHeight": 689
+      },
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "screen": "garden-growing",
+        "width": 388,
+        "scrollWidth": 388,
+        "height": 689,
+        "scrollHeight": 689
+      },
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "screen": "garden-ready",
+        "width": 388,
+        "scrollWidth": 388,
+        "height": 689,
+        "scrollHeight": 689
+      },
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "screen": "garden-sow",
+        "width": 388,
+        "scrollWidth": 388,
+        "height": 689,
+        "scrollHeight": 689
+      },
+      {
+        "viewport": [
+          320,
+          568
+        ],
+        "screen": "home",
+        "width": 318,
+        "scrollWidth": 318,
+        "height": 424,
+        "scrollHeight": 424
+      },
+      {
+        "viewport": [
+          320,
+          568
+        ],
+        "screen": "workbench",
+        "width": 318,
+        "scrollWidth": 318,
+        "height": 424,
+        "scrollHeight": 646
+      },
+      {
+        "viewport": [
+          320,
+          568
+        ],
+        "screen": "garden",
+        "width": 318,
+        "scrollWidth": 318,
+        "height": 424,
+        "scrollHeight": 424
+      },
+      {
+        "viewport": [
+          360,
+          640
+        ],
+        "screen": "home",
+        "width": 358,
+        "scrollWidth": 358,
+        "height": 492,
+        "scrollHeight": 492
+      },
+      {
+        "viewport": [
+          360,
+          640
+        ],
+        "screen": "workbench",
+        "width": 358,
+        "scrollWidth": 358,
+        "height": 492,
+        "scrollHeight": 628
+      },
+      {
+        "viewport": [
+          360,
+          640
+        ],
+        "screen": "garden",
+        "width": 358,
+        "scrollWidth": 358,
+        "height": 492,
+        "scrollHeight": 492
+      },
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "screen": "home",
+        "width": 388,
+        "scrollWidth": 388,
+        "height": 689,
+        "scrollHeight": 689
+      },
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "screen": "workbench",
+        "width": 388,
+        "scrollWidth": 388,
+        "height": 689,
+        "scrollHeight": 689
+      },
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "screen": "garden",
+        "width": 388,
+        "scrollWidth": 388,
+        "height": 689,
+        "scrollHeight": 689
+      },
+      {
+        "viewport": [
+          430,
+          932
+        ],
+        "screen": "home",
+        "width": 398,
+        "scrollWidth": 398,
+        "height": 777,
+        "scrollHeight": 777
+      },
+      {
+        "viewport": [
+          430,
+          932
+        ],
+        "screen": "workbench",
+        "width": 398,
+        "scrollWidth": 398,
+        "height": 777,
+        "scrollHeight": 777
+      },
+      {
+        "viewport": [
+          430,
+          932
+        ],
+        "screen": "garden",
+        "width": 398,
+        "scrollWidth": 398,
+        "height": 777,
+        "scrollHeight": 777
+      },
+      {
+        "viewport": [
+          768,
+          1024
+        ],
+        "screen": "home",
+        "width": 398,
+        "scrollWidth": 398,
+        "height": 725,
+        "scrollHeight": 725
+      },
+      {
+        "viewport": [
+          768,
+          1024
+        ],
+        "screen": "workbench",
+        "width": 398,
+        "scrollWidth": 398,
+        "height": 725,
+        "scrollHeight": 725
+      },
+      {
+        "viewport": [
+          768,
+          1024
+        ],
+        "screen": "garden",
+        "width": 398,
+        "scrollWidth": 398,
+        "height": 725,
+        "scrollHeight": 725
+      },
+      {
+        "viewport": [
+          1280,
+          900
+        ],
+        "screen": "home",
+        "width": 398,
+        "scrollWidth": 398,
+        "height": 725,
+        "scrollHeight": 725
+      },
+      {
+        "viewport": [
+          1280,
+          900
+        ],
+        "screen": "workbench",
+        "width": 398,
+        "scrollWidth": 398,
+        "height": 725,
+        "scrollHeight": 725
+      },
+      {
+        "viewport": [
+          1280,
+          900
+        ],
+        "screen": "garden",
+        "width": 398,
+        "scrollWidth": 398,
+        "height": 725,
+        "scrollHeight": 725
+      },
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "screen": "monohome",
+        "width": 388,
+        "scrollWidth": 388,
+        "height": 689,
+        "scrollHeight": 689
+      },
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "screen": "monoworkbench",
+        "width": 388,
+        "scrollWidth": 388,
+        "height": 689,
+        "scrollHeight": 689
+      },
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "screen": "monogarden",
+        "width": 388,
+        "scrollWidth": 388,
+        "height": 689,
+        "scrollHeight": 689
+      },
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "screen": "immortalhome",
+        "width": 388,
+        "scrollWidth": 388,
+        "height": 689,
+        "scrollHeight": 689
+      },
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "screen": "immortalworkbench",
+        "width": 388,
+        "scrollWidth": 388,
+        "height": 689,
+        "scrollHeight": 689
+      },
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "screen": "immortalgarden",
+        "width": 388,
+        "scrollWidth": 388,
+        "height": 689,
+        "scrollHeight": 689
+      }
+    ],
+    "errors": [],
+    "screenshots": [
+      "01_洞府_after.png",
+      "01_洞府_before.png",
+      "02_炼器室_after.png",
+      "02_炼器室_before.png",
+      "03_丹房_after.png",
+      "03_丹房_before.png",
+      "04_工作台_after.png",
+      "04_工作台_before.png",
+      "05_赋灵_after.png",
+      "05_赋灵_before.png",
+      "06_灵田_after.png",
+      "06_灵田_before.png",
+      "07_生长_after.png",
+      "07_生长_before.png",
+      "08_成熟_after.png",
+      "08_成熟_before.png",
+      "09_播种确认_after.png",
+      "09_播种确认_before.png",
+      "1280x900_garden.png",
+      "1280x900_home.png",
+      "1280x900_sow.png",
+      "1280x900_workbench.png",
+      "320x568_garden.png",
+      "320x568_home.png",
+      "320x568_sow.png",
+      "320x568_workbench.png",
+      "360x640_garden.png",
+      "360x640_home.png",
+      "360x640_sow.png",
+      "360x640_workbench.png",
+      "390x844_garden.png",
+      "390x844_home.png",
+      "390x844_sow.png",
+      "390x844_workbench.png",
+      "430x932_garden.png",
+      "430x932_home.png",
+      "430x932_sow.png",
+      "430x932_workbench.png",
+      "768x1024_garden.png",
+      "768x1024_home.png",
+      "768x1024_sow.png",
+      "768x1024_workbench.png",
+      "immortal_garden.png",
+      "immortal_home.png",
+      "immortal_workbench.png",
+      "mono_garden.png",
+      "mono_home.png",
+      "mono_workbench.png"
+    ]
+  },
+  "productionChanged": false,
+  "TapTapSDK": "NOT_VERIFIED"
+}
