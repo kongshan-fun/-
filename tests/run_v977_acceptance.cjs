@@ -1,0 +1,6 @@
+'use strict';
+const {spawnSync}=require('node:child_process'),fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'..'),out=path.join(root,'artifacts/v977');fs.mkdirSync(out,{recursive:true});
+const jobs=[['current 20-suite regression','node',['tests/run_v975_acceptance.cjs']],['V90.76 rescue and guide safety','node',['tests/v976_rescue_and_guides.cjs']],['V90.77 realm and energy arithmetic','node',['tests/v977_bigu.cjs']],['Speedrun ruleset isolation','node',['tests/v977_ruleset.cjs']]];
+const results=[];for(const[name,exe,args]of jobs){const t=Date.now(),r=spawnSync(exe,args,{cwd:root,encoding:'utf8'});fs.writeFileSync(path.join(out,exe+'-'+path.basename(args[0])+'.log'),(r.stdout||'')+(r.stderr||''));const pass=!r.error&&r.status===0;results.push({name,pass,seconds:(Date.now()-t)/1000});console.log(pass?'PASS':'FAIL',name);if(!pass)console.error(r.stderr||r.error||r.stdout);}
+const report={version:'V90.77',sourceSha256:require('node:crypto').createHash('sha256').update(fs.readFileSync(path.join(root,'index.html'))).digest('hex'),results};fs.writeFileSync(path.join(out,'acceptance.json'),JSON.stringify(report,null,2));process.exitCode=results.every(x=>x.pass)?0:1;
