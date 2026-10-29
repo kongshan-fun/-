@@ -54,6 +54,7 @@ jobs:
               assert target.read_text(encoding='utf-8')==content
           print('SOURCE MATERIALIZED',len(approved))
           PY
+          if [ -f _delivery/v980-finalize.py ]; then python _delivery/v980-finalize.py; fi
       - name: Rebuild exact H5 and run 27 suites
         run: |
           set -o pipefail
@@ -106,7 +107,7 @@ jobs:
           git config user.name 'Verification bot'
           git config user.email 'verification-bot@users.noreply.github.com'
           git add README.md docs/V90.80_方正纸墨精修说明.md docs/v980 src/v980 tests/v980_* tests/run_v980_acceptance.cjs tools/build_v980_from_v979.py tools/check_entry_consistency.py index.html releases/山野修仙记_V90.80_方正纸墨.html
-          git rm -- _delivery/v980.ready _delivery/v980-delta-*.b64
+          git rm -- _delivery/v980.ready _delivery/v980-delta-*.b64 _delivery/v980-finalize.py
           git commit -m 'feat(V90.80): verified square paper-ink UI [skip ci]'
           git push origin HEAD:feat/v90.80-square-paper-ink
           git rev-parse HEAD > artifacts/v980/verified-source-commit.txt
