@@ -2532,7 +2532,8 @@ body.theme-immortal #phone #panel-root[data-ui979=true] .btn.primary{
     instance: null,
     ready: false,
     playing: false,
-    pending: null,        // { action, label }
+    pending: null,        // { action, label, id, settled }
+    requestSeq: 0,
     lastError: '',
     plays: 0,
     rewards: 0,
@@ -2555,29 +2556,13 @@ body.theme-immortal #phone #panel-root[data-ui979=true] .btn.primary{
         adState.ready = false;
         adState.lastError = (err && (err.errMsg || err.errCode)) || 'unknown';
         log('ad error: ' + adState.lastError);
-        // 拉不到广告就把这次请求直接放行，不让玩家卡住
-        if (adState.pending) {
-          var p = adState.pending;
-          adState.pending = null;
-          adState.playing = false;
-          adState.failures++;
-          toast('广告暂时拉不到，本次直接发放', 'warn');
-          grant(p.action);
-        }
+        var pending = adState.pending;
+        if (pending) settleAd(pending.id, 'fallback');
       });
       ad.onClose(function (res) {
-        var p = adState.pending;
-        adState.pending = null;
-        adState.playing = false;
-        adState.ready = false;
-        if (!p) return;
-        if (res && res.isEnded) {
-          adState.rewards++;
-          grant(p.action);
-        } else {
-          adState.declines++;
-          toast('需完整看完视频才能领取 ' + p.label, 'warn');
-        }
+        var pending = adState.pending;
+        if (!pending) return;
+        settleAd(pending.id, res && res.isEnded ? 'reward' : 'decline');
       });
       adState.instance = ad;
       try {
@@ -2592,41 +2577,57 @@ body.theme-immortal #phone #panel-root[data-ui979=true] .btn.primary{
     }
   }
 
+  function settleAd(requestId, outcome) {
+    var pending = adState.pending;
+    if (!pending || pending.id !== requestId || pending.settled) return false;
+    pending.settled = true;
+    adState.pending = null;
+    adState.playing = false;
+    adState.ready = false;
+    if (outcome === 'reward') {
+      adState.rewards++;
+      grant(pending.action);
+    } else if (outcome === 'fallback') {
+      adState.failures++;
+      toast('广告暂时拉不到，本次按离线兜底规则发放', 'warn');
+      grant(pending.action);
+    } else {
+      adState.declines++;
+      toast('需完整看完视频才能领取 ' + pending.label, 'warn');
+    }
+    return true;
+  }
+
   function showAd(action) {
     var label = AD_ACTIONS[action] || '奖励';
     if (adState.playing) { toast('广告播放中，请稍候', 'warn'); return; }
     var ad = ensureAd();
-    if (!ad) {
-      // 环境不支持广告（浏览器/APK）或适配层被关：直接放行，由游戏发奖
-      grant(action);
-      return;
-    }
+    if (!ad) { grant(action); return; }
+    var requestId = ++adState.requestSeq;
     adState.playing = true;
-    adState.pending = { action: action, label: label };
+    adState.pending = { action: action, label: label, id: requestId, settled: false };
     adState.plays++;
     var p;
     try { p = ad.show(); } catch (e) { p = Promise.reject(e); }
     if (!p || typeof p.then !== 'function') return;
-    p.then(function () { adState.ready = false; }, function (showErr) {
+    p.then(function () {
+      if (adState.pending && adState.pending.id === requestId) adState.ready = false;
+    }, function (showErr) {
+      if (!adState.pending || adState.pending.id !== requestId) return;
       log('ad show failed, retry once', showErr);
-      // show() 失败 → load() 后重试一次（官方推荐的一次性恢复）
       try {
-        ad.load().then(function () {
+        Promise.resolve(ad.load()).then(function () {
+          if (!adState.pending || adState.pending.id !== requestId) return;
           return ad.show();
-        }).then(function () { adState.ready = false; }, function (retryErr) {
+        }).then(function () {
+          if (adState.pending && adState.pending.id === requestId) adState.ready = false;
+        }).catch(function (retryErr) {
+          if (!adState.pending || adState.pending.id !== requestId) return;
           log('ad retry failed', retryErr);
-          adState.pending = null;
-          adState.playing = false;
-          adState.failures++;
-          toast('广告暂时拉不到，本次直接发放', 'warn');
-          grant(action);
+          settleAd(requestId, 'fallback');
         });
       } catch (e) {
-        adState.pending = null;
-        adState.playing = false;
-        adState.failures++;
-        toast('广告暂时拉不到，本次直接发放', 'warn');
-        grant(action);
+        if (adState.pending && adState.pending.id === requestId) settleAd(requestId, 'fallback');
       }
     });
   }
