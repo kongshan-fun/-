@@ -1,0 +1,61 @@
+name: Export exact submitted V90.80 TapTap H5 source
+on:
+  push:
+    branches:
+      - delivery/v90.80-taptap-submitted-source
+    paths:
+      - .github/workflows/export-v980-submitted-source.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check Git blob identity and package unmodified submitted source
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, json, subprocess, zipfile
+          src=Path('releases/山野修仙记_V90.80_TapTap适配版.html')
+          raw=src.read_bytes()
+          git_blob=subprocess.check_output(['git','hash-object',str(src)],text=True).strip()
+          expected_blob='b28ad23c4e5ef9dca15513532354ce80d62555aa'
+          assert git_blob==expected_blob, f'Mismatched Git blob: {git_blob}'
+          assert len(raw)==1067178, f'Mismatched source size: {len(raw)}'
+          s=raw.decode('utf-8-sig')
+          assert '<html' in s.lower() and '</html>' in s.lower()
+          assert '先结束斗法' in s, 'P8 display not found'
+          assert '旧灵田归档身份不符' in s, 'P9 legacy archive check missing'
+          out=Path('dist');out.mkdir(exist_ok=True)
+          original=out/src.name;original.write_bytes(raw)
+          (out/'index.html').write_bytes(raw)
+          meta={
+           'artifact':'V90.80 TapTap submitted adaptation HTML (not vanilla H5)',
+           'source':'kongshan-fun/- / main / releases/'+src.name,
+           'main_at_checkout':'dcde87986ca1bc73ec53d8380b9f59d313a5d6ad',
+           'github_blob_sha1':git_blob,
+           'sha256':hashlib.sha256(raw).hexdigest().upper(),
+           'bytes':len(raw),
+           'same_bytes_as_original':(out/'index.html').read_bytes()==raw,
+           'platform_release_note':'h5VersionId 394184 / audit_id 1168261',
+           'P8_source_marker':True,
+           'P9_source_marker':True
+          }
+          (out/'源文件核验.json').write_text(json.dumps(meta,ensure_ascii=False,indent=2),encoding='utf-8')
+          (out/'使用说明.txt').write_text('V90.80 TapTap 实际提审适配版（仓库原文件，未改代码）。\nindex.html 与原文件逐字节一致。平台广告/云存档/排行榜需 TapTap 容器及账号环境。\n本下载包为重新封装，不等同于 TapTap 后台原始上传 ZIP。\n',encoding='utf-8')
+          with zipfile.ZipFile(out/'山野修仙记_V90.80_TapTap实际提审源码.zip','w',zipfile.ZIP_DEFLATED,compresslevel=9) as z:
+           for p in [out/'index.html',original,out/'源文件核验.json',out/'使用说明.txt']:
+            z.write(p,p.name)
+          with zipfile.ZipFile(out/'山野修仙记_V90.80_TapTap实际提审源码.zip') as z:
+           assert z.testzip() is None
+           assert z.read('index.html')==raw
+          print(json.dumps(meta,ensure_ascii=False,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: V90.80-TapTap-submitted-exact-html-and-package
+          path: dist/
+          retention-days: 30
