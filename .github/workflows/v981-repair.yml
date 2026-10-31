@@ -1,0 +1,68 @@
+name: V90.81 TapTap Repair Acceptance
+on:
+  push:
+    branches: [fix/v90.81-taptap-cloud-tutorial-ad]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  repair-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Patch exact submitted V90.80 TapTap baseline
+        run: python3 tools/patch_v981.py
+      - name: Syntax-check all inline JavaScript
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re,subprocess
+          s=Path('releases/山野修仙记_V90.81_TapTap修复版.html').read_text(encoding='utf-8')
+          scripts=re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>',s,re.S|re.I)
+          assert len(scripts)==12, len(scripts)
+          for i,script in enumerate(scripts):
+              p=Path('/tmp')/f'v981-{i}.js';p.write_text(script,encoding='utf-8')
+              subprocess.run(['node','--check',str(p)],check=True)
+          print('12 inline scripts syntax PASS')
+          PY
+      - name: Release assertions
+        run: node tests/v981_release_assertions.cjs
+      - name: Package repaired TapTap HTML and original baseline
+        run: |
+          mkdir -p dist
+          cp releases/山野修仙记_V90.81_TapTap修复版.html dist/index.html
+          cp releases/山野修仙记_V90.81_TapTap修复版.html dist/山野修仙记_V90.81_TapTap修复版.html
+          cp releases/山野修仙记_V90.80_TapTap适配版.html dist/山野修仙记_V90.80_TapTap原提审基线.html
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,json,zipfile
+          p=Path('dist/index.html');raw=p.read_bytes()
+          meta={'version':'V90.81 TapTap修复候选','bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest().upper(),'baseline':'V90.80 TapTap actual submitted adapter','P8':'preserved','P9':'preserved and covered by existing old-save compatibility'}
+          Path('dist/核验信息.json').write_text(json.dumps(meta,ensure_ascii=False,indent=2),encoding='utf-8')
+          with zipfile.ZipFile('dist/山野修仙记_V90.81_TapTap修复包.zip','w',zipfile.ZIP_DEFLATED,9) as z:
+              for f in ['index.html','山野修仙记_V90.81_TapTap修复版.html','山野修仙记_V90.80_TapTap原提审基线.html','核验信息.json']:
+                  z.write(Path('dist')/f,f)
+          with zipfile.ZipFile('dist/山野修仙记_V90.81_TapTap修复包.zip') as z:
+              assert z.testzip() is None
+              assert z.read('index.html')==raw
+          print(json.dumps(meta,ensure_ascii=False))
+          PY
+      - name: Commit repaired release and entry to candidate branch
+        run: |
+          git config user.name 'Development verification bot'
+          git config user.email 'development-verification@users.noreply.github.com'
+          git add index.html releases/山野修仙记_V90.81_TapTap修复版.html
+          git commit -m 'fix(V90.81): secure cloud restore, guide routing and ad reward settlement [skip ci]'
+          git push origin HEAD:fix/v90.81-taptap-cloud-tutorial-ad
+      - uses: actions/upload-artifact@v4
+        with:
+          name: V90.81-TapTap-repaired-H5-and-baseline
+          path: dist/
+          retention-days: 30
