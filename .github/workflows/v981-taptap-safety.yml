@@ -1,0 +1,72 @@
+name: V90.81 TapTap security and onboarding candidate
+on:
+  push:
+    branches:
+      - fix/v90.81-taptap-onboarding-cloud-safety
+    paths:
+      - 'tools/build_v981_taptap_from_v980.py'
+      - 'patches/v981_splices.xz.b64'
+      - '.github/workflows/v981-taptap-safety.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  verify-and-publish-candidate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check frozen submitted source and reconstruct tested candidate byte-for-byte
+        run: python3 tools/build_v981_taptap_from_v980.py
+      - name: Javascript parse checks and core regression
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),vm=require('vm'),crypto=require('crypto'),assert=require('assert');
+          const source=fs.readFileSync('index.html','utf8');
+          const scripts=[...source.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)];
+          assert.equal(scripts.length,12);
+          scripts.forEach((m,i)=>new vm.Script(m[1],{filename:'script-'+i+'.js'}));
+          assert(source.includes('SHANYE-V981-TT-P0SAFE'));
+          console.log('Syntax and TapTap-build marker PASS');
+          NODE
+          node tests/run_v908_regression.cjs
+          node tests/v923_gear_drop.cjs
+          node tests/v926_realm_guide.cjs
+          node tests/v927_gear_economy.cjs
+      - name: Persist identical tested candidate under source branch (never main)
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add index.html 'releases/山野修仙记_V90.81_TapTap修复候选.html'
+          git diff --cached --quiet || (git commit -m 'release-candidate(V90.81): verified exact TapTap hotfix source' && git push)
+      - name: Package exact candidate HTML for download
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,json,zipfile
+          data=Path('index.html').read_bytes()
+          sha=hashlib.sha256(data).hexdigest().upper()
+          assert sha=='E2795E7F2A80E8B3E71688A4BF7F5C33EDAF27B9199D3FB33288EC5FFFE5FF4D'
+          out=Path('dist');out.mkdir(exist_ok=True)
+          (out/'index.html').write_bytes(data)
+          (out/'山野修仙记_V90.81_TapTap修复候选.html').write_bytes(data)
+          metadata={'version':'V90.81 TapTap safety+guide candidate','sha256':sha,'bytes':len(data),'based_on':'V90.80 actual TapTap submitted HTML','testing_note':'SDK simulation and local Chromium, not certified on live TapTap','production_unchanged':True}
+          (out/'校验信息.json').write_text(json.dumps(metadata,ensure_ascii=False,indent=2),encoding='utf8')
+          with zipfile.ZipFile(out/'山野修仙记_V90.81_TapTap修复候选_完整包.zip','w',zipfile.ZIP_DEFLATED,compresslevel=9) as z:
+            for f in [out/'index.html',out/'山野修仙记_V90.81_TapTap修复候选.html',out/'校验信息.json']:
+              z.write(f,f.name)
+          with zipfile.ZipFile(out/'山野修仙记_V90.81_TapTap修复候选_完整包.zip') as z:
+            assert z.testzip() is None and z.read('index.html')==data
+          print(json.dumps(metadata,ensure_ascii=False))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: V90.81-TapTap-safety-verified-H5
+          path: dist/
+          retention-days: 30
