@@ -10377,7 +10377,7 @@ function guideTarget(){const s=game.s,step=s.guide.step,b=s.guide.base;
  if(s.combat)return {selector:s.combat.intent==='heavy'?'[data-a="fight"][data-mode="guard"]':'[data-a="fight"][data-mode="attack"]',tip:s.combat.intent==='heavy'?'看到重击先防守。':'先完成战斗，引导会保留。'};
  if(s.hunger<30){
   const food=['berry','pill','meal','fish'].find(id=>s.inv[id]>0);
-  if(food)return {selector:food==='berry'?'#food-button':'#pack-button',tip:'先使用行囊中的食物恢复饱腹；休息不会代替进食。'};
+  if(food)return {selector:food==='berry'?'#food-button':panel==='pack'?'[data-a="consume"][data-id="'+food+'"]':'#pack-button',tip:'先使用行囊中的食物恢复饱腹；休息不会代替进食。'};
   return resourceGuide('berry');
  }
  if(step===0)return resourceGuide('fiber');
