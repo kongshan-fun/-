@@ -193,7 +193,7 @@ rep("if(step===6)return recipeGuide('woodSword');","if(step===6){if(panel==='cam
 a=s.index(" if(s.hunger<30){");b=s.index("\n if(step===0)",a)
 s=s[:a]+""" if(s.hunger<30){
   const food=['berry','pill','meal','fish'].find(id=>s.inv[id]>0);
-  if(food)return {selector:food==='berry'?'#food-button':'#pack-button',tip:'先使用行囊中的食物恢复饱腹；休息不会代替进食。'};
+  if(food)return {selector:food==='berry'?'#food-button':panel==='pack'?'[data-a="consume"][data-id="'+food+'"]':'#pack-button',tip:'先使用行囊中的食物恢复饱腹；休息不会代替进食。'};
   return resourceGuide('berry');
  }"""+s[b:]
 rep("材料已备齐！返回洞府建造，或前往炼制完成制作。","材料已备齐！返回洞府进入对应建筑完成制作。","goal footer")
