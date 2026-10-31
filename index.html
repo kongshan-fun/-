@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
+<script>window.__SHANYE_BUILD_CODE="SHANYE-V980-TT-B44E420E";</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f8f7f2">
@@ -2257,6 +2258,1251 @@ body.theme-immortal #phone #panel-root[data-ui979=true] .btn.primary{
 </style>
 </head>
 <body>
+<script>
+/* ============================================================================
+ * 山野修仙记 V90.7 · TapTap H5 平台适配层 (QTAP 3.0.0 · 云存档为主)
+ * ----------------------------------------------------------------------------
+ * 2.0.0 相对 1.2.0 的变化
+ *   1) 重新接入 TapTap 激励视频（广告位 1054324），恢复三处「观看领取」入口：
+ *        data-a="birth-ad"         命格页 · 看完 +3 次抽取机会
+ *        data-a="birth-jade-ad"    属性确认页 · 看完 +200 轮回玉
+ *        data-a="ad-life-confirm"  续命弹窗「观看领取」· 看完 +10 年寿元
+ *   2) 战力榜填真实客户端榜单 ID：a7m6yjlef2giizektn（综合战力榜 · 永久 · 取历史最高）
+ *   3) 云存档逻辑与 1.2.0 一致，未改动。
+ *
+ * 设计原则（仍是「游戏逻辑零改动」）
+ *   1) 适配层不改写任何游戏内按钮的发奖逻辑。它只在捕获阶段拦下这三个按钮，
+ *      播完激励视频、且 onClose 回传 isEnded===true 时，才把这次点击「还给」
+ *      游戏自己的 handler，由游戏发奖。
+ *   2) 环境兜底。没有 tap 对象（浏览器 / APK 直开）时不拦截，三个入口退回
+ *      「点一下即到账」，游戏照样能玩。
+ *   3) 广告兜底。拉不到广告（onError / show+load 重试仍失败）时直接放行发奖，
+ *      绝不把玩家卡在「点了没反应」。
+ *   4) 存档兜底。若运行环境屏蔽了 localStorage，自动用 tap.setStorageSync 垫片。
+ * ========================================================================== */
+(function () {
+  'use strict';
+
+  var VERSION = 'qtap-3.0.0';
+
+  /* ==========================================================================
+   * 1. 部署前需要填写的配置
+   * ======================================================================== */
+  var CONFIG = {
+    ads: {
+      spaceId: '1054324',   // TapTap 小游戏/H5 广告位（由 check_ads_status 查询得到）
+      enabled: true         // false = 完全关闭广告拦截（入口退回免费领取）
+    },
+    leaderboard: {
+      power: 'a7m6yjlef2giizektn',   // 综合战力榜（客户端 ID，不是后台数据库 ID）
+      speedrun: '89uvqr12t55efn1ff6'  // 飞升速通榜（升序：分数越小越好，分数 = 耗寿年（向下取整）（354 = 35.4 年））
+    },
+    // 寿命换算：一游戏年 = 5760 游戏分钟（四游戏日）；战败额外折寿 16 年
+    life: {
+      yearMinutes: 5760,
+      defeatYears: 16,
+      scoreScale: 1
+    },
+    cloudSave: {
+      archiveName: 'shanye_v907_all',  // 云存档名：≤60 字节、不能有空格和中文
+      minIntervalMs: 90000,           // 自动上传最小间隔（接口限流 60 秒/次，留余量）
+      autoSync: true,                 // 存档变化后自动上传（本轮起为官方存档方式）
+      autoRestore: true               // 本地完全没有存档时，启动自动从云端拉回
+    },
+    // 官方成就：achievementId 必须在「开发者中心 → 游戏服务 → 成就」创建后填入。
+    // 空字符串表示该阈值不发起解锁请求（不会报错，也不会误解锁）。
+    achievements: {
+      boss: { '1': '', '3': '', '5': '', '10': '' }
+    },
+    leaderboardAuto: {
+      enabled: true,
+      minIntervalMs: 120000           // 自动上报战力最小间隔
+    },
+    forceMock: false,   // true = 强制模拟（不调真实平台接口），便于本地验收
+    debug: false
+  };
+
+  /**
+   * 需要「观看激励视频才发奖」的入口（按钮 data-a → 奖励文案）
+   *   birth-ad          命格页 · 3 次抽取机会
+   *   birth-jade-ad     属性确认页 · 200 轮回玉
+   *   ad-life           续命机缘（状态栏快捷入口 + 设置页按钮，游戏里两处同 action）
+   *   ad-life-confirm   续命确认弹窗里的「观看领取」按钮（兼容旧入口）
+   */
+  var AD_ACTIONS = {
+    'birth-ad': '3 次抽取机会',
+    'birth-jade-ad': '200 轮回玉',
+    'ad-life': '10 年寿元',
+    'ad-life-confirm': '10 年寿元',
+    'ad-life-rescue': '15 年寿元'
+  };
+
+  /* ==========================================================================
+   * 2. 环境探测
+   * ======================================================================== */
+  var TAP = (typeof globalThis !== 'undefined' && globalThis.tap) ? globalThis.tap : null;
+  var MOCK = !!CONFIG.forceMock || !TAP;
+  var START_AT = Date.now();
+
+  function log() {
+    if (!CONFIG.debug) return;
+    try { console.log.apply(console, ['[QTAP]'].concat([].slice.call(arguments))); } catch (e) {}
+  }
+
+  /** 安全调用 tap 上的成员，任何异常都吞掉并返回 null */
+  function tapCall(path, args) {
+    if (!TAP) return null;
+    try {
+      var parts = String(path).split('.');
+      var ctx = TAP;
+      for (var i = 0; i < parts.length - 1; i++) {
+        ctx = ctx[parts[i]];
+        if (!ctx) return null;
+      }
+      var fn = ctx[parts[parts.length - 1]];
+      if (typeof fn !== 'function') return null;
+      return fn.apply(ctx, args || []);
+    } catch (e) {
+      log('tapCall failed: ' + path, e);
+      return null;
+    }
+  }
+
+  /* ==========================================================================
+   * 3. localStorage 垫片（仅在原生不可用时安装）
+   * ======================================================================== */
+  function storageMode() {
+    try {
+      if (!globalThis.localStorage) return 'missing';
+      var k = '__qtap_probe__';
+      globalThis.localStorage.setItem(k, '1');
+      if (globalThis.localStorage.getItem(k) !== '1') return 'broken';
+      globalThis.localStorage.removeItem(k);
+      return 'native';
+    } catch (e) {
+      return 'blocked';
+    }
+  }
+
+  function installStorageShim() {
+    if (!TAP || typeof TAP.setStorageSync !== 'function') return false;
+    var IDX = '__qtap_ls_index__';
+    function readIdx() {
+      try { var s = TAP.getStorageSync(IDX); return s ? JSON.parse(s) : []; } catch (e) { return []; }
+    }
+    function writeIdx(a) {
+      try { TAP.setStorageSync(IDX, JSON.stringify(a)); } catch (e) {}
+    }
+    var api = {
+      getItem: function (k) {
+        try {
+          var v = TAP.getStorageSync(String(k));
+          return (v === '' || v === undefined || v === null) ? null : String(v);
+        } catch (e) { return null; }
+      },
+      setItem: function (k, v) {
+        var key = String(k);
+        var i = readIdx();
+        if (i.indexOf(key) < 0) { i.push(key); writeIdx(i); }
+        TAP.setStorageSync(key, String(v));
+      },
+      removeItem: function (k) {
+        var key = String(k);
+        try { TAP.removeStorageSync(key); } catch (e) {}
+        var i = readIdx(), p = i.indexOf(key);
+        if (p >= 0) { i.splice(p, 1); writeIdx(i); }
+      },
+      clear: function () {
+        readIdx().forEach(function (k) { try { TAP.removeStorageSync(k); } catch (e) {} });
+        writeIdx([]);
+      },
+      key: function (n) {
+        var i = readIdx();
+        return (n >= 0 && n < i.length) ? i[n] : null;
+      }
+    };
+    try {
+      Object.defineProperty(api, 'length', { get: function () { return readIdx().length; } });
+      Object.defineProperty(globalThis, 'localStorage', {
+        value: api, configurable: true, writable: true
+      });
+      log('localStorage shim installed');
+      return true;
+    } catch (e) {
+      log('localStorage shim failed', e);
+      return false;
+    }
+  }
+
+  var STORAGE = storageMode();
+  if (STORAGE !== 'native') installStorageShim();
+
+  /* ==========================================================================
+   * 4. 存档键范围
+   * ======================================================================== */
+  var PREFIXES = ['qinglan-wendao-v14-', 'shanye_birth_ads_v36_', 'qinglan-wendao-v',
+    // V90.7 本机资质榜（最快飞升记录）：随存档一起备份，避免换设备丢成绩
+    'shanye-v907-local-ascension-board'];
+
+  function isGameKey(k) {
+    if (!k) return false;
+    for (var i = 0; i < PREFIXES.length; i++) {
+      if (k.indexOf(PREFIXES[i]) === 0) return true;
+    }
+    return false;
+  }
+
+  function collectPayload() {
+    var keys = {}, n = 0;
+    try {
+      var ls = globalThis.localStorage;
+      for (var i = 0; i < ls.length; i++) {
+        var k = ls.key(i);
+        if (isGameKey(k) && !/-(?:presync-backup|restore-stage|restore-rollback)$/.test(k)) {
+          var v = ls.getItem(k);
+          if (v !== null) { keys[k] = v; n++; }
+        }
+      }
+    } catch (e) { log('collect failed', e); }
+    return { v: 1, game: 'shanye-v907', ts: Date.now(), count: n, keys: keys };
+  }
+
+  function countSlots() {
+    var n = 0;
+    try {
+      var ls = globalThis.localStorage;
+      for (var i = 0; i < ls.length; i++) {
+        var k = ls.key(i);
+        if (k && /-slot-\d{3}$/.test(k)) n++;
+      }
+    } catch (e) {}
+    return n;
+  }
+
+  /* ==========================================================================
+   * 5. 提示条（优先复用游戏自带 notify）
+   * ======================================================================== */
+  function toast(msg, kind) {
+    var bridgeNotify = globalThis.__QTAP_NOTIFY || globalThis.notify;
+    if (typeof bridgeNotify === 'function') {
+      try { bridgeNotify(msg, kind || 'ok'); return; } catch (e) {}
+    }
+    var el = document.getElementById('qtap-toast');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'qtap-toast';
+      document.body.appendChild(el);
+    }
+    el.textContent = msg;
+    el.className = 'show';
+    clearTimeout(el.__t);
+    el.__t = setTimeout(function () { el.className = ''; }, 2600);
+  }
+
+  /* ==========================================================================
+   * 6. 状态桥（由游戏 render()/persist() 发布）
+   * ======================================================================== */
+  function state() {
+    var st = globalThis.__QTAP_STATE || null;
+    if (!st || !st.game) return null;
+    return st;
+  }
+
+  function livePower() {
+    var st = state();
+    if (!st) return 0;
+    // V90.4 把 QCombatRating 收进了 IIFE，改由 P2 补丁在 render() 里把战力发布到状态桥
+    if (typeof st.power === 'number' && isFinite(st.power) && st.power > 0) return st.power;
+    try {
+      if (globalThis.QCombatRating && globalThis.QCombatRating.live) {
+        return globalThis.QCombatRating.live(st.game).total || 0;
+      }
+    } catch (e) { log('power failed', e); }
+    return 0;
+  }
+
+  /* ==========================================================================
+   * 7. 激励视频
+   * --------------------------------------------------------------------------
+   * 单例：整个生命周期只有一个 RewardedVideoAd 实例（平台要求）。
+   * 流程：点击入口 → 记录被打断的按钮 → show()（未就绪则 load 后重试一次）
+   *       → onClose(isEnded) → 真 → 把点击还给按钮；假 → 不发奖。
+   * ======================================================================== */
+  var adState = {
+    instance: null,
+    ready: false,
+    playing: false,
+    pending: null,        // { action, label }
+    lastError: '',
+    plays: 0,
+    rewards: 0,
+    declines: 0,
+    failures: 0
+  };
+
+  function adsAvailable() {
+    return !MOCK && CONFIG.ads.enabled && !!TAP && typeof TAP.createRewardedVideoAd === 'function';
+  }
+
+  function ensureAd() {
+    if (!adsAvailable()) return null;
+    if (adState.instance) return adState.instance;
+    try {
+      var ad = TAP.createRewardedVideoAd({ adUnitId: CONFIG.ads.spaceId });
+      if (!ad) return null;
+      ad.onLoad(function () { adState.ready = true; });
+      ad.onError(function (err) {
+        adState.ready = false;
+        adState.lastError = (err && (err.errMsg || err.errCode)) || 'unknown';
+        log('ad error: ' + adState.lastError);
+        // 拉不到广告就把这次请求直接放行，不让玩家卡住
+        if (adState.pending) {
+          var p = adState.pending;
+          adState.pending = null;
+          adState.playing = false;
+          adState.failures++;
+          toast('广告暂时拉不到，本次直接发放', 'warn');
+          grant(p.action);
+        }
+      });
+      ad.onClose(function (res) {
+        var p = adState.pending;
+        adState.pending = null;
+        adState.playing = false;
+        adState.ready = false;
+        if (!p) return;
+        if (res && res.isEnded) {
+          adState.rewards++;
+          grant(p.action);
+        } else {
+          adState.declines++;
+          toast('需完整看完视频才能领取 ' + p.label, 'warn');
+        }
+      });
+      adState.instance = ad;
+      try {
+        ad.load().then(function () { adState.ready = true; },
+                       function (e) { log('preload failed', e); });
+      } catch (e) { log('preload threw', e); }
+      return ad;
+    } catch (e) {
+      log('createRewardedVideoAd failed', e);
+      adState.lastError = (e && e.message) || String(e);
+      return null;
+    }
+  }
+
+  function showAd(action) {
+    var label = AD_ACTIONS[action] || '奖励';
+    if (adState.playing) { toast('广告播放中，请稍候', 'warn'); return; }
+    var ad = ensureAd();
+    if (!ad) {
+      // 环境不支持广告（浏览器/APK）或适配层被关：直接放行，由游戏发奖
+      grant(action);
+      return;
+    }
+    adState.playing = true;
+    adState.pending = { action: action, label: label };
+    adState.plays++;
+    var p;
+    try { p = ad.show(); } catch (e) { p = Promise.reject(e); }
+    if (!p || typeof p.then !== 'function') return;
+    p.then(function () { adState.ready = false; }, function (showErr) {
+      log('ad show failed, retry once', showErr);
+      // show() 失败 → load() 后重试一次（官方推荐的一次性恢复）
+      try {
+        ad.load().then(function () {
+          return ad.show();
+        }).then(function () { adState.ready = false; }, function (retryErr) {
+          log('ad retry failed', retryErr);
+          adState.pending = null;
+          adState.playing = false;
+          adState.failures++;
+          toast('广告暂时拉不到，本次直接发放', 'warn');
+          grant(action);
+        });
+      } catch (e) {
+        adState.pending = null;
+        adState.playing = false;
+        adState.failures++;
+        toast('广告暂时拉不到，本次直接发放', 'warn');
+        grant(action);
+      }
+    });
+  }
+
+  /* ---- 发奖：把这次点击还给游戏自己的 handler ---- */
+  var replaying = false;
+
+  function findAdButton(action) {
+    var nodes = document.querySelectorAll('[data-a="' + action + '"]');
+    for (var i = 0; i < nodes.length; i++) {
+      var n = nodes[i];
+      if (n && !n.disabled) return n;
+    }
+    return nodes[0] || null;
+  }
+
+  function grant(action) {
+    var btn = findAdButton(action);
+    if (!btn) {
+      toast('面板已刷新，请重新点击领取', 'warn');
+      return;
+    }
+    replaying = true;
+    try {
+      // btn.click() 同步派发事件，游戏 handler 在本次调用返回前就已经跑完，
+      // 所以标志位在 finally 里立刻复位即可，不需要留时间窗。
+      btn.click();
+    } catch (e) {
+      log('replay click failed', e);
+      toast('领取失败，请重试', 'warn');
+    } finally {
+      replaying = false;
+    }
+  }
+
+  /** 捕获阶段拦截：拦下三个需看广告的按钮，播完再放行 */
+  function installAdInterceptor() {
+    if (!adsAvailable()) { log('ad interceptor skipped (no tap / disabled)'); return; }
+    document.addEventListener('click', function (e) {
+      if (replaying) return;                    // 发奖回放，直接放行给游戏
+      var t = e.target;
+      while (t && t.nodeType === 1 && t.tagName !== 'BUTTON') t = t.parentNode;
+      if (!t || t.nodeType !== 1) return;
+      var action = t.getAttribute('data-a');
+      if (!action || !AD_ACTIONS[action]) return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+      showAd(action);
+    }, true);
+    log('ad interceptor installed, spaceId=' + CONFIG.ads.spaceId);
+  }
+
+  /* ==========================================================================
+   * 8. 云存档
+   * ======================================================================== */
+  var UUID_KEY = '__qtap_archive_uuid__';
+  var lastUploadAt = 0;
+
+  function archiveUuid() {
+    try { return globalThis.localStorage.getItem(UUID_KEY) || ''; } catch (e) { return ''; }
+  }
+  function saveUuid(u) {
+    try { if (u) globalThis.localStorage.setItem(UUID_KEY, String(u)); } catch (e) {}
+  }
+
+  function cloudAvailable() {
+    return !MOCK && !!TAP && typeof TAP.getCloudSaveManager === 'function' && typeof TAP.getFileSystemManager === 'function';
+  }
+
+  function writeLocalFile(payload) {
+    return new Promise(function (resolve, reject) {
+      var fs = TAP.getFileSystemManager();
+      var dir = (TAP.env && TAP.env.USER_DATA_PATH) ? TAP.env.USER_DATA_PATH : '';
+      if (!dir) { reject(new Error('缺少 USER_DATA_PATH')); return; }
+      var filePath = dir + '/shanye_cloudsave.json';
+      fs.writeFile({
+        filePath: filePath,
+        data: JSON.stringify(payload),
+        encoding: 'utf8',
+        success: function () { resolve(filePath); },
+        fail: function (e) { reject(new Error('写本地文件失败：' + ((e && e.errMsg) || ''))); }
+      });
+    });
+  }
+
+  function pushArchive(filePath) {
+    return new Promise(function (resolve, reject) {
+      var cs = TAP.getCloudSaveManager();
+      var payload = collectPayload();
+      var meta = {
+        name: CONFIG.cloudSave.archiveName,     // ASCII、无空格
+        summary: '山野修仙记 V90.81 · ' + countSlots() + ' 存档位 · ' +
+                 new Date().toISOString().slice(0, 16).replace('T', ' '),
+        extra: JSON.stringify({ v: 1, archive: 'all', slots: countSlots() }),
+        playtime: Math.max(0, Math.floor((Date.now() - START_AT) / 1000))
+      };
+      var opts = {
+        archiveMetaData: meta,
+        archiveFilePath: filePath,
+        success: function (res) {
+          if (res && res.uuid) saveUuid(res.uuid);
+          resolve(res || {});
+        },
+        fail: function (e) {
+          var code = e && (e.errno || e.errCode);
+          var msg = (e && e.errMsg) || '';
+          if (code === 400001) msg = '上传过于频繁（每分钟限 1 次）';
+          reject(new Error(msg || ('云存档失败(' + code + ')')));
+        }
+      };
+      var uuid = archiveUuid();
+      if (uuid) cs.updateArchive(Object.assign({ archiveUUID: uuid }, opts));
+      else cs.createArchive(opts);
+    });
+  }
+
+  function uploadCloud(force) {
+    if (!cloudAvailable()) return Promise.reject(new Error('当前环境没有 TapTap 云存档'));
+    var now = Date.now();
+    if (!force && now - lastUploadAt < CONFIG.cloudSave.minIntervalMs) {
+      return Promise.reject(new Error('距上次上传不足 ' +
+        Math.ceil(CONFIG.cloudSave.minIntervalMs / 1000) + ' 秒，请稍后'));
+    }
+    var payload = collectPayload();
+    if (!payload.count) return Promise.reject(new Error('没有可上传的存档'));
+    lastUploadAt = now;
+    return writeLocalFile(payload).then(pushArchive);
+  }
+
+  /* ------------------------------------------------------------------------
+   * 云存档成为官方存档方式后新增的两块：
+   *   1) 启动引导 bootstrapCloud()：本地有档 → 本地为准；本地完全没有 → 自动拉回
+   *   2) 状态展示 cloudMode/cloudMessage：设置页顶部一句话说明当前同步状态
+   * 自动上传仍由 watchSave() 负责（轮询 __QTAP_SAVE_TICK + 90 秒节流）。
+   * ---------------------------------------------------------------------- */
+  var AUTORESTORE_FLAG = '__qtap_autorestore_done__';
+  var cloudMode = 'idle';        // idle | local | empty | restoring | restored | error
+  var cloudMessage = '';
+
+  function setCloudMode(mode, msg) {
+    cloudMode = mode;
+    cloudMessage = msg || '';
+    var line = document.getElementById('qtap-cloud-line');
+    if (line) line.textContent = cloudSummary();
+    log('cloud mode', mode, msg);
+  }
+
+  function hasLocalMainSave() {
+    try {
+      var ls = globalThis.localStorage;
+      for (var i = 0; i < ls.length; i++) {
+        var k = ls.key(i);
+        if (!k || !/^qinglan-wendao-v14-(?:(?:easy|standard|challenge)-)?(?:sword|herb)-slot-\\d{3}$/.test(k)) continue;
+        var raw = ls.getItem(k);
+        if (!raw) continue;
+        try {
+          var state = JSON.parse(raw);
+          if (state && state.version === 14 && state.rebuilt === 1 &&
+              (state.race === 'sword' || state.race === 'herb') &&
+              Number.isInteger(state.level) && state.level >= 1) return true;
+        } catch (e) {}
+      }
+    } catch (e) { log('local save probe failed', e); }
+    return false;
+  }
+
+  function readFlag(k) {
+    try { return globalThis.localStorage.getItem(k) || ''; } catch (e) { return ''; }
+  }
+  function writeFlag(k, v) {
+    try { globalThis.localStorage.setItem(k, String(v)); } catch (e) {}
+  }
+
+  /** 启动引导：决定「本地为准」还是「从云端拉回」 */
+  function bootstrapCloud() {
+    if (!cloudAvailable() || !CONFIG.cloudSave.autoSync) return;
+    if (hasLocalMainSave()) {
+      setCloudMode('local', '本地进度为准 · 存档自动同步到 TapTap 云端');
+      return;
+    }
+    setCloudMode('empty', '正在检查云端存档…');
+    listCloud().then(function (list) {
+      if (!list || !list.length) {
+        setCloudMode('empty', '尚无云端存档 · 此档首次保存后自动上传');
+        return;
+      }
+      if (!CONFIG.cloudSave.autoRestore) {
+        setCloudMode('empty', '云端已有存档 · 可在下方「存档排障」手动恢复');
+        return;
+      }
+      if (readFlag(AUTORESTORE_FLAG) === '1') {
+        setCloudMode('error', '已尝试自动恢复但本机仍无存档 · 请在「存档排障」手动恢复');
+        return;
+      }
+      var item = list[0];
+      if (item && item.uuid) saveUuid(item.uuid);
+      setCloudMode('restoring', '正在从云端恢复存档…');
+      return restoreCloud(item && item.uuid).then(function (r) {
+        writeFlag(AUTORESTORE_FLAG, '1');
+        setCloudMode('restored', '已从云端恢复 ' + (r && r.count) + ' 个存档键 · 正在重新载入…');
+        try { window.__QTAP_NOTIFY && window.__QTAP_NOTIFY('已从云端恢复存档'); } catch (e) {}
+        setTimeout(function () { try { globalThis.location.reload(); } catch (e) {} }, 900);
+      });
+    }).catch(function (err) {
+      setCloudMode('error', '云端不可用：' + err.message);
+    });
+  }
+
+  /** 云存档一句话状态（放在设置面板顶部，替代原来的三个手动按钮） */
+  function cloudSummary() {
+    if (!cloudAvailable()) return '当前环境没有 TapTap 云存档（浏览器 / 本地 APK 版请用「存档排障」里的 JSON 导出）';
+    if (!CONFIG.cloudSave.autoSync) return '自动同步未启用';
+    if (cloudMode === 'error' || cloudMode === 'restored' || cloudMode === 'restoring') {
+      return cloudMessage || '';
+    }
+    if (cloudMode === 'empty') return cloudMessage || '尚无云端存档 · 首次保存后自动上传';
+    if (cloudMode === 'local') return '进度自动保存并同步到 TapTap 云端 · 换设备登录同一账号即可接续';
+    return '进度自动保存并同步到 TapTap 云端';
+  }
+
+  function listCloud() {
+    return new Promise(function (resolve, reject) {
+      if (!cloudAvailable()) { reject(new Error('当前环境没有 TapTap 云存档')); return; }
+      var cs = TAP.getCloudSaveManager();
+      cs.getArchiveList({
+        success: function (res) { resolve((res && res.saves) || []); },
+        fail: function (e) { reject(new Error((e && e.errMsg) || '获取云存档列表失败')); }
+      });
+    });
+  }
+
+  function applyPayload(payload) {
+    var incoming=payload&&payload.keys;
+    if(!incoming||typeof incoming!=='object'||Array.isArray(incoming))throw Error('云存档内容无法识别');
+    var ls=globalThis.localStorage,clean={};
+    Object.keys(incoming).forEach(function(k){
+      if(!isGameKey(k)||k===UUID_KEY||/-(?:presync-backup|restore-stage|restore-rollback)$/.test(k))throw Error('云存档包含不允许恢复的键：'+k);
+      if(typeof incoming[k]!=='string')throw Error('云存档键值格式错误：'+k);
+      clean[k]=incoming[k];
+    });
+    if(!Object.keys(clean).length)throw Error('云存档没有可恢复的角色数据');
+    var before={};
+    for(var i=0;i<ls.length;i++){var k=ls.key(i);if(isGameKey(k)&&k!==UUID_KEY&&!/-(?:presync-backup|restore-stage|restore-rollback)$/.test(k)){var v=ls.getItem(k);if(v!==null)before[k]=v;}}
+    var backupKey='__qtap_presync_backup_v1__',stageKey='__qtap_restore_stage_v1__';
+    var backup=JSON.stringify({v:1,reason:'before-cloud-restore',ts:Date.now(),keys:before});
+    var stage=JSON.stringify({v:1,ts:Date.now(),keys:clean});
+    try{ls.setItem(backupKey,backup);if(ls.getItem(backupKey)!==backup)throw Error('恢复前备份校验失败');ls.setItem(stageKey,stage);if(ls.getItem(stageKey)!==stage)throw Error('临时云档校验失败');}
+    catch(e){try{ls.removeItem(stageKey)}catch(_){}throw Error('无法建立可靠的恢复保护，未改动本地存档：'+(e.message||e));}
+    try{
+      Object.keys(clean).forEach(function(k){ls.setItem(k,clean[k]);if(ls.getItem(k)!==clean[k])throw Error('写入后校验不一致：'+k);});
+      Object.keys(clean).forEach(function(k){if(ls.getItem(k)!==clean[k])throw Error('恢复复核失败：'+k);});
+      Object.keys(before).forEach(function(k){if(!Object.prototype.hasOwnProperty.call(clean,k))ls.removeItem(k);});
+      Object.keys(clean).forEach(function(k){if(ls.getItem(k)!==clean[k])throw Error('最终复核失败：'+k);});
+      try{ls.removeItem(stageKey)}catch(_){}
+      log('cloud restore committed ('+Object.keys(clean).length+' keys)');
+      return Object.keys(clean).length;
+    }catch(err){
+      var rollbackError=null;
+      try{
+        var current=[];for(var j=0;j<ls.length;j++){var ck=ls.key(j);if(isGameKey(ck)&&ck!==UUID_KEY&&!/-(?:presync-backup|restore-stage|restore-rollback)$/.test(ck))current.push(ck);}
+        current.forEach(function(k){ls.removeItem(k);});
+        Object.keys(before).forEach(function(k){ls.setItem(k,before[k]);});
+        Object.keys(before).forEach(function(k){if(ls.getItem(k)!==before[k])throw Error('回滚校验失败：'+k);});
+      }catch(rb){rollbackError=rb;}
+      try{ls.removeItem(stageKey)}catch(_){}
+      if(rollbackError)throw Error('云存档恢复失败，自动回滚未能完成；保护快照保留在本机：'+(rollbackError.message||rollbackError));
+      throw Error('云存档恢复失败，已完整恢复原本地存档：'+(err.message||err));
+    }
+  }
+  function restoreCloud(uuid) {
+    return new Promise(function (resolve, reject) {
+      if (!cloudAvailable()) { reject(new Error('当前环境没有 TapTap 云存档')); return; }
+      var cs = TAP.getCloudSaveManager();
+      var archiveId = uuid || archiveUuid();
+      if (!archiveId) { reject(new Error('本机还没有绑定云存档，请先上传一次')); return; }
+      var dir = (TAP.env && TAP.env.USER_DATA_PATH) ? TAP.env.USER_DATA_PATH : '';
+      var target = dir + '/shanye_restore.json';
+      cs.getArchiveList({
+        success: function (res) {
+          var list = (res && res.saves) || [];
+          var item = null;
+          for (var i = 0; i < list.length; i++) {
+            if (list[i] && list[i].uuid === archiveId) { item = list[i]; break; }
+          }
+          if (!item) { reject(new Error('云端找不到该存档，可能已被删除')); return; }
+          cs.getArchiveData({
+            archiveUUID: archiveId,
+            archiveFileId: item.fileId,
+            targetFilePath: target,
+            success: function () {
+              var fs = TAP.getFileSystemManager();
+              fs.readFile({
+                filePath: target,
+                encoding: 'utf8',
+                success: function (r) {
+                  try {
+                    var payload = JSON.parse(r.data);
+                    var n = applyPayload(payload);
+                    resolve({ count: n, ts: payload.ts });
+                  } catch (e) { reject(new Error('云存档解析失败：' + e.message)); }
+                },
+                fail: function (e) { reject(new Error('读取云存档文件失败')); }
+              });
+            },
+            fail: function (e) { reject(new Error((e && e.errMsg) || '下载云存档失败')); }
+          });
+        },
+        fail: function (e) { reject(new Error((e && e.errMsg) || '获取云存档列表失败')); }
+      });
+    });
+  }
+
+  /* ==========================================================================
+   * 8.5 官方成就（tap.createAchievementManager，基础库 1.5.0+）
+   * ======================================================================== */
+  var achievementManager = null;
+  var unlockedAchievements = {};
+
+  function achievementAvailable() {
+    return !MOCK && !!TAP && typeof TAP.createAchievementManager === 'function';
+  }
+
+  function ensureAchievements() {
+    if (achievementManager) return achievementManager;
+    if (!achievementAvailable()) return null;
+    try {
+      achievementManager = TAP.createAchievementManager({ toastEnable: true });
+    } catch (e) {
+      log('createAchievementManager failed', e);
+      achievementManager = null;
+    }
+    return achievementManager;
+  }
+
+  function unlockAchievement(achievementId) {
+    var id = String(achievementId || '').trim();
+    if (!id) return Promise.resolve({ ok: false, reason: 'no-id' });
+    if (unlockedAchievements[id]) return Promise.resolve({ ok: true, skipped: true, achievementId: id });
+    var manager = ensureAchievements();
+    if (!manager || typeof manager.unlockAchievement !== 'function') {
+      return Promise.resolve({ ok: false, reason: 'unavailable' });
+    }
+    try {
+      manager.unlockAchievement({ achievementId: id });
+      unlockedAchievements[id] = true;
+      return Promise.resolve({ ok: true, achievementId: id });
+    } catch (e) {
+      return Promise.resolve({ ok: false, reason: 'throw', error: e });
+    }
+  }
+
+  /** 按当前 Boss 击杀数解锁对应阈值成就（取已达成的最高阈值） */
+  function unlockBossAchievement(bossCount) {
+    var map = CONFIG.achievements && CONFIG.achievements.boss;
+    var total = Number(bossCount);
+    if (!map || !isFinite(total)) return Promise.resolve({ ok: false, reason: 'unconfigured' });
+    var hits = Object.keys(map).map(Number)
+      .filter(function (n) { return isFinite(n) && n > 0 && total >= n && String(map[String(n)] || '').trim(); })
+      .sort(function (a, b) { return a - b; });
+    if (!hits.length) return Promise.resolve({ ok: false, reason: 'below-threshold-or-empty' });
+    return unlockAchievement(map[String(hits[hits.length - 1])]);
+  }
+
+  function showAchievements() {
+    var manager = ensureAchievements();
+    if (!manager || typeof manager.showAchievements !== 'function') return false;
+    try { manager.showAchievements(); return true; } catch (e) { return false; }
+  }
+
+  /* ==========================================================================
+   * 9. 排行榜（战力）
+   * ======================================================================== */
+  function leaderboardAvailable() {
+    return !MOCK && !!TAP && typeof TAP.getLeaderboardManager === 'function' && !!CONFIG.leaderboard.power;
+  }
+
+  var lastSubmitAt = 0, bestSubmitted = 0;
+
+  function submitPower(force) {
+    return new Promise(function (resolve, reject) {
+      if (!leaderboardAvailable()) { reject(new Error('当前环境没有 TapTap 排行榜')); return; }
+      var st = state();
+      if (!st) { reject(new Error('还没有进行中的档位，先入世修行')); return; }
+      if (st.game && st.game.s && st.game.s.ended) { reject(new Error('本档已结束，无法上报')); return; }
+      var score = livePower();
+      if (!score) { reject(new Error('读不到战力数值')); return; }
+      if (!force && score <= bestSubmitted) { resolve({ skipped: true, score: score }); return; }
+      var now = Date.now();
+      if (!force && now - lastSubmitAt < CONFIG.leaderboardAuto.minIntervalMs) {
+        resolve({ skipped: true, score: score });
+        return;
+      }
+      var lb = TAP.getLeaderboardManager();
+      lastSubmitAt = now;
+      lb.submitScores({
+        scores: [{ leaderboardId: CONFIG.leaderboard.power, score: Math.round(score) }],
+        callback: {
+          onSuccess: function (res) {
+            bestSubmitted = Math.max(bestSubmitted, score);
+            resolve({ score: score, res: res });
+          },
+          onFailure: function (code, message) {
+            reject(new Error('上报失败(' + code + ')：' + (message || '')));
+          }
+        }
+      });
+    });
+  }
+
+  /* ------------------------------------------------------------------------
+   * 飞升速通榜：按「消耗的寿命」排序，越小越好
+   *   耗寿分钟 = 历时分钟 + 战败次数 × 16 年 × 5760 分钟/年
+   *   分数     = round(耗寿分钟 / 5760 × 100)   → 35 = 耗寿 35 年
+   * 用 ×100 是为了保留两位小数：一次通关约 20~40 年，
+   * 若直接取整年，全服只有 20 来个不同数值，大面积并列。
+   * ---------------------------------------------------------------------- */
+  function ascensionCostScore(record) {
+    var cfg = CONFIG.life;
+    var minutes = Number(record && record.elapsedMinutes);
+    if (!isFinite(minutes) || minutes < 0) return 0;
+    var defeats = Number(record && record.defeats) || 0;
+    if (!isFinite(defeats) || defeats < 0) defeats = 0;
+    var lifeMinutes = minutes + defeats * cfg.defeatYears * cfg.yearMinutes;
+    return Math.floor(lifeMinutes / cfg.yearMinutes * cfg.scoreScale);
+  }
+
+  function submitAscension(record) {
+    return new Promise(function (resolve, reject) {
+      if (!leaderboardAvailable() || !CONFIG.leaderboard.speedrun) {
+        reject(new Error('当前环境没有速通榜')); return;
+      }
+      var score = ascensionCostScore(record);
+      if (!(score > 0)) { reject(new Error('没有可上报的飞升记录')); return; }
+      var lb = TAP.getLeaderboardManager();
+      lb.submitScores({
+        scores: [{ leaderboardId: CONFIG.leaderboard.speedrun, score: score }],
+        callback: {
+          onSuccess: function (res) { resolve({ score: score, res: res }); },
+          onFailure: function (code, message) {
+            reject(new Error('速通榜上报失败(' + code + ')：' + (message || '')));
+          }
+        }
+      });
+    });
+  }
+
+  function openSpeedrunLeaderboard() {
+    return new Promise(function (resolve, reject) {
+      if (!leaderboardAvailable() || !CONFIG.leaderboard.speedrun) {
+        reject(new Error('当前环境没有速通榜')); return;
+      }
+      var lb = TAP.getLeaderboardManager();
+      lb.openLeaderboard({
+        leaderboardId: CONFIG.leaderboard.speedrun,
+        callback: {
+          onSuccess: function (r) { resolve(r); },
+          onFailure: function (code, message) { reject(new Error('打开速通榜失败(' + code + ')：' + (message || ''))); }
+        }
+      });
+    });
+  }
+
+  function openLeaderboard() {
+    return new Promise(function (resolve, reject) {
+      if (!leaderboardAvailable()) { reject(new Error('当前环境没有 TapTap 排行榜')); return; }
+      var lb = TAP.getLeaderboardManager();
+      lb.openLeaderboard({
+        leaderboardId: CONFIG.leaderboard.power,
+        callback: {
+          onSuccess: function (r) { resolve(r); },
+          onFailure: function (code, message) { reject(new Error('打开榜单失败(' + code + ')：' + (message || ''))); }
+        }
+      });
+    });
+  }
+
+  /* ==========================================================================
+   * 10. 自动同步（保守节流，只在存档真的变化时触发）
+   * ======================================================================== */
+  var lastTick = -1;
+
+  function watchSave() {
+    setInterval(function () {
+      var tick = globalThis.__QTAP_SAVE_TICK || 0;
+      if (tick === lastTick) return;
+      lastTick = tick;
+      var now = Date.now();
+      if (CONFIG.cloudSave.autoSync && cloudAvailable() &&
+          now - lastUploadAt >= CONFIG.cloudSave.minIntervalMs) {
+        uploadCloud(false).catch(function (e) { log('auto cloud skipped: ' + e.message); });
+      }
+      if (CONFIG.leaderboardAuto.enabled && leaderboardAvailable()) {
+        submitPower(false).catch(function (e) { log('auto lb skipped: ' + e.message); });
+      }
+    }, 5000);
+  }
+
+  /* ==========================================================================
+   * 11. 界面：并入游戏「设置」面板，不占用任何游戏画面
+   * ======================================================================== */
+  var CSS = [
+    '#qtap-settings-block .qtap-cloud-line{margin:4px 0 8px;color:#4a5a4a;line-height:1.6}',
+    '#qtap-settings-block .qtap-troubleshoot{margin-top:8px;border-top:1px dashed #cfd6cf;padding-top:6px}',
+    '#qtap-settings-block .qtap-troubleshoot summary{cursor:pointer;color:#5a6b5a;font-size:13px;padding:4px 0}',
+    '#qtap-toast{position:fixed;left:50%;top:16%;transform:translateX(-50%);z-index:10000;background:#111;color:#fff;',
+    'padding:9px 14px;border-radius:6px;font-size:12px;max-width:80vw;opacity:0;pointer-events:none;',
+    'transition:opacity .18s;text-align:center}',
+    '#qtap-toast.show{opacity:1}',
+    '#qtap-settings-block{margin-top:2px}',
+    '#qtap-settings-block .qtap-status{font-size:11px;line-height:1.7;margin:5px 0 0;white-space:pre-wrap;',
+    'word-break:break-all;color:inherit;opacity:.72}',
+    '#qtap-settings-block .qtap-status.is-warn{color:#a04b42;opacity:1}'
+  ].join('\n');
+
+  function closestEl(node, sel) {
+    while (node && node !== document) {
+      if (node.nodeType === 1 && node.matches && node.matches(sel)) return node;
+      node = node.parentNode;
+    }
+    return null;
+  }
+
+  function hasBossAchievementIds() {
+    var map = CONFIG.achievements && CONFIG.achievements.boss;
+    if (!map) return false;
+    return Object.keys(map).some(function (k) { return String(map[k] || '').trim(); });
+  }
+
+  function envSummary() {
+    return (MOCK ? '模拟模式（未接入真实 TapTap 环境）' : 'TapTap 运行环境') +
+      ' · 激励视频 ' + (adsAvailable() ? ('可用 · 广告位 ' + CONFIG.ads.spaceId) : '不可用（直接发放）') +
+      ' · 云存档 ' + (cloudAvailable() ? '可用' : '不可用') +
+      ' · 战力榜 ' + (leaderboardAvailable() ? '可用' : '未配置') +
+      ' · 成就 ' + (achievementAvailable() ? (hasBossAchievementIds() ? '可用' : '待填 ID') : '不可用');
+  }
+
+  function injectSettingsEntry() {
+    var body = document.getElementById('panel-body');
+    if (!body) return false;
+    if (!body.querySelector('[data-a="theme-set"]')) return false;    // 不是设置面板
+    if (body.querySelector('#qtap-settings-block')) return true;      // 已经注入过
+
+    hideLegacySaveRow(body);
+
+    var block = document.createElement('div');
+    block.id = 'qtap-settings-block';
+    block.innerHTML =
+      '<h3>云端存档</h3>' +
+      '<p class="qtap-cloud-line" id="qtap-cloud-line"></p>' +
+      '<div class="inline-buttons">' +
+        '<button class="btn" data-qtap="lbsubmit">上报战力</button>' +
+        '<button class="btn" data-qtap="lbopen">打开战力榜</button>' +
+        '<button class="btn" data-qtap="lbopen-speed">飞升速通榜</button>' +
+        '<button class="btn" data-qtap="achievements">成就</button>' +
+      '</div>' +
+      '<details class="qtap-troubleshoot">' +
+        '<summary>存档排障</summary>' +
+        '<div class="inline-buttons">' +
+          '<button class="btn" data-qtap-legacy="export">导出存档</button>' +
+          '<button class="btn" data-qtap-legacy="import">导入存档</button>' +
+          '<button class="btn" data-qtap-legacy="restore">恢复上次备份</button>' +
+        '</div>' +
+        '<div class="inline-buttons" style="margin-top:5px">' +
+          '<button class="btn" data-qtap="upload">立即同步云端</button>' +
+          '<button class="btn" data-qtap="restore">从云端恢复</button>' +
+          '<button class="btn" data-qtap="list">查看云存档</button>' +
+        '</div>' +
+        '<p class="qtap-status" id="qtap-inline-status"></p>' +
+      '</details>';
+
+    // 位置：紧贴游戏原本的存档按钮行（该行已被隐藏）之前，保证在面板顶部可见
+    var legacyRow = body.querySelector('[data-qtap-hidden="1"]');
+    if (legacyRow && legacyRow.parentNode === body) body.insertBefore(block, legacyRow);
+    else body.insertBefore(block, body.firstChild);
+
+    var line = document.getElementById('qtap-cloud-line');
+    if (line) line.textContent = cloudSummary();
+    var st = document.getElementById('qtap-inline-status');
+    if (st) st.textContent = envSummary();
+    return true;
+  }
+
+  /** 把游戏原生的「导出/导入/恢复上次备份」整行及提示句隐藏，改由排障区代理 */
+  function hideLegacySaveRow(body) {
+    try {
+      var exportBtn = body.querySelector('[data-a="export"]');
+      if (!exportBtn) return;
+      var row = closestEl(exportBtn, '.inline-buttons');
+      if (row) { row.setAttribute('data-qtap-hidden', '1'); row.style.display = 'none'; }
+      var hint = row && row.nextElementSibling;
+      if (hint && hint.tagName === 'P' && /换文件路径|先导出/.test(hint.textContent || '')) {
+        hint.setAttribute('data-qtap-hidden', '1');
+        hint.style.display = 'none';
+      }
+    } catch (e) {}
+  }
+
+  function setStatus(msg, isWarn) {
+    var n = document.getElementById('qtap-inline-status');
+    if (n) {
+      n.textContent = msg;
+      n.className = 'qtap-status' + (isWarn ? ' is-warn' : '');
+    } else {
+      toast(msg, isWarn ? 'warn' : 'ok');
+    }
+  }
+
+  function act(kind) {
+    var p;
+    if (kind === 'upload') {
+      setStatus('正在上传…');
+      p = uploadCloud(true).then(function () {
+        setStatus('已上传 ' + collectPayload().count + ' 个存档键 · uuid: ' +
+          (archiveUuid() || '-'));
+      });
+    } else if (kind === 'restore') {
+      setStatus('正在从云端恢复…');
+      p = restoreCloud().then(function (r) {
+        setStatus('已恢复 ' + r.count + ' 个键，正在重载游戏…');
+        setTimeout(function () { location.reload(); }, 1000);
+      });
+    } else if (kind === 'list') {
+      setStatus('正在读取…');
+      p = listCloud().then(function (list) {
+        if (!list.length) { setStatus('云端还没有存档'); return; }
+        setStatus(list.map(function (s, i) {
+          return (i + 1) + ') ' + (s.name || '-') + '  ' + (s.summary || '') +
+                 '\n   uuid: ' + (s.uuid || '-');
+        }).join('\n'));
+      });
+    } else if (kind === 'lbsubmit') {
+      setStatus('正在上报战力…');
+      p = submitPower(true).then(function (r) {
+        setStatus(r.skipped ? '战力未超过已上报值，已跳过'
+                            : ('已上报战力 ' + Math.round(r.score)));
+      });
+    } else if (kind === 'lbopen-speed') {
+      setStatus('正在打开速通榜…');
+      openSpeedrunLeaderboard().then(function () {
+        setStatus('速通榜已打开（数字即耗寿年数，越小越好）');
+      }).catch(function (err) { setStatus(err.message, true); });
+      return;
+    } else if (kind === 'achievements') {
+      setStatus('正在打开成就…');
+      if (!showAchievements()) setStatus('当前环境暂不支持成就面板', true);
+      else setStatus('成就面板已打开');
+      return;
+    } else if (kind === 'lbopen') {
+      setStatus('正在打开榜单…');
+      p = openLeaderboard().then(function () { setStatus('榜单已打开'); });
+    } else {
+      return;
+    }
+    p.catch(function (e) { setStatus((e && e.message) || String(e), true); });
+  }
+
+  function bindPanelActions() {
+    var root = document.getElementById('panel-root');
+    if (!root || root.__qtapBound) return;
+    root.__qtapBound = true;
+    root.addEventListener('click', function (e) {
+      var legacy = closestEl(e.target, '[data-qtap-legacy]');
+      if (legacy) {
+        e.preventDefault();
+        if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+        e.stopPropagation();
+        var legacyAct = legacy.getAttribute('data-qtap-legacy');
+        var native = document.querySelector('[data-a="' + legacyAct + '"]');
+        if (native) native.click();
+        return;
+      }
+      var b = closestEl(e.target, '[data-qtap]');
+      if (!b) return;
+      e.preventDefault();
+      if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+      e.stopPropagation();
+      act(b.getAttribute('data-qtap'));
+    }, false);
+  }
+
+  var panelObserver = null;
+  function watchPanel() {
+    bindPanelActions();
+    var root = document.getElementById('panel-root');
+    if (!root) return;
+    if (!panelObserver) {
+      panelObserver = new MutationObserver(function () { injectSettingsEntry(); });
+      panelObserver.observe(root, { childList: true, subtree: true });
+    }
+    injectSettingsEntry();
+  }
+
+  function openSettings() {
+    var b = document.querySelector('[data-a="panel"][data-name="settings"]');
+    if (b) b.click();
+  }
+
+  /* ==========================================================================
+   * 12. 启动
+   * ======================================================================== */
+  function boot() {
+    try {
+      var style = document.createElement('style');
+      style.textContent = CSS;
+      document.head.appendChild(style);
+    } catch (e) { log('style inject failed', e); }
+    try { ensureAd(); } catch (e) { log('ad init failed', e); }
+    try { installAdInterceptor(); } catch (e) { log('interceptor failed', e); }
+    try { watchPanel(); } catch (e) { log('watchPanel failed', e); }
+    setTimeout(function () { try { watchPanel(); } catch (e) {} }, 800);
+    watchSave();
+    try { setTimeout(bootstrapCloud, 600); } catch (e) { log('cloud bootstrap failed', e); }
+    log('booted, mode=' + (MOCK ? 'mock' : 'taptap') + ', storage=' + STORAGE);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+
+  /* ==========================================================================
+   * 13. 对外接口
+   * ======================================================================== */
+  globalThis.QTap = {
+    version: VERSION,
+    config: CONFIG,
+    isMock: function () { return MOCK; },
+    env: {
+      hasTap: !!TAP,
+      storage: STORAGE,
+      cloud: cloudAvailable,
+      leaderboard: leaderboardAvailable,
+      achievements: achievementAvailable,
+      ads: adsAvailable
+    },
+    ads: {
+      spaceId: CONFIG.ads.spaceId,
+      available: adsAvailable,
+      show: showAd,
+      stats: function () {
+        return { plays: adState.plays, rewards: adState.rewards, declines: adState.declines,
+                 failures: adState.failures, ready: adState.ready, playing: adState.playing,
+                 lastError: adState.lastError };
+      }
+    },
+    cloud: {
+      upload: uploadCloud,
+      list: listCloud,
+      restore: restoreCloud,
+      collect: collectPayload,
+      uuid: archiveUuid,
+      mode: function () { return cloudMode; },
+      status: function () { return cloudMessage; },
+      hasLocalMainSave: hasLocalMainSave,
+      bootstrap: bootstrapCloud
+    },
+    achievements: {
+      available: achievementAvailable,
+      unlock: unlockAchievement,
+      unlockBoss: unlockBossAchievement,
+      show: showAchievements
+    },
+    leaderboard: {
+      submit: submitPower,
+      open: openLeaderboard,
+      submitAscension: submitAscension,
+      openSpeedrun: openSpeedrunLeaderboard,
+      ascensionCostScore: ascensionCostScore
+    },
+    getState: state,
+    getPower: livePower,
+    ui: {
+      openSettings: openSettings,
+      status: setStatus,
+      inject: injectSettingsEntry
+    }
+  };
+})();
+
+window.__SHANYE_STANDARD_BOARD_IDS={"power":"x2vrind450ieimxazy","speedrun":"gohqzrhs79kgpryrbr"};
+/* V90.64 TapTap ranked modes. Install immediately AFTER the existing QTap adapter.
+   This guard also protects the adapter's PRIVATE auto-power and settings handlers:
+   those read QTap.config.leaderboard, not the public methods alone.
+   Never invent an official standard leaderboard ID. */
+(function (g) {
+  'use strict';
+  const q=g.QTap;
+  if (!q?.config?.leaderboard || !q.leaderboard || q.rankDifficulty?.sync) return;
+  const cfg=q.config.leaderboard;
+  const original={
+    power:String(cfg.power||''), speedrun:String(cfg.speedrun||'')
+  };
+  const supplied=g.__SHANYE_STANDARD_BOARD_IDS||{};
+  const standard={
+    power:String(supplied.power||''), speedrun:String(supplied.speedrun||'')
+  };
+  if(standard.power===original.power||standard.speedrun===original.speedrun ||
+     (standard.power && standard.power===standard.speedrun)){
+    standard.power='';standard.speedrun='';
+  }
+  // Underlying qtap-3 adapter otherwise submits to its single hardcoded power
+  // leaderboard from a private watchSave() closure, bypassing public API guards.
+  // Disable THAT watcher and reimplement safe, mode-scoped auto-submission.
+  const auto=q.config.leaderboardAuto;
+  const autoInterval=auto?.minIntervalMs||120000;
+  if(auto)auto.enabled=false;
+  const baseApi={
+    submit:q.leaderboard.submit,
+    submitAscension:q.leaderboard.submitAscension,
+    open:q.leaderboard.open,
+    openSpeedrun:q.leaderboard.openSpeedrun
+  };
+  function currentMode(){
+    const st=g.__QTAP_STATE;
+    if(!st?.role || !st?.game?.s?.difficulty)return null;
+    const mode=st.game.s.difficulty;
+    return mode==='standard'||mode==='challenge'||mode==='easy'?mode:null;
+  }
+  function sync(){
+    const mode=currentMode();
+    const dest=mode==='challenge'?original:mode==='standard'?standard:null;
+    // Empty SDK IDs are fail-closed for easy, missing, or unconfigured standard;
+    // no score is ever written to a challenge board by a standard/easy player.
+    cfg.power=dest?.power||'';
+    cfg.speedrun=dest?.speedrun||'';
+    if(auto)auto.enabled=false;
+    return {mode, powerReady:!!cfg.power,speedrunReady:!!cfg.speedrun};
+  }
+  function guard(method,kind,args){
+    const state=sync();
+    if(state.mode==='easy'||!state.mode)
+      return Promise.resolve({skipped:true,reason:state.mode==='easy'?'easy-unranked':'no-playing-character'});
+    if(!state[kind+'Ready'])
+      return Promise.reject(new Error(state.mode==='standard'?'标准模式排行榜未配置独立 TapTap 榜单 ID':'挑战排行榜暂不可用'));
+    const fn=baseApi[method];
+    if(typeof fn!=='function')return Promise.reject(new Error('TapTap 排行榜接口不可用'));
+    try{return Promise.resolve(fn.apply(q.leaderboard,args))}
+    catch(e){return Promise.reject(e)}
+  }
+  q.leaderboard.submit=function(force){return guard('submit','power',[force]);};
+  q.leaderboard.submitAscension=function(record){
+    const mode=currentMode();
+    if(record?.difficulty && record.difficulty!==mode)
+      return Promise.reject(new Error('飞升成绩难度与角色存档不一致'));
+    return guard('submitAscension','speedrun',[record]);
+  };
+  q.leaderboard.open=function(){return guard('open','power',[]);};
+  q.leaderboard.openSpeedrun=function(){return guard('openSpeedrun','speedrun',[]);};
+  q.rankDifficulty={
+    sync,
+    mode:currentMode,
+    standardConfigured:()=>!!standard.power&&!!standard.speedrun,
+    originalChallengeIdsUnchanged:()=>!!original.power&&!!original.speedrun,
+    // Client IDs are not secrets; diagnostics avoid logging user identifiers.
+    readiness:()=>sync()
+  };
+  // Begin with no leaderboard available until a SAVED/PLAYING character is
+  // known. The render/persist bridge should call rankDifficulty.sync().
+  sync();
+  let lastTick=-1, lastSubmitAt=0, lastMode=null;
+  if(typeof g.setInterval==='function')g.setInterval(function(){
+    const tick=g.__QTAP_SAVE_TICK||0;
+    if(tick===lastTick)return;
+    lastTick=tick;
+    const state=sync();
+    if(!state.powerReady || !q.env?.leaderboard?.())return;
+    const now=Date.now(),change=lastMode!==state.mode;
+    if(!change && now-lastSubmitAt<autoInterval)return;
+    lastSubmitAt=now;lastMode=state.mode;
+    q.leaderboard.submit(true).catch(function(){});
+  },5000);
+})(globalThis);
+
+</script>
 <div id="phone" class="phone front-mode">
  <div id="game-shell" class="game-shell">
   <header class="topbar"><div class="wordmark">山野修仙记 <span>十二境 · 修仙生存</span></div><div class="top-buttons"><button data-a="panel" data-name="help">教程</button><button data-a="panel" data-name="settings">设置</button></div></header>
@@ -2755,7 +4001,7 @@ root.QCombatRating={birth,live,percentile,gearDelta};
   "paragraphs": [
    "青岚、碧溪、赤砂、玄阴、天阙构成前期五境；之后为丹霞雷渊、婴灵古墟、化神云海、炼虚裂隙、合体仙城、大乘古道、渡劫天门。每张地图都是8×8。",
    "两族选择不改变地点、主要剧情或飞升结局。先修仪式后战首领，高阶需回洞府破境。不同种族的境界名称显示在状态、档案和修炼页。",
-   "资源、灵田、奇遇、再战及装备重复制作支持继续探索。当前不含仙界内容、宗门弟子、多人联机、广告或付费抽卡。"
+   "资源、灵田、奇遇、再战及装备重复制作支持继续探索。当前接入 TapTap 激励视频广告、云端存档与战力排行榜；不含仙界内容、宗门弟子、多人联机或付费抽卡。"
   ]
  },
  {
@@ -2780,7 +4026,7 @@ root.QCombatRating={birth,live,percentile,gearDelta};
   "id": "storage",
   "title": "存储安全与当前边界",
   "paragraphs": [
-   "200个是逻辑档位上限，不预占空间。当前仍为浏览器localStorage；浏览器配额不足会拒绝写入并提示导出，不承诺200份满进度都装得下。",
+   "200个是逻辑档位上限，不预占空间。当前仍为浏览器localStorage；浏览器配额不足会拒绝写入并提示导出，两族各有简单、标准、挑战三种难度，每种难度各100个独立档位，共600个逻辑档位；浏览器本地存储仍受设备配额限制，建议定期导出JSON备份。",
    "保存失败时不切走当前未保存进度；损坏档锁定，不允许新建覆盖。主档损坏时仅尝试同族同号备份，不从别的档位恢复。",
    "请勿在多个标签同时操作同一档位。离线存档不是防作弊服务器，外部JSON、手动清理和不同浏览器来源的旧备份无法完全限制。"
   ]
@@ -3159,7 +4405,7 @@ const GUIDE=[
  {id:'warehouse',title:'建造仓房',text:'外出采集的材料多了，行囊难免装不下。先按下方清单采齐建仓房的材料，数量凑齐后返回洞府，修建仓房。'},
  {id:'storage',title:'学会存取物资',text:'打开仓库，将随身的一份材料存进去，再取回一份。以后出门前记得带上采集工具、补给和任务所需材料。'},
  {id:'forge',title:'建造炼器室',text:'想要炼制自己的法器，先得有炼器室。查看下方缺少的材料，继续采集；材料齐全后回洞府完成建造。'},
- {id:'sword',title:'炼制第一把法剑',text:'打开「炼制」，备好桃木灵剑所需材料，在炼器室打造你的第一把武器。完成后留意综合战力的变化。'},
+ {id:'sword',title:'炼制第一把法剑',text:'在洞府点击「炼器室」，找到桃木灵剑配方并制作。完成后会自动装备，留意综合战力的变化。'},
  {id:'alchemy',title:'建造丹房，准备补给',text:'丹药能让远行更加从容。先收集材料建好丹房，再备齐辟谷丸的炼制材料。照着下方清单一步步完成。'},
  {id:'book',title:'查阅万象图鉴',text:'不认识的材料、妖兽或法器，都可以到图鉴里查一查。打开图鉴，看看物品的用途和来源，为下一次探索做好准备。'},
  {id:'train',title:'先练招，再迎战',text:'真正的妖兽会伤人，战败还可能折损寿元。先回洞府，在「修炼」中安全试剑，学会观察敌人动作、攻击和防守。'},
@@ -3312,7 +4558,7 @@ const HELP=[
    "五境各有两处可重复奇遇，包括隐居石窟、旧匣、灵泉、鱼群、残炉、熔岩遗匣、古冢夜语、阴河渡口、残卷石台与宝库。到达点探查，两项选择只能完成其一；关闭不扣次数，完成后当天不能重复领奖。",
    "古冢夜间18点至次日6点开放，其他需要工具、材料或防护的选择会给出提示。固定奇遇地块禁止筑庐，避免把探索内容覆盖掉。奇遇奖励超重留在原处，回来拾取。",
    "普通野怪有22%机会掉装备，首领必掉一件；通关后可隔日在首领格再战，生命与攻击提高25%，仍有修为和保底精良装备。重复击败不重复解锁或反复弹最终通关窗。",
-   "每天资源与奇遇刷新、灵田可产出、装备可重复炼制，但不要求现实等待。本版没有离线收益、抽卡、广告、付费建筑、联网排行榜或宗门弟子管理。"
+   "每天资源与奇遇刷新、灵田可产出、装备可重复炼制，但不要求现实等待。本版接入激励视频广告、云端存档与联网战力排行榜；没有离线收益、抽卡、付费建筑或宗门弟子管理。"
   ]
  },
  {
@@ -3666,7 +4912,7 @@ HELP.push({id:'p11-high-realm',title:'高境异能与异兆调查',paragraphs:[
 
 HELP.push({id:'survival-time',title:'饥渴与休息：按时间结算',paragraphs:[
  '气血损失按实际时间累计：饱腹0时每小时至少损失4气血，饮水0时每小时至少损失8气血；两项耗尽时叠加，高境人物由于气血上限较高，伤害也相应增加。',
- '每次行动原有的饱腹、饮水消耗保持不变。一次长行动若中途耗尽补给，仅从耗尽时开始计算伤害。连续短行动与等时长的长行动使用同一套时间计算规则。',
+ '饱腹与饮水的基础消耗会随境界提升而降低；第七境领悟灵息辟谷后，可自行开启真元/妖元抵扣普通饥渴消耗，能量储备不足或处于战斗、回灵修行时会暂停。炎热等环境额外消耗仍需补给。一次长行动若中途耗尽补给，仅从耗尽时开始计算伤害。连续短行动与等时长的长行动使用同一套时间计算规则。',
  '洞府安睡及休息按分钟恢复气血和灵力。补给充足才能完整恢复，任一补给低于或等于10则停止恢复，请先在洞府用餐补水。'
 ]});
 D.HELP.push({id:'v907-ascension',title:'飞升后继续修行、轮回玉结算与本机资质榜',paragraphs:[
@@ -3951,7 +5197,7 @@ const legacy=[
   "id": "storage",
   "title": "存储安全与当前边界",
   "paragraphs": [
-   "每种难度两族各100档、共600个逻辑档位，不预占空间。当前仍为浏览器localStorage；浏览器配额不足会拒绝写入并提示导出，不承诺200份满进度都装得下。",
+   "每种难度两族各100档、共600个逻辑档位，不预占空间。当前仍为浏览器localStorage；浏览器配额不足会拒绝写入并提示导出，两族各有简单、标准、挑战三种难度，每种难度各100个独立档位，共600个逻辑档位；浏览器本地存储仍受设备配额限制，建议定期导出JSON备份。",
    "保存失败时不切走当前未保存进度；损坏档锁定，不允许新建覆盖。主档损坏时仅尝试同族同号备份，不从别的档位恢复。",
    "请勿在多个标签同时操作同一档位。离线存档不是防作弊服务器，外部JSON、手动清理和不同浏览器来源的旧备份无法完全限制。"
   ]
@@ -4068,7 +5314,7 @@ const legacy=[
   "title": "饥渴与休息：按时间结算",
   "paragraphs": [
    "气血损失按实际时间累计：饱腹0时每小时至少损失4气血，饮水0时每小时至少损失8气血；两项耗尽时叠加，高境人物由于气血上限较高，伤害也相应增加。",
-   "每次行动原有的饱腹、饮水消耗保持不变。一次长行动若中途耗尽补给，仅从耗尽时开始计算伤害。连续短行动与等时长的长行动使用同一套时间计算规则。",
+   "饱腹与饮水的基础消耗会随境界提升而降低；第七境领悟灵息辟谷后，可自行开启真元/妖元抵扣普通饥渴消耗，能量储备不足或处于战斗、回灵修行时会暂停。炎热等环境额外消耗仍需补给。一次长行动若中途耗尽补给，仅从耗尽时开始计算伤害。连续短行动与等时长的长行动使用同一套时间计算规则。",
    "洞府安睡及休息按分钟恢复气血和灵力。补给充足才能完整恢复，任一补给低于或等于10则停止恢复，请先在洞府用餐补水。"
   ]
  }
@@ -5512,7 +6758,7 @@ get character(){return B.profile(this.s.birth);}
   // Capture first finish before the 1000-year ascension grant. Time excludes the 420-minute birth clock.
   this.s.ascensionRecord={version:1,race:this.s.character,
    runId:[this.s.character,this.s.birth.seed,this.s.seed,this.s.minutes].join(':'),
-   elapsedMinutes:Math.max(0,this.s.minutes-420),remainingLifeMinutes:this.s.life.left,defeats:this.s.life.losses,difficulty:this.s.difficulty};
+   elapsedMinutes:Math.max(0,this.s.minutes-420),remainingLifeMinutes:this.s.life.left,defeats:this.s.life.losses,difficulty:this.s.difficulty};try{if(window.QTap&&QTap.leaderboard&&QTap.leaderboard.submitAscension)QTap.leaderboard.submitAscension(this.s.ascensionRecord).catch(function(__qtapS){});}catch(__qtapS2){}
   this.s.life.left+=D.ASCENSION_RULE.life*D.LIFE.yearMinutes;
   this.s.hp=this.s.maxHp;this.s.spirit=this.s.maxSpirit;
   this.log('飞升天门已启，凡界篇章完结。','good');
@@ -6323,7 +7569,7 @@ const batches=this.farmBatches,loot=Object.fromEntries(Object.entries(D.FARM_LOO
    if(extra&&D.ITEMS[extra]&&this.random()<.28)this.loot({[extra]:1},'妖兽额外战利品');
   }
   this.log('战胜'+e.name+' · 修为+'+e.xp,'good');if(boss)this.dropLoot();if(b.siteReward)this.eventReward(b.siteReward.key,b.siteReward.choice);
-  if(boss){const i=Number(b.type.slice(4)),first=!this.s.cleared[i];if(first&&this.s.character==='human')this.manualAcquire('boss');this.s.cleared[i]=true;this.s.bossDaily[i]=this.day;this.s.stats.bossWins++;this.s.flags.boss=this.s.cleared[0];/* V90.68 所有地图统一重算开图（原来只在前五图更新，第六图起要重进才开）*/this.recalcUnlocked();
+  if(boss){const i=Number(b.type.slice(4)),first=!this.s.cleared[i];if(first&&this.s.character==='human')this.manualAcquire('boss');this.s.cleared[i]=true;this.s.bossDaily[i]=this.day;this.s.stats.bossWins++;try{if(window.QTap&&QTap.achievements&&QTap.achievements.unlockBoss)QTap.achievements.unlockBoss(this.s.stats.bossWins);}catch(__qtapA){}this.s.flags.boss=this.s.cleared[0];/* V90.68 所有地图统一重算开图（原来只在前五图更新，第六图起要重进才开）*/this.recalcUnlocked();
    if(first&&i<4)this.note('已解锁 '+D.ZONES[i+1].name,'ok','unlock');else if(first&&i===4)this.note('筑道之路已通，已解锁丹霞雷渊','ok','unlock');else if(first&&i>=5){const _nx=D.ZONES[i+1];const _ok=_nx&&this.s.unlocked>i+1;this.note(_ok?('已解锁 '+(_nx?_nx.name:'')):('道坛试炼已过 · 回洞府「修炼→破境」后开放'+( _nx?_nx.name:'' )),'ok','unlock');}
   }
   const materialParts=[];
@@ -6372,7 +7618,7 @@ const batches=this.farmBatches,loot=Object.fromEntries(Object.entries(D.FARM_LOO
    ()=>st.training>(b.training||0),
    ()=>st.travels>(b.travels||0)
   ];
-  while(g.step<tests.length&&tests[g.step]())g.step++;if(g.step>=tests.length){g.status='done';if(!g.rewarded){g.rewarded=true;this.loot({salve:2,pill:1},'入门礼');this.note('入门完成 · 回春散2、辟谷丸1','ok','guide-complete');}}
+  while(g.step<tests.length&&tests[g.step]())g.step++;if(g.step>=tests.length){g.status='done';if(!g.rewarded){g.rewarded=true;this.loot({salve:2,pill:1},'入门礼');this.note('基础入门完成 · 回春散2、辟谷丸1。接下来从青岚山麓开始主线：修复山门封印、击败本境首领，再回洞府满足破境条件。','ok','guide-complete');}}
  }
  // V63: delta-based reward ledger; records real changes and never issues loot.
  rewardSnapshot(){
@@ -7285,7 +8531,7 @@ RaceSlots.prototype.save=function(id,g,n=1,options={}){
  for(const key of [this.key(id,n),this.backupKey(id,n)]){
   const raw=this.readKey(key);if(!raw)continue;let old;try{old=JSON.parse(raw);}catch{continue;}
   if(old.version!==14||!old.rebuilt||old.garden!==undefined)continue;
-  if(old.race!==id||old.difficulty!==this.difficulty)throw Error('旧灵田归档身份不符');
+  if(old.race!==id||(old.difficulty!==undefined&&old.difficulty!==this.difficulty))throw Error('旧灵田归档身份不符');
   const archive=this.gardenArchiveKey(id,n),prior=this.readKey(archive);
   if(!prior){this.storage.setItem(archive,raw);if(this.readKey(archive)!==raw)throw Error('灵田升级前归档校验失败，取消覆盖');}
   break;
@@ -7339,7 +8585,7 @@ function archives(id,all,page,active,mode='challenge'){const c=B.RACES[id],used=
  return header('03','characters',globalThis.QData.DIFFICULTIES[mode].name+' · '+c.name+'档案')+heading('第二步 · 选择一生',c.name+'档案','已建档可继续，空档先抽取天赋。')+`<div class="archive-count"><span><b>${used}</b> 在修</span><span><b>${empty}</b> 空档</span><span><b>${dead}</b> 陨落</span><span>共100档</span></div><section class="entry-content entry-save-content" aria-label="第${page+1}页档位"><div class="entry-save-grid">${cells}</div></section><footer class="entry-footer entry-save-footer"><nav class="entry-pagination" aria-label="存档分页"><button data-a="slot-page" data-d="-1" ${page===0?'disabled':''}>← 上页</button><strong>${page+1}<small> / 5</small></strong><button data-a="slot-page" data-d="1" ${page===4?'disabled':''}>下页 →</button></nav><div class="entry-footer-tools"><button data-a="characters">返回种族</button>${active?'<button data-a="slot-back">返回游戏</button>':''}</div><p>陨落不波及其他档位 · 不覆盖旧版存档</p></footer>`;
 }
 function birth(b,slot,draws,hasLegacy,dead=false,remaining=0){const c=B.profile(b),e=B.effects(b);return header('04','birth-back',c.name+' · 第'+num(slot)+'档')+heading('第三步 · 抽取先天天赋','先定天赋','先决定先天天赋，再确认本世属性。')+
- `<section class="entry-content birth-content"><label class="birth-name-label">道号<input id="birth-name" maxlength="12" value="${esc(b.name)}" autocomplete="off" aria-label="道号，最多12字"></label><p class="birth-stage-note">本页只负责抽取灵根／血脉等先天天赋。下一页再用轮回玉确认本世四项基础属性。</p><div class="birth-traits">${B.cards(b).map(([k,v,n])=>`<div class="birth-trait"><small>${k}</small><div><b>${esc(v)}</b><span>${esc(n)}</span></div></div>`).join('')}</div><div class="power-rating"><strong>初始战力 ${globalThis.QCombatRating.birth(b).toLocaleString("zh-CN")}</strong><small>约优于 ${globalThis.QCombatRating.percentile(b)}% 的同族随机命格（固定8192次抽样比较）· 战力不代表必胜，气运与修炼潜力另有价值</small></div><div class="birth-effect-summary">修为获取 +${e.xp}% · 攻势 +${e.damage}%<br>装备品质判定 +${e.quality.toFixed(1)} · 药物恢复 +${e.heal}%</div><details class="birth-rates"><summary>查看抽取概率与规则</summary><p>${(b.race==='human'?B.ROOTS:B.BLOODS).map(x=>x.name+' '+x.weight+'%').join(' · ')}</p><p>${b.race==='human'?'灵根品阶独立抽取；五行偏性是灵根中的首属性。异灵根另标雷、冰或风，其当前属性效果仍按五行偏性结算。':'血脉品阶独立抽取；狼、狐、猿、蛇、鹤本相各20%。'}悟性/灵智、根骨/妖躯为40–90，气运为1–100。任何天赋都可以飞升；试玩领取不需要观看广告。</p><p>气运只改善已有装备品质判定，不保证每次出稀有装备，不改变固定材料产量。天赋不改变地图、首领解锁和飞升门槛。</p></details></section><footer class="entry-footer birth-footer"><div class="birth-actions"><button data-a="birth-reroll" ${remaining<=0?'disabled':''}>重新抽取<small>剩余 ${remaining} 次</small></button><button class="entry-main-action" data-a="birth-next">确认天赋 · 下一步<span>→</span></button></div><div class="entry-footer-tools"><button data-a="birth-ad">领取3次抽取机会</button><span class="micro">已抽 ${draws} 次 · 可用 ${remaining} 次</span></div><div class="entry-footer-tools">${hasLegacy&&b.race==='human'&&!dead?'<button data-a="legacy-list">继承本机旧档</button>':''}${!dead?'<button data-a="entry-import">导入JSON存档</button>':''}<button data-a="birth-back">返回档位</button></div><p>天赋先定，属性后调；正式入世前不会覆盖档位。</p></footer>`;}
+ `<section class="entry-content birth-content"><label class="birth-name-label">道号<input id="birth-name" maxlength="12" value="${esc(b.name)}" autocomplete="off" aria-label="道号，最多12字"></label><p class="birth-stage-note">本页只负责抽取灵根／血脉等先天天赋。下一页再用轮回玉确认本世四项基础属性。</p><div class="birth-traits">${B.cards(b).map(([k,v,n])=>`<div class="birth-trait"><small>${k}</small><div><b>${esc(v)}</b><span>${esc(n)}</span></div></div>`).join('')}</div><div class="power-rating"><strong>初始战力 ${globalThis.QCombatRating.birth(b).toLocaleString("zh-CN")}</strong><small>约优于 ${globalThis.QCombatRating.percentile(b)}% 的同族随机命格（固定8192次抽样比较）· 战力不代表必胜，气运与修炼潜力另有价值</small></div><div class="birth-effect-summary">修为获取 +${e.xp}% · 攻势 +${e.damage}%<br>装备品质判定 +${e.quality.toFixed(1)} · 药物恢复 +${e.heal}%</div><details class="birth-rates"><summary>查看抽取概率与规则</summary><p>${(b.race==='human'?B.ROOTS:B.BLOODS).map(x=>x.name+' '+x.weight+'%').join(' · ')}</p><p>${b.race==='human'?'灵根品阶独立抽取；五行偏性是灵根中的首属性。异灵根另标雷、冰或风，其当前属性效果仍按五行偏性结算。':'血脉品阶独立抽取；狼、狐、猿、蛇、鹤本相各20%。'}悟性/灵智、根骨/妖躯为40–90，气运为1–100。任何天赋都可以飞升；领取额外抽取次数需观看激励视频。</p><p>气运只改善已有装备品质判定，不保证每次出稀有装备，不改变固定材料产量。天赋不改变地图、首领解锁和飞升门槛。</p></details></section><footer class="entry-footer birth-footer"><div class="birth-actions"><button data-a="birth-reroll" ${remaining<=0?'disabled':''}>重新抽取<small>剩余 ${remaining} 次</small></button><button class="entry-main-action" data-a="birth-next">确认天赋 · 下一步<span>→</span></button></div><div class="entry-footer-tools"><button data-a="birth-ad">领取3次抽取机会</button><span class="micro">已抽 ${draws} 次 · 可用 ${remaining} 次</span></div><div class="entry-footer-tools">${hasLegacy&&b.race==='human'&&!dead?'<button data-a="legacy-list">继承本机旧档</button>':''}${!dead?'<button data-a="entry-import">导入JSON存档</button>':''}<button data-a="birth-back">返回档位</button></div><p>天赋先定，属性后调；正式入世前不会覆盖档位。</p></footer>`;}
 function birthConfirm(b,slot,ledger,dead=false){const c=B.profile(b),adds=(b.adds&&typeof b.adds==='object')?b.adds:{hp:0,spirit:0,attack:0,years:0,spent:0};
  const remain=Math.max(0,ledger.balance-(adds.spent||0));
  const rows=[[ '气血','hp',c.hp,'每次 +4 / 10玉',10],[c.energy,'spirit',c.spirit,'每次 +4 / 10玉',10],['攻击','attack',c.attack,'每次 +1 / 20玉',20],['寿元','years',c.years+'年','每次 +5年 / 10玉',10]];
@@ -7498,6 +8744,7 @@ function resetOldSlot(){const m=modal;if(!m||m.kind!=='rebuild-reset')return;
 }
 function load(){game=new QGame();activeRole=null;activeSlot=1;deathBoot=false;saveStatus=saveAvailable?'请选择角色':'浏览器存储受限';}
 function persist(){
+ try{window.__QTAP_STATE={role:activeRole,slot:activeSlot,game:game,power:(function(){try{return QCombatRating.live(game).total||0}catch(__qtapP){return 0}})()};window.__QTAP_SAVE_TICK=(window.__QTAP_SAVE_TICK||0)+1;try{window.QTap?.rankDifficulty?.sync()}catch(__rank){} }catch(__qtapE){}
  if(!activeRole)return true;
   if(game.s.ended){
    if(lifeRescueReady()){saveStatus='救援待确认 · 已保留寿尽前存档';return true;}
@@ -8901,12 +10148,12 @@ ${nav('set-reset','重新修行','新开存档 · 需再次确认','')}
 function settingsChildBody(){
  const sub=panel.replace('set-','');
  if(sub==='save')return `<div class="v909-set">
-<section class="v909-mod"><h3 class="v909-mod-title">存档与备份</h3><p class="v909-mod-hint">换文件路径、浏览器、设备或网址前先导出。继承旧版存档只可主动进行一次。</p><div class="v909-actions"><button class="btn primary v909-btn" data-a="export">导出存档</button><button class="btn v909-btn" data-a="import">导入存档</button><button class="btn v909-btn" data-a="restore">恢复上次备份</button>${hasOldArchive()?'<button class="btn v909-btn" data-a="export-old-archive">导出重构前旧档</button>':''}</div><p class="v909-note">进度保存在本机浏览器。寿元耗尽只删除当前种族的当前档位及其备份，不影响其他档位；外部 JSON 仍可手动回档。</p></section>
+<section class="v909-mod"><h3 class="v909-mod-title">存档与备份</h3><p class="v909-mod-hint">进度自动保存并同步到 TapTap 云端，换设备登录同一账号即可接续。继承旧版存档只可主动进行一次。</p><div class="v909-actions"><button class="btn primary v909-btn" data-a="export">导出存档</button><button class="btn v909-btn" data-a="import">导入存档</button><button class="btn v909-btn" data-a="restore">恢复上次备份</button>${hasOldArchive()?'<button class="btn v909-btn" data-a="export-old-archive">导出重构前旧档</button>':''}</div><p class="v909-note">进度自动保存并同步到 TapTap 云端。寿元耗尽只删除当前种族的当前档位及其备份，不影响其他档位；进度自动保存并同步到 TapTap 云端。</p></section>
 <p class="v909-set-status">${esc(saveStatus)}</p></div>`;
  if(sub==='life')return `<div class="v909-set">
 <section class="v909-mod"><h3 class="v909-mod-title">修行状态与寿元</h3><div class="v909-kv"><span>剩余寿元</span><b>${game.lifeYears.toFixed(1)} 年</b></div><div class="v909-kv"><span>倒下次数</span><b>${game.s.life.losses} 次</b></div><div class="v909-kv"><span>延寿丹</span><b>${game.s.life.elixirs}/${D.LIFE.elixirLimit}</b></div><div class="v909-actions"><button class="btn primary v909-btn" data-a="ad-life" ${simulatedLifeAdReady()?'':'disabled'}>${game.s.combat?'斗法中不可使用':'领取10年寿元'}</button></div><p class="v909-note">任何时候都可以领取 10 年寿元（斗法中除外），每世不限次数，看完一段激励视频即到账。寿元归零不会立刻清档：本世还有一次逆命续年的机会（+15 年，进度全部保留）；选择「接受轮回」才会结算并清除当前档位的主存档与自动备份。</p></section></div>`;
  if(sub==='char')return `<div class="v909-set">
-<section class="v909-mod"><h3 class="v909-mod-title">角色与档案</h3><p class="v909-mod-hint">人族与妖族各 100 个独立档位；各档命格、寿元、背包、地图与洞府完全独立。</p><div class="v909-actions"><button class="btn primary v909-btn" data-a="characters">种族与百档档案</button><button class="btn v909-btn" data-a="ranking-open">本机飞升资质榜</button></div><p class="v909-note">飞升榜仅在本机保存、可导出 JSON，不是已接入云端的公开排行榜。</p></section></div>`;
+<section class="v909-mod"><h3 class="v909-mod-title">角色与档案</h3><p class="v909-mod-hint">人族与妖族各 100 个独立档位；各档命格、寿元、背包、地图与洞府完全独立。</p><div class="v909-actions"><button class="btn primary v909-btn" data-a="characters">种族与百档档案</button><button class="btn v909-btn" data-a="ranking-open">本机飞升资质榜</button></div><p class="v909-note">飞升成绩会同时提交到 TapTap 云端「飞升速通榜」，可在设置页打开查看。</p></section></div>`;
  if(sub==='visual')return `<div class="v909-set">
 <section class="v909-mod"><h3 class="v909-mod-title">视觉与体验</h3><div class="theme-picker v909-themes" role="group" aria-label="视觉主题"><button class="btn theme-choice" data-a="theme-set" data-theme="forest" aria-pressed="false">暖白松绿</button><button class="btn theme-choice" data-a="theme-set" data-theme="mono" aria-pressed="false">极简黑白</button><button class="btn theme-choice" data-a="theme-set" data-theme="immortal" aria-pressed="false">✦ 流光仙境</button></div><div class="v909-actions"><button class="btn v909-btn" data-a="motion">${game.s.settings.motion?'减少动效':'恢复动效'}</button></div><p class="v909-note">三种主题可自由切换。流光仙境包含灵光与粒子动效；「减少动效」会关闭过渡与动画，不影响任何操作与显示。</p></section></div>`;
  if(sub==='help')return `<div class="v909-set">
@@ -8942,7 +10189,7 @@ function renderPanel(){const root=$('panel-root');$('phone').classList.toggle('i
 function openPanel(name){
  if(name==='quest'&&isQuestChild(panel)){leaveQuestChild();return;}
  codexRecipeReturn=false;
- if(game.s.combat&&!['help','settings','log','book'].includes(name)){notify('先结束斗法','warn');return;}
+ if(game.s.combat){notify('先结束斗法','warn');return;}
  stop();mapOpen=false;travelOpen=false;if(panel===name){panelScroll[panel]=$('panel-body')?.scrollTop||0;panel=null;}else{if(panel)panelScroll[panel]=$('panel-body')?.scrollTop||0;panel=name;filter='all';search='';if(name==='manuals'){manualView='owned';manualKind='all';}if(name==='book'){bookDetailKey=null;}}
  if(panel==='book')flush(game.act('book-open'));else{persist();render();}if(panel&&$('panel-body'))$('panel-body').scrollTop=panelScroll[panel]||0;
 }
@@ -9017,7 +10264,8 @@ function renderModal(){const r=$('modal-root');syncLayers();if(!modal){r.innerHT
  requestAnimationFrame(()=>r.querySelector('button')?.focus({preventScroll:true}));
 }
 function render(){
- if(game.s.combat){mapOpen=false;travelOpen=false;panel=null;} renderStatus();renderScene();renderMap();renderPeek();renderTravel();renderPanel();renderPromo();syncCombat();syncLayers();$('game-shell').classList.toggle('in-secret',!!game.s.secretRealm);
+ try{window.__QTAP_STATE={role:activeRole,slot:activeSlot,game:game,power:(function(){try{return QCombatRating.live(game).total||0}catch(__qtapP){return 0}})()};window.__QTAP_NOTIFY=notify;try{window.QTap?.rankDifficulty?.sync()}catch(__rank){} }catch(__qtapE){}
+ renderStatus();renderScene();renderMap();renderPeek();renderTravel();renderPanel();renderPromo();syncCombat();syncLayers();$('game-shell').classList.toggle('in-secret',!!game.s.secretRealm);
  $('phone').classList.toggle('reduced',!game.s.settings.motion);
  if(guideRAF)cancelAnimationFrame(guideRAF);guideRAF=requestAnimationFrame(renderCoach);
 }
@@ -9122,19 +10370,15 @@ function tutorialGoalHTML(goal){
  });
  const done=rows.every(x=>x.left===0);
  const missingSources=Object.entries(goal.cost).filter(([id,count])=>(game.s.inv[id]||0)+(goal.home?(game.camp?.stash[id]||0):0)<count).slice(0,2).map(([id])=>`<div class="guide-source-row"><b>${esc(D.ITEMS[id].name)}</b>：${esc(tutorialSourceText(id))}</div>`).join('');
- return `<div class="guide-goal" aria-live="polite"><div class="guide-goal-title">当前目标：${esc(goal.label)}</div><div class="guide-goal-items">${rows.map(x=>`<div class="guide-goal-item ${x.left?'missing':'complete'}"><span>${esc(x.name)} <b>${x.got}/${x.need}</b>${x.left?' · 缺'+x.left:' ✓'}</span><div class="goal-track"><div class="goal-fill" style="width:${x.pct}%"></div></div></div>`).join('')}</div>${!done?`<div class="guide-source-list">${missingSources}</div>`:''}<div class="guide-goal-footer">${done?'材料已备齐！返回洞府建造，或前往炼制完成制作。':goal.home?'继续收集缺少的材料；洞府仓库内可用的材料也会计入。':'继续收集缺少的材料，采到后数量会更新。'}</div></div>`;
+ return `<div class="guide-goal" aria-live="polite"><div class="guide-goal-title">当前目标：${esc(goal.label)}</div><div class="guide-goal-items">${rows.map(x=>`<div class="guide-goal-item ${x.left?'missing':'complete'}"><span>${esc(x.name)} <b>${x.got}/${x.need}</b>${x.left?' · 缺'+x.left:' ✓'}</span><div class="goal-track"><div class="goal-fill" style="width:${x.pct}%"></div></div></div>`).join('')}</div>${!done?`<div class="guide-source-list">${missingSources}</div>`:''}<div class="guide-goal-footer">${done?'材料已备齐！返回洞府进入对应建筑完成制作。':goal.home?'继续收集缺少的材料；洞府仓库内可用的材料也会计入。':'继续收集缺少的材料，采到后数量会更新。'}</div></div>`;
 }
 function guideTarget(){const s=game.s,step=s.guide.step,b=s.guide.base;
  if(s.combat)return {selector:s.combat.intent==='heavy'?'[data-a="fight"][data-mode="guard"]':'[data-a="fight"][data-mode="attack"]',tip:s.combat.intent==='heavy'?'看到重击先防守。':'先完成战斗，引导会保留。'};
  if(s.hunger<30){
-  if(s.inv.berry)return {selector:'#food-button',tip:'先吃灵果，避免饥饿。'};
-  if(game.atCamp)return {selector:'#rest-button',tip:'先在洞府休息，利用每日简餐补给。'};
-  const food=['pill','meal','fish'].find(id=>s.inv[id]>0);
-  if(food)return {selector:panel==='pack'?`[data-a="consume"][data-id="${food}"]`:'#pack-button',tip:'行囊中有食物，先使用再继续。'};
+  const food=['berry','pill','meal','fish'].find(id=>s.inv[id]>0);
+  if(food)return {selector:food==='berry'?'#food-button':'#pack-button',tip:'先使用行囊中的食物恢复饱腹；休息不会代替进食。'};
   return resourceGuide('berry');
  }
- if(s.hp<s.maxHp*.5&&game.camp)return {selector:game.atCamp?'#rest-button':'#home-button',tip:'先补足食物与清水，再回府休息恢复气血。'};
- if(s.water<25){if(s.inv.water)return {selector:'#water-button',tip:'先补饮水，再继续行动。'};return resourceGuide('water');}
  if(step===0)return resourceGuide('fiber');
  if(step===1)return recipeGuide('axe');
  if(step===2)return settleGuide();
@@ -9151,7 +10395,7 @@ function guideTarget(){const s=game.s,step=s.guide.step,b=s.guide.base;
   return {selector:panel==='warehouse'?`[data-a="withdraw"][data-id="${id}"]`:panel==='camp'?'[data-name="warehouse"]':'#camp-button',tip:'再取1份出来；返回探索后不能远程取仓物。'};
  }
  if(step===5)return buildingGuide('forge');
- if(step===6)return recipeGuide('woodSword');
+ if(step===6){if(panel==='camp')return {selector:'[data-a="facility-open"][data-name="facility-forge"]',tip:'点击洞府中的炼器室，进入后制作桃木灵剑。'};return recipeGuide('woodSword');}
  if(step===7){if(game.roomLevel('alchemy')<1)return buildingGuide('alchemy');return recipeGuide('pill');}
  if(step===8)return {selector:'#book-button',tip:'打开图鉴，新增建筑也有造价和作用说明。'};
  if(step===9)return {selector:!game.atCamp?'#home-button':panel==='cultivate'?'[data-a="train"]':panel==='camp'?'[data-name="cultivate"]':'#camp-button',tip:'回到洞府，进入修炼进行安全试剑。'};
@@ -9255,7 +10499,7 @@ function handle(a,b){
  if(a==='heritage-back'){entryImport=null;showPage({kind:'birth',role:selectedRole,slot:draftSlot});return;}
   if(a==='birth-ad'&&frontPage?.kind==='birth'){drawAdReward();return;}
  if(a==='birth-reroll'&&frontPage?.kind==='birth'){
-  try{const st=drawState(selectedRole,draftSlot);if(st.used>=BIRTH_FREE+st.bonus){notify('免费次数用完，可模拟观看广告领取3次','warn');return;}const name=B.nameOf($('birth-name')?.value,selectedRole);const next=B.roll(selectedRole,seedNow(),name);normalizeBirthAdds(next);st.used++;if(!saveDraft(selectedRole,draftSlot,next))return;if(!saveDrawState(selectedRole,draftSlot,st))return;draftBirth=next;drawCount=st.used;renderPage();$('entry-root').querySelector('[data-a="birth-reroll"]')?.focus({preventScroll:true});}catch(e){notify(e.message,'warn');}return;
+  try{const st=drawState(selectedRole,draftSlot);if(st.used>=BIRTH_FREE+st.bonus){notify('免费次数用完，观看激励视频可再领3次','warn');return;}const name=B.nameOf($('birth-name')?.value,selectedRole);const next=B.roll(selectedRole,seedNow(),name);normalizeBirthAdds(next);st.used++;if(!saveDraft(selectedRole,draftSlot,next))return;if(!saveDrawState(selectedRole,draftSlot,st))return;draftBirth=next;drawCount=st.used;renderPage();$('entry-root').querySelector('[data-a="birth-reroll"]')?.focus({preventScroll:true});}catch(e){notify(e.message,'warn');}return;
  }
  if(a==='birth-next'&&frontPage?.kind==='birth'){try{draftBirth.name=B.nameOf($('birth-name')?.value??draftBirth.name,selectedRole);if(!saveDraft(selectedRole,draftSlot,draftBirth))return;showPage({kind:'birth-confirm',role:selectedRole,slot:draftSlot});}catch(e){notify(e.message,'warn');}return;}
 if(a==='birth-prev'&&frontPage?.kind==='birth-confirm'){showPage({kind:'birth',role:selectedRole,slot:draftSlot});return;}
