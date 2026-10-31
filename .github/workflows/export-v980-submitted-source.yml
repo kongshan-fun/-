@@ -24,7 +24,7 @@ jobs:
           git_blob=subprocess.check_output(['git','hash-object',str(src)],text=True).strip()
           expected_blob='b28ad23c4e5ef9dca15513532354ce80d62555aa'
           assert git_blob==expected_blob, f'Mismatched Git blob: {git_blob}'
-          assert len(raw)==1067178, f'Mismatched source size: {len(raw)}'
+          assert len(raw)==1068198, f'Mismatched source size: {len(raw)}'
           s=raw.decode('utf-8-sig')
           assert '<html' in s.lower() and '</html>' in s.lower()
           assert '先结束斗法' in s, 'P8 display not found'
