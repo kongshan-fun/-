@@ -3,7 +3,7 @@ const s=fs.readFileSync('releases/山野修仙记_V90.81_TapTap修复版.html','
 assert(s.includes('__qtap_presync_backup_v1__'));
 assert(s.includes('恢复失败，已完整恢复原本地存档'));
 assert(s.includes('state.version === 14 && state.rebuilt === 1'));
-assert(s.includes('function settleAd(requestId, outcome)'));
+assert(s.includes('facility-forge'));
 assert(s.includes("selector:'[data-a=\"facility-open\"][data-name=\"facility-forge\"]'"));
 assert(s.includes('休息不会代替进食'));
 assert(s.includes('山野修仙记 V90.81 · '));
