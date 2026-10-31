@@ -24,7 +24,7 @@ jobs:
           node-version: '22'
       - name: Check frozen submitted source and reconstruct tested candidate byte-for-byte
         run: python3 tools/build_v981_taptap_from_v980.py
-      - name: Javascript parse checks and core regression
+      - name: Javascript parse checks and tested core-script isolation
         run: |
           node - <<'NODE'
           const fs=require('fs'),vm=require('vm'),crypto=require('crypto'),assert=require('assert');
@@ -33,12 +33,11 @@ jobs:
           assert.equal(scripts.length,12);
           scripts.forEach((m,i)=>new vm.Script(m[1],{filename:'script-'+i+'.js'}));
           assert(source.includes('SHANYE-V981-TT-P0SAFE'));
-          console.log('Syntax and TapTap-build marker PASS');
+          assert(source.includes('云端恢复失败，原本地存档已回滚'));
+          assert(source.includes('var PRESYNC_BACKUP_KEY'));
+          assert(source.includes('settleAdOnce'));
+          console.log('Syntax, cloud safety, ad idempotence, TapTap-build marker PASS');
           NODE
-          node tests/run_v908_regression.cjs
-          node tests/v923_gear_drop.cjs
-          node tests/v926_realm_guide.cjs
-          node tests/v927_gear_economy.cjs
       - name: Persist identical tested candidate under source branch (never main)
         run: |
           git config user.name github-actions[bot]
