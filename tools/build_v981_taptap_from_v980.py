@@ -34,8 +34,8 @@ def main():
     assert len(rebuilt) == TARGET_BYTES, "Unexpected output length"
     assert sha(rebuilt) == TARGET_SHA, "Rebuilt game differs from tested candidate"
     # This does not turn mock SDK tests into a claim of TapTap platform certification.
-    src_scripts = re.findall(r"<script\\b[^>]*>(.*?)</script>", old.decode("utf8"), re.S)
-    new_scripts = re.findall(r"<script\\b[^>]*>(.*?)</script>", rebuilt.decode("utf8"), re.S)
+    src_scripts = re.findall(r"<script\b[^>]*>(.*?)</script>", old.decode("utf8"), re.S)
+    new_scripts = re.findall(r"<script\b[^>]*>(.*?)</script>", rebuilt.decode("utf8"), re.S)
     assert len(src_scripts) == len(new_scripts) == 12
     assert [i for i,(a,b) in enumerate(zip(src_scripts,new_scripts)) if a!=b] == [0,1,5,9]
     assert "SHANYE-V981-TT-P0SAFE" in rebuilt.decode("utf8")
