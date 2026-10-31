@@ -86,6 +86,107 @@ c=c.replace("list[i].uuid === uuid","list[i].uuid === archiveId").replace("archi
 assert "var uuid = uuid ||" not in c
 s=s[:a]+c+s[b:]
 rep("summary: '山野修仙记 V56 · '","summary: '山野修仙记 V90.81 · '","cloud version")
+
+rep("    pending: null,        // { action, label }","    pending: null,        // { action, label, id, settled }\n    requestSeq: 0,","ad request identity")
+rep("""      ad.onError(function (err) {
+        adState.ready = false;
+        adState.lastError = (err && (err.errMsg || err.errCode)) || 'unknown';
+        log('ad error: ' + adState.lastError);
+        // 拉不到广告就把这次请求直接放行，不让玩家卡住
+        if (adState.pending) {
+          var p = adState.pending;
+          adState.pending = null;
+          adState.playing = false;
+          adState.failures++;
+          toast('广告暂时拉不到，本次直接发放', 'warn');
+          grant(p.action);
+        }
+      });
+      ad.onClose(function (res) {
+        var p = adState.pending;
+        adState.pending = null;
+        adState.playing = false;
+        adState.ready = false;
+        if (!p) return;
+        if (res && res.isEnded) {
+          adState.rewards++;
+          grant(p.action);
+        } else {
+          adState.declines++;
+          toast('需完整看完视频才能领取 ' + p.label, 'warn');
+        }
+      });
+""","""      ad.onError(function (err) {
+        adState.ready = false;
+        adState.lastError = (err && (err.errMsg || err.errCode)) || 'unknown';
+        log('ad error: ' + adState.lastError);
+        var pending = adState.pending;
+        if (pending) settleAd(pending.id, 'fallback');
+      });
+      ad.onClose(function (res) {
+        var pending = adState.pending;
+        if (!pending) return;
+        settleAd(pending.id, res && res.isEnded ? 'reward' : 'decline');
+      });
+""","ad callbacks settle once")
+a=s.index("  function showAd(action) {")
+b=s.index("\n  /* ---- 发奖：",a)
+s=s[:a]+"""  function settleAd(requestId, outcome) {
+    var pending = adState.pending;
+    if (!pending || pending.id !== requestId || pending.settled) return false;
+    pending.settled = true;
+    adState.pending = null;
+    adState.playing = false;
+    adState.ready = false;
+    if (outcome === 'reward') {
+      adState.rewards++;
+      grant(pending.action);
+    } else if (outcome === 'fallback') {
+      adState.failures++;
+      toast('广告暂时拉不到，本次按离线兜底规则发放', 'warn');
+      grant(pending.action);
+    } else {
+      adState.declines++;
+      toast('需完整看完视频才能领取 ' + pending.label, 'warn');
+    }
+    return true;
+  }
+
+  function showAd(action) {
+    var label = AD_ACTIONS[action] || '奖励';
+    if (adState.playing) { toast('广告播放中，请稍候', 'warn'); return; }
+    var ad = ensureAd();
+    if (!ad) { grant(action); return; }
+    var requestId = ++adState.requestSeq;
+    adState.playing = true;
+    adState.pending = { action: action, label: label, id: requestId, settled: false };
+    adState.plays++;
+    var p;
+    try { p = ad.show(); } catch (e) { p = Promise.reject(e); }
+    if (!p || typeof p.then !== 'function') return;
+    p.then(function () {
+      if (adState.pending && adState.pending.id === requestId) adState.ready = false;
+    }, function (showErr) {
+      if (!adState.pending || adState.pending.id !== requestId) return;
+      log('ad show failed, retry once', showErr);
+      try {
+        Promise.resolve(ad.load()).then(function () {
+          if (!adState.pending || adState.pending.id !== requestId) return;
+          return ad.show();
+        }).then(function () {
+          if (adState.pending && adState.pending.id === requestId) adState.ready = false;
+        }).catch(function (retryErr) {
+          if (!adState.pending || adState.pending.id !== requestId) return;
+          log('ad retry failed', retryErr);
+          settleAd(requestId, 'fallback');
+        });
+      } catch (e) {
+        if (adState.pending && adState.pending.id === requestId) settleAd(requestId, 'fallback');
+      }
+    });
+  }
+"""+s[b:]
+
 # Tutorial step 7 points at the actual forge entrance when the camp panel is open.
 rep("if(step===6)return recipeGuide('woodSword');","if(step===6){if(panel==='camp')return {selector:'[data-a=\"facility-open\"][data-name=\"facility-forge\"]',tip:'点击洞府中的炼器室，进入后制作桃木灵剑。'};return recipeGuide('woodSword');}","forge tutorial")
 # Replace hunger branch by source offsets; never suggest resting to replenish food.
