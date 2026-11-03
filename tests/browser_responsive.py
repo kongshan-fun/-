@@ -50,9 +50,12 @@ window.__LAYOUT_AUDIT = {
     game=new QGame();
     activeRole='human'; activeSlot=1; frontPage=null;panel='camp';
     const s=game.s,zone=s.zone;
-    s.settlements[zone]={pos:{...s.pos},level:3,
+    // V90.80+ keeps one permanent homestead, not settlements[zone].
+    s.homestead={version:1,pos:{x:1,y:5},level:3,
       buildings:{warehouse:3,forge:3,alchemy:3,quiet:3,farm:3},
-      stash:{},storedGears:[],foundedAt:s.minutes,farmAt:s.minutes};
+      stash:{},storedGears:[],pendingHarvest:{},foundedAt:s.minutes,
+      farmAt:s.minutes,migratedFrom:0};
+    s.homeSchema=1; s.atHome=true;
     renderPage();render();
   }
 };
@@ -143,29 +146,36 @@ def archive_case(page, width, height):
 
 def building_case(page, width, height):
     page.evaluate("()=>window.__LAYOUT_AUDIT.buildings()")
-    cards = page.locator(".building-card")
-    ensure(cards.count() >= 6, "building grid not generated")
+    # V90.79+ uses six functional facility cards in the real home page,
+    # replacing the obsolete five-tier `.building-card` construction grid.
+    cards = page.locator(".home978-grid .facility978-card")
+    ensure(cards.count() == 6, f"home facility cards {cards.count()} != 6")
+    grid = bounds(page, ".home978-grid")
+    ensure(grid["width"] > 100 and grid["height"] > 100, "home facility grid collapsed")
+    ensure(grid["scrollWidth"] <= grid["clientWidth"] + 2, "home facility grid horizontal overflow")
     max_lines = 0
     for idx in range(cards.count()):
-        # V90.35 起设施卡不再有「升级后…」说明行（攻略文案已移出卡片），
-        # 所以这里改判「材料清单 + 卡内所有文本都不越界」。
         m = cards.nth(idx).evaluate(
             """e=>{
-                 const rows=[...e.querySelectorAll('.building-cost,.building-footer,.building-heading')];
-                 const out=rows.map(r=>({scroll:r.scrollHeight,client:r.clientHeight,
-                                         bottom:r.getBoundingClientRect().bottom}));
+                 const rows=[...e.querySelectorAll('.facility978-enter,.facility978-foot')];
+                 const out=rows.map(r=>({scrollWidth:r.scrollWidth,clientWidth:r.clientWidth,
+                     bottom:r.getBoundingClientRect().bottom}));
                  const box=e.getBoundingClientRect();
                  return {scroll:e.scrollHeight,client:e.clientHeight,
-                         overflow:out.filter(r=>r.scroll>r.client+2).length,
-                         outside:out.filter(r=>r.bottom>box.bottom+1).length};
+                         overflowX:out.filter(r=>r.scrollWidth>r.clientWidth+2).length,
+                         outside:out.filter(r=>r.bottom>box.bottom+2).length};
                }""")
-        ensure(m["scroll"] <= m["client"] + 2, f"building {idx} card clipped {m}")
-        ensure(m["overflow"] == 0 and m["outside"] == 0, f"building {idx} rows clipped {m}")
+        ensure(m["scroll"] <= m["client"] + 2, f"facility {idx} card clipped {m}")
+        ensure(m["overflowX"] == 0 and m["outside"] == 0, f"facility {idx} rows clipped {m}")
         max_lines = max(max_lines, m["scroll"])
     cards.last.scroll_into_view_if_needed(timeout=12000)
-    cards.last.locator("button").first.click(timeout=10000)
     page.screenshot(path=str(OUT / f"buildings-{width}x{height}.png"))
+    # Verify a real clickable facility opens its functional panel (not a dummy card).
+    cards.first.locator(".facility978-enter").click(timeout=10000)
+    ensure(page.locator("#panel-root .panel-overlay").count() == 1,
+           "facility entry did not open its functional panel")
     return {"viewport": f"{width}x{height}", "buildingCards": cards.count(),
+            "gridWidth": round(grid["width"], 1),
             "maxDescriptionHeight": max_lines, "result": "PASS"}
 
 
