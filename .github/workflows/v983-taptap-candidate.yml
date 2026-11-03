@@ -1,0 +1,69 @@
+name: V90.83 TapTap Release Candidate
+on:
+  push:
+    branches: [release/v90.83-taptap-candidate-20261103]
+    paths:
+      - 'platform/taptap-adapter-v983.js'
+      - 'releases/山野修仙记_V90.83_TapTap候选版.html'
+      - 'tools/build_taptap_v983.py'
+      - 'tests/v983_*'
+      - '.github/workflows/v983-taptap-candidate.yml'
+      - 'docs/V90.83_*'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Frozen base + vendored adapter deterministic build
+        run: python3 tools/build_taptap_v983.py --check
+      - name: Core gameplay and platform fault injection
+        run: |
+          node tests/syntax_check.cjs
+          node tests/v981_xp_economy.cjs
+          node tests/v982_p0_p1_regression.cjs
+          node tests/v983_taptap_acceptance.cjs
+      - name: Chromium browser setup
+        run: |
+          python3 -m pip install --disable-pip-version-check playwright==1.56.0
+          python3 -m playwright install --with-deps chromium
+      - name: Five viewports with TapTap fake SDK
+        run: python3 tests/v983_taptap_browser.py
+      - name: Package one-root TapTap ZIP and independent manifest
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,zipfile,json
+          root=Path('artifacts/v983-package');root.mkdir(parents=True,exist_ok=True)
+          src=Path('releases/山野修仙记_V90.83_TapTap候选版.html')
+          raw=src.read_bytes()
+          entry='shanye-v983/index.html'
+          target=root/'山野修仙记_V90.83_TapTap候选上传包.zip'
+          with zipfile.ZipFile(target,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=9) as z:
+              z.writestr(entry,raw)
+          with zipfile.ZipFile(target) as z:
+              assert z.namelist()==[entry]
+              assert z.testzip() is None and z.read(entry)==raw
+          meta={'version':'V90.83','status':'candidate-not-published','bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest().upper(),'entry':entry,'real_TapTap_SDK':'pending-on-device'}
+          (root/'发布候选核验信息.json').write_text(json.dumps(meta,ensure_ascii=False,indent=2),encoding='utf8')
+          print('ZIP CONTENT VERIFIED',json.dumps(meta,ensure_ascii=False))
+          PY
+      - name: Upload release package and browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: shanye-v983-taptap-candidate-${{ github.run_id }}
+          path: |
+            artifacts/v983-package/
+            artifacts/v983-browser/
+          retention-days: 30
+          if-no-files-found: warn

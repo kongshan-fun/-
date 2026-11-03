@@ -1,4 +1,8 @@
-# 山野修仙记 · V90.62 主线已合并（TapTap 平台发布待验收）
+# 山野修仙记 · GitHub 主线 V90.82 / TapTap V90.83 发布候选
+
+> **2026-11-03 当前状态：** GitHub main 为 V90.82（正式 TapTap 包未随之更换）。TapTap V90.83 候选只在分支 `release/v90.83-taptap-candidate-20261103`，文件 `releases/山野修仙记_V90.83_TapTap候选版.html`。由 `tools/build_taptap_v983.py --check` 复现；发布门禁见 `docs/V90.83_发布候选验收矩阵.md`。**普通网页 `index.html` 不是 TapTap 上传包。** 候选暂未配置 V90.83 官方新赛季榜单客户端 ID，适配层默认拒绝向旧榜上报，待后台建立四个新 ID 后再开放。
+
+## 历史 V90.62 主线记录
 
 原创竖屏 H5 文字修仙生存 RPG。**V90.62 已通过 PR #22 正式合并至 GitHub `main`（合并提交 `8d9c1ba47d967884898f86fb3b0326adaa1561ed`），主线构建 CI 通过；这不等于 TapTap 线上已更新。**默认入口 [`index.html`](index.html) 与 [V90.62 独立发布文件](releases/山野修仙记_V90.62_存档可靠性收口.html) 字节一致，并由 [`tools/build_v962_from_main.py`](tools/build_v962_from_main.py) 从冻结 V90.61 基线确定性重建。
 
