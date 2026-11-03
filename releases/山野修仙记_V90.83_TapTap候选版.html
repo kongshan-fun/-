@@ -1169,14 +1169,23 @@ window.__SHANYE_STANDARD_BOARD_IDS={"power":"x2vrind450ieimxazy","speedrun":"goh
   const original={
     power:String(cfg.power||''), speedrun:String(cfg.speedrun||'')
   };
-  const supplied=g.__SHANYE_STANDARD_BOARD_IDS||{};
-  const standard={
-    power:String(supplied.power||''), speedrun:String(supplied.speedrun||'')
-  };
-  if(standard.power===original.power||standard.speedrun===original.speedrun ||
-     (standard.power && standard.power===standard.speedrun)){
-    standard.power='';standard.speedrun='';
+  // V90.83 changes the balance rules. Never submit a new-season score to
+  // V90.80's official board IDs; the platform must provide new client IDs.
+  const legacyStandard=g.__SHANYE_STANDARD_BOARD_IDS||{};
+  const official983=g.__SHANYE_V983_OFFICIAL_BOARD_IDS||{};
+  const legacyIds=new Set([original.power,original.speedrun,String(legacyStandard.power||''),String(legacyStandard.speedrun||'')]);
+  function freshBoards(mode){
+    const candidate=official983[mode]||{};
+    const power=String(candidate.power||'').trim();
+    const speedrun=String(candidate.speedrun||'').trim();
+    if(!power||!speedrun||power===speedrun||legacyIds.has(power)||legacyIds.has(speedrun))return {power:'',speedrun:''};
+    return {power,speedrun};
   }
+  const newChallenge=freshBoards('challenge'),newStandard=freshBoards('standard');
+  if(newChallenge.power&&(newChallenge.power===newStandard.power||newChallenge.power===newStandard.speedrun||newChallenge.speedrun===newStandard.power||newChallenge.speedrun===newStandard.speedrun)){
+    newChallenge.power='';newChallenge.speedrun='';newStandard.power='';newStandard.speedrun='';
+  }
+
   // Underlying qtap-3 adapter otherwise submits to its single hardcoded power
   // leaderboard from a private watchSave() closure, bypassing public API guards.
   // Disable THAT watcher and reimplement safe, mode-scoped auto-submission.
@@ -1197,7 +1206,7 @@ window.__SHANYE_STANDARD_BOARD_IDS={"power":"x2vrind450ieimxazy","speedrun":"goh
   }
   function sync(){
     const mode=currentMode();
-    const dest=mode==='challenge'?original:mode==='standard'?standard:null;
+    const dest=mode==='challenge'?newChallenge:mode==='standard'?newStandard:null;
     // Empty SDK IDs are fail-closed for easy, missing, or unconfigured standard;
     // no score is ever written to a challenge board by a standard/easy player.
     cfg.power=dest?.power||'';
@@ -1221,6 +1230,7 @@ window.__SHANYE_STANDARD_BOARD_IDS={"power":"x2vrind450ieimxazy","speedrun":"goh
     const mode=currentMode();
     if(record?.difficulty && record.difficulty!==mode)
       return Promise.reject(new Error('飞升成绩难度与角色存档不一致'));
+    if(record?.ruleset!=='balance-v982')return Promise.reject(new Error('旧规则集成绩不得写入V90.83榜'));
     return guard('submitAscension','speedrun',[record]);
   };
   q.leaderboard.open=function(){return guard('open','power',[]);};
@@ -1228,7 +1238,8 @@ window.__SHANYE_STANDARD_BOARD_IDS={"power":"x2vrind450ieimxazy","speedrun":"goh
   q.rankDifficulty={
     sync,
     mode:currentMode,
-    standardConfigured:()=>!!standard.power&&!!standard.speedrun,
+    standardConfigured:()=>!!newStandard.power&&!!newStandard.speedrun,
+    challengeConfigured:()=>!!newChallenge.power&&!!newChallenge.speedrun,
     originalChallengeIdsUnchanged:()=>!!original.power&&!!original.speedrun,
     // Client IDs are not secrets; diagnostics avoid logging user identifiers.
     readiness:()=>sync()
