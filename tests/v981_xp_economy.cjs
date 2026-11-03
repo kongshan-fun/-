@@ -8,7 +8,7 @@ const scripts = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)];
 const root = {};
 for (const script of scripts.slice(0, 5)) new Function('globalThis', script[2])(root);
 const { QData: D, QGame: G } = root;
-assert.equal(D.RELEASE, 'V90.81');
+assert.equal(D.RELEASE, 'V90.82');
 let checks = 0;
 const check = (condition, label) => { checks++; assert.ok(condition, label); };
 function create(level, zone, race = 'human', difficulty = 'standard', seed = 261014) {

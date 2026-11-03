@@ -6,7 +6,7 @@ name: Main Verify (current release)
 
 on:
   push:
-    branches: [main, release/v90.62-integration-20261023]
+    branches: [main, release/v90.62-integration-20261023, fix/v90.82-p0-p1-audit-20261103]
     paths:
       - 'index.html'
       - 'releases/**'
@@ -53,6 +53,7 @@ jobs:
         run: |
           node tests/syntax_check.cjs
           node tests/v981_xp_economy.cjs
+          node tests/v982_p0_p1_regression.cjs
           node tests/run_v908_regression.cjs
           node tests/v923_gear_drop.cjs
           # V90.26 渡劫测试按旧地图营地判定；V90.80 已改为全图洞府，
