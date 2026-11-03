@@ -125,6 +125,24 @@ async function run(){
   const response=await m.world.QTap.leaderboard.submit();
   ok(response.skipped===true,'easy leaderboard ignored');
  }
+ {
+  const keys=['qinglan-wendao-v11-sword','qinglan-wendao-v11-herb-slot-077',
+    'qinglan-wendao-v10','qinglan-wendao-v9','qinglan-wendao-v7',
+    'qinglan-cultivation-five-v5','qinglan-cultivation-demo-v2','qinglan-cultivation-demo-v1'];
+  for(const older of keys){
+   const m=mock({[older]:'HISTORIC_SAVE'});
+   ok(m.world.QTap.cloud.hasLocalMainSave(),'legacy save prevents auto cloud overwrite '+older);
+   ok(Object.hasOwn(m.world.QTap.cloud.collect().keys,older),'legacy key is included in cloud backup '+older);
+  }
+ }
+ for(const mode of ['standard','challenge']){
+  const m=mock({}, {tap:true});
+  m.world.__QTAP_STATE={role:'human',slot:1,game:new G(null,80311,'human',null,mode),power:9999};
+  const ready=m.world.QTap.rankDifficulty.sync();
+  ok(ready.mode===mode&&!ready.powerReady&&!ready.speedrunReady,'V90.83 official old leaderboard IDs disabled until new season');
+  await assert.rejects(m.world.QTap.leaderboard.submit(true),/排行榜|暂不可用/);count++;
+  await assert.rejects(m.world.QTap.leaderboard.submitAscension({difficulty:mode,ruleset:'garden-v978'}),/旧规则集/);count++;
+ }
  console.log('V90.83 TAPTAP SDK/ROLE/CLOUD/ADS PASS '+count+' assertions');
 }
 run().catch(e=>{console.error(e);process.exitCode=1});
