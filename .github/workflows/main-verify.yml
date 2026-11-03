@@ -56,7 +56,8 @@ jobs:
           node tests/v923_gear_drop.cjs
           # V90.26 渡劫测试按旧地图营地判定；V90.80 已改为全图洞府，
           # 以当前 v981 的真实洞府入口和渡劫结算回归替代。
-          node tests/v927_gear_economy.cjs
+          # V90.27 仍操作每张地图独立 settlements，当前版本改为全图唯一 homestead，
+          # 该旧经济脚本保留历史归档，不再作为当前版本发布门禁。
           node tests/v908-character-gear-layout.test.cjs
       - name: 中文字体（布局测量必须用真实字形）
         run: |
