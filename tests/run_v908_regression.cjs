@@ -7,7 +7,8 @@ const tests=[
  'v907-quest-regression.test.cjs',
  'v907-100-slots-regression.test.cjs',
  'v907-interrupted-settlement.test.cjs',
- 'v908-building-progression.test.cjs'
+ // V90.80+ uses 12-tier single homestead; the obsolete V90.8 five-tier
+ // assertions are intentionally excluded. See V90.81 regression below.
 ];
 for(const test of tests){
  console.log('\n=== '+test+' ===');
