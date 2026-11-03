@@ -54,7 +54,8 @@ jobs:
           node tests/v981_xp_economy.cjs
           node tests/run_v908_regression.cjs
           node tests/v923_gear_drop.cjs
-          node tests/v926_realm_guide.cjs
+          # V90.26 渡劫测试按旧地图营地判定；V90.80 已改为全图洞府，
+          # 以当前 v981 的真实洞府入口和渡劫结算回归替代。
           node tests/v927_gear_economy.cjs
           node tests/v908-character-gear-layout.test.cjs
       - name: 中文字体（布局测量必须用真实字形）
