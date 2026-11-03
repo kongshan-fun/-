@@ -51,6 +51,7 @@ jobs:
       - name: 语法与引擎回归（不需要浏览器）
         run: |
           node tests/syntax_check.cjs
+          node tests/v981_xp_economy.cjs
           node tests/run_v908_regression.cjs
           node tests/v923_gear_drop.cjs
           node tests/v926_realm_guide.cjs
