@@ -600,6 +600,15 @@
     Object.keys(incoming).forEach(function(k){
       if(!isGameKey(k)||k===UUID_KEY||/-(?:presync-backup|restore-stage|restore-rollback)$/.test(k))throw Error('云存档包含不允许恢复的键：'+k);
       if(typeof incoming[k]!=='string')throw Error('云存档键值格式错误：'+k);
+      var identity=/^qinglan-wendao-v14-(?:(easy|standard|challenge)-)?(human|demon)-slot-(\d{3})$/.exec(k);
+      if(identity){
+        var state;
+        try{state=JSON.parse(incoming[k]);}catch(_){throw Error('云角色存档JSON损坏，拒绝覆盖：'+k);}
+        if(!state||state.version!==14||state.race!==identity[2]||state.character!==identity[2]||
+            (state.difficulty===undefined?'challenge':state.difficulty)!==(identity[1]||'challenge')||
+            !state.birth||typeof state.birth!=='object'||!Number.isInteger(state.birth.seed))
+          throw Error('云角色档身份或版本错误，拒绝覆盖：'+k);
+      }
       clean[k]=incoming[k];
     });
     if(!Object.keys(clean).some(function(k){return /^qinglan-wendao-v14-(?:(?:easy|standard|challenge)-)?(?:human|demon)-slot-\d{3}$/.test(k)||/^qinglan-wendao-v(?:10|11)-/.test(k);}))throw Error('云存档不包含可恢复角色，禁止清理本地记录');
@@ -614,6 +623,7 @@
       Object.keys(clean).forEach(function(k){ls.setItem(k,clean[k]);if(ls.getItem(k)!==clean[k])throw Error('写入后校验不一致：'+k);});
       Object.keys(clean).forEach(function(k){if(ls.getItem(k)!==clean[k])throw Error('恢复复核失败：'+k);});
       Object.keys(before).forEach(function(k){if(!Object.prototype.hasOwnProperty.call(clean,k))ls.removeItem(k);});
+      Object.keys(before).forEach(function(k){if(!Object.prototype.hasOwnProperty.call(clean,k)&&ls.getItem(k)!==null)throw Error('旧键清理校验失败：'+k);});
       Object.keys(clean).forEach(function(k){if(ls.getItem(k)!==clean[k])throw Error('最终复核失败：'+k);});
       try{ls.removeItem(stageKey)}catch(_){}
       log('cloud restore committed ('+Object.keys(clean).length+' keys)');
