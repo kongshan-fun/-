@@ -182,7 +182,8 @@
    * ======================================================================== */
   var PREFIXES = ['qinglan-wendao-v14-', 'shanye_birth_ads_v36_', 'qinglan-wendao-v',
     // V90.7 本机资质榜（最快飞升记录）：随存档一起备份，避免换设备丢成绩
-    'shanye-v907-local-ascension-board','shanye-v978-local-ascension-board-v1','shanye-v982-local-ascension-board-v1'];
+    'shanye-v907-local-ascension-board','shanye-v978-local-ascension-board-v1','shanye-v982-local-ascension-board-v1',
+    'qinglan-cultivation-five-v5','qinglan-cultivation-demo-v2','qinglan-cultivation-demo-v1'];
 
   function isGameKey(k) {
     if (!k) return false;
@@ -521,6 +522,9 @@
       var ls=globalThis.localStorage;
       for(var i=0;i<ls.length;i++){
         var k=ls.key(i),m=k&&/^qinglan-wendao-v14-(?:(easy|standard|challenge)-)?(human|demon)-slot-(\d{3})$/.exec(k);
+        var legacyKey=/^qinglan-wendao-v11-(?:sword|herb)(?:-slot-\d{3})?$/.test(k)||
+          ['qinglan-wendao-v10','qinglan-wendao-v9','qinglan-wendao-v8','qinglan-wendao-v7','qinglan-cultivation-five-v5','qinglan-cultivation-demo-v2','qinglan-cultivation-demo-v1'].includes(k);
+        if(legacyKey&&ls.getItem(k)!==null)return true;
         if(!m||Number(m[3])<1||Number(m[3])>100)continue;
         // A damaged local role slot must not be silently overwritten via cloud restore.
         if(ls.getItem(k)!==null)return true;
@@ -611,7 +615,7 @@
       }
       clean[k]=incoming[k];
     });
-    if(!Object.keys(clean).some(function(k){return /^qinglan-wendao-v14-(?:(?:easy|standard|challenge)-)?(?:human|demon)-slot-\d{3}$/.test(k)||/^qinglan-wendao-v(?:10|11)-/.test(k);}))throw Error('云存档不包含可恢复角色，禁止清理本地记录');
+    if(!Object.keys(clean).some(function(k){return /^qinglan-wendao-v14-(?:(?:easy|standard|challenge)-)?(?:human|demon)-slot-\d{3}$/.test(k)||/^qinglan-wendao-v11-(?:sword|herb)(?:-slot-\d{3})?$/.test(k)||['qinglan-wendao-v10','qinglan-wendao-v9','qinglan-wendao-v8','qinglan-wendao-v7','qinglan-cultivation-five-v5','qinglan-cultivation-demo-v2','qinglan-cultivation-demo-v1'].includes(k);}))throw Error('云存档不包含可恢复角色，禁止清理本地记录');
     var before={};
     for(var i=0;i<ls.length;i++){var k=ls.key(i);if(isGameKey(k)&&k!==UUID_KEY&&!/-(?:presync-backup|restore-stage|restore-rollback)$/.test(k)){var v=ls.getItem(k);if(v!==null)before[k]=v;}}
     var backupKey='__qtap_presync_backup_v1__',stageKey='__qtap_restore_stage_v1__';
